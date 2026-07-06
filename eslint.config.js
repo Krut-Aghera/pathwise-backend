@@ -1,7 +1,7 @@
 import js from "@eslint/js";
 import globals from "globals";
-import { defineConfig } from "eslint/config";
 import eslintConfigPrettier from "eslint-config-prettier";
+import { defineConfig } from "eslint/config";
 
 export default defineConfig([
     {
@@ -23,13 +23,28 @@ export default defineConfig([
         },
 
         rules: {
-            "no-unused-vars": "warn",
-            "no-console": "off",
             "no-undef": "error",
+            "no-unreachable": "error",
+            "no-unreachable-loop": "error",
+
+            "no-unused-vars": [
+                "warn",
+                {
+                    argsIgnorePattern: "^next$",
+                    ignoreRestSiblings: true,
+                },
+            ],
+
+            "prefer-const": "error",
             "no-var": "error",
-            "prefer-const": "warn",
+
             eqeqeq: ["error", "always"],
+            curly: ["error", "all"],
+
+            "no-return-await": "error",
+            "no-console": "off",
         },
     },
+
     eslintConfigPrettier,
 ]);
