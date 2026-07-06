@@ -6,6 +6,8 @@
         "source.fixAll.eslint": "always"
     },
 
+    "prettier.requireConfig": true,
+
     "editor.tabSize": 4,
     "editor.insertSpaces": true,
 
