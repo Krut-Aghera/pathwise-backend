@@ -31,3 +31,8 @@ export const serverAppConfig = Object.freeze({
     PORT: Number(requireEnv("PORT")),
     CLIENT_URL: requireEnv("CLIENT_URL"),
 });
+
+export const dbConfig = Object.freeze({
+    MONGO_URI: requireEnv("MONGO_URI"),
+    DB_NAME: requireEnv("DB_NAME"),
+});
