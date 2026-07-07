@@ -36,3 +36,12 @@ export const dbConfig = Object.freeze({
     MONGO_URI: requireEnv("MONGO_URI"),
     DB_NAME: requireEnv("DB_NAME"),
 });
+
+export const jwtConfig = Object.freeze({
+    JWT_ACCESS_SECRET: Number(requireEnv("JWT_ACCESS_SECRET")),
+    JWT_REFRESH_SECRET: Number(requireEnv("JWT_REFRESH_SECRET")),
+    ACCESS_TOKEN_EXPIRY: requireEnv("ACCESS_TOKEN_EXPIRY"),
+    REFRESH_TOKEN_EXPIRY: requireEnv("REFRESH_TOKEN_EXPIRY"),
+    ACCESS_TOKEN_COOKIE_EXPIRY: requireEnv("ACCESS_TOKEN_COOKIE_EXPIRY"),
+    REFRESH_TOKEN_COOKIE_EXPIRY: requireEnv("REFRESH_TOKEN_COOKIE_EXPIRY"),
+});
