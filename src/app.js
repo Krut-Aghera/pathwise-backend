@@ -1,18 +1,36 @@
 import express from "express";
 import cors from "cors";
+import hpp from "hpp";
+import cookieParser from "cookie-parser";
 import morganLogger from "./config/morgan.config.js";
-import { serverConfig } from "./config/env.config.js";
+import { serverAppConfig } from "./config/env.config.js";
 import { apiRateLimiter } from "./middlewares/ratelimit.middleware.js";
 import { globalErrorMiddleware, notFoundErrorMiddleware } from "./middlewares/error.middleware.js";
 import HTTP_STATUS from "./constants/http-status.js";
 import ApiResponse from "./utils/responsehandler.js";
+import helmetMiddleware from "./middlewares/helmet.middleware.js";
 
 const app = express();
 
 ///////////////////////////////////////////////////////////////
+// security middleware
+
+app.use(apiRateLimiter);
+app.use(helmetMiddleware);
+app.use(hpp());
+app.use(
+    cors({
+        origin: serverAppConfig?.CLIENT_URL || "http://localhost:5173",
+        credentials: true,
+        methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "HEAD", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    })
+);
+
+///////////////////////////////////////////////////////////////
 // morgan middleware for logs
 
-if (serverConfig?.NODE_ENV === "development") {
+if (serverAppConfig?.NODE_ENV === "development") {
     app.use(morganLogger);
 }
 
@@ -21,11 +39,10 @@ if (serverConfig?.NODE_ENV === "development") {
 
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: false, limit: "10kb" }));
+app.use(cookieParser());
 
 ///////////////////////////////////////////////////////////////
 // route middleware
-
-// app.use("/api/v1", apiRateLimiter);
 
 // testing route
 

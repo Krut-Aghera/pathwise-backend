@@ -25,8 +25,9 @@ const requireEnv = (key) => {
 ////////////////////////////////////////////////////////////////////////////////
 // Server Configuration
 
-export const serverConfig = Object.freeze({
+export const serverAppConfig = Object.freeze({
     APP_NAME: requireEnv("APP_NAME"),
     NODE_ENV: process.env.NODE_ENV,
     PORT: Number(requireEnv("PORT")),
+    CLIENT_URL: requireEnv("CLIENT_URL"),
 });

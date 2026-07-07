@@ -1,7 +1,7 @@
 import pino from "pino";
-import { serverConfig } from "../config/env.config.js";
+import { serverAppConfig } from "../config/env.config.js";
 
-const isDevelopment = serverConfig?.NODE_ENV === "development";
+const isDevelopment = serverAppConfig?.NODE_ENV === "development";
 
 const logger = pino({
     level: isDevelopment ? "debug" : "info",
