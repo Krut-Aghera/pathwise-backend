@@ -1,7 +1,10 @@
 import { body } from "express-validator";
 import REGEX_VALIDATIONS from "../../constants/regex-validation.js";
 
-const registerUserValidation = [
+///////////////////////////////////////////////////////////////
+// registration validation
+
+const registerUser = [
     body("username")
         .trim()
         .notEmpty()
@@ -28,4 +31,24 @@ const registerUserValidation = [
         .withMessage(REGEX_VALIDATIONS.password.MESSAGE),
 ];
 
-export { registerUserValidation };
+///////////////////////////////////////////////////////////////
+// login validation
+
+const login = [
+    body("email")
+        .trim()
+        .notEmpty()
+        .withMessage("Email is required")
+        .bail()
+        .matches(REGEX_VALIDATIONS.email.PATTERN)
+        .withMessage("Invalid credentials."),
+
+    body("password")
+        .notEmpty()
+        .withMessage("Password is required")
+        .bail()
+        .matches(REGEX_VALIDATIONS.password.PATTERN)
+        .withMessage("Invalid credentials."),
+];
+
+export { registerUser, login };

@@ -1,13 +1,13 @@
 import jwt from "jsonwebtoken";
-import ApiError from "../utils/errorHandler";
+import ApiError from "../utils/errorHandler.js";
 import User from "../features/user/user.model.js";
-import { jwtConfig } from "../config/env.config";
+import { jwtConfig } from "../config/env.config.js";
 import HTTP_STATUS from "../constants/http-status.js";
 
 ///////////////////////////////////////////////////////////////
 // token verification middleware
 
-const tokenVerificationEngine = catchAsync(async (req, res, next) => {
+const tokenVerificationEngine = async (req, res, next) => {
     const accessToken = req.cookies.accessToken;
 
     if (!accessToken) {
@@ -39,7 +39,7 @@ const tokenVerificationEngine = catchAsync(async (req, res, next) => {
 
     req.user = user;
     next();
-});
+};
 
 ///////////////////////////////////////////////////////////////
 // authorization middleware
@@ -65,4 +65,4 @@ const authorizeRole = (...allowedRoles) => {
     };
 };
 
-export default authorizeRole;
+export { tokenVerificationEngine, authorizeRole };

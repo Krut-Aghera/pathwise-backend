@@ -18,6 +18,14 @@ const createUserSession = async (user) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// destroy session
+
+const destroyUserSession = async (user) => {
+    user.refreshToken = null;
+    await authRepository.saveUser(user);
+};
+
+///////////////////////////////////////////////////////////////
 // exports
 
-export { createUserSession };
+export { createUserSession, destroyUserSession };

@@ -10,9 +10,9 @@ const createUser = (userData) => {
 ///////////////////////////////////////////////////////////////
 // save user document
 
-const saveUser = (user) => {
+const saveUser = (user, validateBeforeSave = false) => {
     return user.save({
-        validateBeforeSave: false,
+        validateBeforeSave,
     });
 };
 
@@ -24,6 +24,13 @@ const findByEmail = (email) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// find by _id
+
+const findById = (_id) => {
+    return User.findById(_id);
+};
+
+///////////////////////////////////////////////////////////////
 // exports
 
-export { createUser, findByEmail, saveUser };
+export { createUser, findByEmail, saveUser, findById };

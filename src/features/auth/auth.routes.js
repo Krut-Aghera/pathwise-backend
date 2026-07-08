@@ -1,7 +1,8 @@
 import express from "express";
 import validationEngine from "../../middlewares/validation.middleware.js";
-import { registerUserValidation } from "./auth.validators.js";
-import { registerUser } from "./auth.controller.js";
+import * as authMiddlewares from "../../middlewares/auth.middleware.js";
+import * as authControllers from "./auth.controller.js";
+import * as authValidations from "./auth.validators.js";
 
 const authRouter = express.Router();
 
@@ -10,9 +11,28 @@ const authRouter = express.Router();
 
 authRouter.post(
     "/register",
-    registerUserValidation, // express validatior array => username || email || password
+    authValidations.registerUser, // express validatior array => username || email || password
     validationEngine, // validation middleware => catches express validatior errors if exists
-    registerUser // controller for user registratioon
+    authControllers.registerUser
+);
+
+///////////////////////////////////////////////////////////////
+// login route
+
+authRouter.post(
+    "/login",
+    authValidations.login, // express validatior array => email || password
+    validationEngine,
+    authControllers.login
+);
+
+///////////////////////////////////////////////////////////////
+// logout route
+
+authRouter.post(
+    "/logout",
+    authMiddlewares.tokenVerificationEngine, // access token (login session) verificatioon
+    authControllers.logout
 );
 
 ///////////////////////////////////////////////////////////////

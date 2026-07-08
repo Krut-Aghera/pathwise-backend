@@ -5,7 +5,7 @@ import {
 import HTTP_STATUS from "../../constants/http-status.js";
 import logger from "../../utils/pinoLogger.js";
 import ApiResponse from "../../utils/responsehandler.js";
-import { userRegistration } from "./auth.service.js";
+import * as authService from "./auth.service.js";
 
 ///////////////////////////////////////////////////////////////
 // registration controller
@@ -14,11 +14,12 @@ const registerUser = async (req, res) => {
     const { username, email, password } = req.body;
 
     // registraion service
-    const { user, accessToken, refreshToken } = await userRegistration({
-        username,
-        email,
-        password,
-    });
+    const { user, accessToken, refreshToken } =
+        await authService.userRegistration({
+            username,
+            email,
+            password,
+        });
 
     return res
         .status(HTTP_STATUS.CREATED)
@@ -34,42 +35,76 @@ const registerUser = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// email verification
+// email verification controller
 
 const verifyEmail = () => {};
 
 ///////////////////////////////////////////////////////////////
-// resend verification email
+// resend verification email controller
 
 const resendVerificationEmail = () => {};
 
 ///////////////////////////////////////////////////////////////
-// login
+// login controller
 
-const login = () => {};
+const login = async (req, res) => {
+    const { email, password } = req.body;
+
+    const { user, accessToken, refreshToken } = await authService.userLogin({
+        email,
+        password,
+    });
+
+    return res
+        .status(HTTP_STATUS.OK)
+        .cookie("accessToken", accessToken, ACCESS_COOKIE_OPTIONS)
+        .cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS)
+        .json(
+            new ApiResponse({
+                statusCode: HTTP_STATUS.OK,
+                message: "User login successful",
+                data: user,
+            })
+        );
+};
 
 ///////////////////////////////////////////////////////////////
-// logout
+// logout controller
 
-const logout = () => {};
+const logout = async (req, res) => {
+    const { user } = req;
+
+    await authService.userLogout(user);
+
+    return res
+        .status(HTTP_STATUS.OK)
+        .clearCookie("accessToken", ACCESS_COOKIE_OPTIONS)
+        .clearCookie("refreshToken", REFRESH_COOKIE_OPTIONS)
+        .json(
+            new ApiResponse({
+                statusCode: HTTP_STATUS.OK,
+                message: "User logout successful",
+            })
+        );
+};
 
 ///////////////////////////////////////////////////////////////
-// refresh access token
+// refresh access token controller
 
 const refreshToken = () => {};
 
 ///////////////////////////////////////////////////////////////
-// forgot password
+// forgot password controller
 
 const forgotPassword = () => {};
 
 ///////////////////////////////////////////////////////////////
-// reset password
+// reset password controller
 
 const resetPassword = () => {};
 
 ///////////////////////////////////////////////////////////////
-// change password
+// change password controller
 
 const changePassword = () => {};
 
