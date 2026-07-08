@@ -1,7 +1,37 @@
-///////////////////////////////////////////////////////////////
-// registration
+import {
+    ACCESS_COOKIE_OPTIONS,
+    REFRESH_COOKIE_OPTIONS,
+} from "../../constants/cookie-options.js";
+import HTTP_STATUS from "../../constants/http-status.js";
+import logger from "../../utils/pinoLogger.js";
+import ApiResponse from "../../utils/responsehandler.js";
+import { userRegistration } from "./auth.service.js";
 
-const registerUser = () => {};
+///////////////////////////////////////////////////////////////
+// registration controller
+
+const registerUser = async (req, res) => {
+    const { username, email, password } = req.body;
+
+    // registraion service
+    const { user, accessToken, refreshToken } = await userRegistration({
+        username,
+        email,
+        password,
+    });
+
+    return res
+        .status(HTTP_STATUS.CREATED)
+        .cookie("accessToken", accessToken, ACCESS_COOKIE_OPTIONS)
+        .cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS)
+        .json(
+            new ApiResponse({
+                statusCode: HTTP_STATUS.CREATED,
+                message: "User registration successful",
+                data: user,
+            })
+        );
+};
 
 ///////////////////////////////////////////////////////////////
 // email verification

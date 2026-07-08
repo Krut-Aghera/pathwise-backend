@@ -76,7 +76,9 @@ const globalErrorMiddleware = (err, req, res, next) => {
 
     const isApiError = err instanceof ApiError;
 
-    const statusCode = isApiError ? err.statusCode : HTTP_STATUS.INTERNAL_SERVER_ERROR;
+    const statusCode = isApiError
+        ? err.statusCode
+        : HTTP_STATUS.INTERNAL_SERVER_ERROR;
 
     const message = isApiError ? err.message : "Internal Server Error";
 

@@ -1,4 +1,5 @@
 import { validationResult } from "express-validator";
+import ApiError from "../utils/errorHandler.js";
 
 const validationEngine = (req, res, next) => {
     const errors = validationResult(req);
@@ -14,7 +15,11 @@ const validationEngine = (req, res, next) => {
             };
         });
 
-        throw newApiError(400, "Validation failed", validationErrors);
+        throw new ApiError({
+            statusCode: 400,
+            message: "Validation failed",
+            errors: validationErrors,
+        });
     }
 
     next();

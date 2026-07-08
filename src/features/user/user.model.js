@@ -10,12 +10,14 @@ const userSchema = new mongoose.Schema(
         username: {
             type: String,
             required: [true, "Username is required"],
-            unique: true,
             trim: true,
             lowercase: true,
             minlength: [3, "Username must be at least 3 characters"],
             maxlength: [30, "Username cannot exceed 30 characters"],
-            match: [REGEX_VALIDATIONS.username.PATTERN, REGEX_VALIDATIONS.username.MESSAGE],
+            match: [
+                REGEX_VALIDATIONS.username.PATTERN,
+                REGEX_VALIDATIONS.username.MESSAGE,
+            ],
         },
 
         email: {
@@ -24,14 +26,20 @@ const userSchema = new mongoose.Schema(
             unique: true,
             lowercase: true,
             trim: true,
-            match: [REGEX_VALIDATIONS.email.PATTERN, REGEX_VALIDATIONS.email.MESSAGE],
+            match: [
+                REGEX_VALIDATIONS.email.PATTERN,
+                REGEX_VALIDATIONS.email.MESSAGE,
+            ],
         },
 
         password: {
             type: String,
             required: [true, "Password is required"],
             select: false, // never returned by default in queries
-            match: [REGEX_VALIDATIONS.password.PATTERN, REGEX_VALIDATIONS.password.MESSAGE],
+            match: [
+                REGEX_VALIDATIONS.password.PATTERN,
+                REGEX_VALIDATIONS.password.MESSAGE,
+            ],
         },
 
         role: {
@@ -41,6 +49,18 @@ const userSchema = new mongoose.Schema(
                 message: "{VALUE} is not a valid role",
             },
             default: ROLES.STUDENT,
+        },
+
+        emailVerificationToken: {
+            type: String,
+            default: null,
+            select: false,
+        },
+
+        emailVerificationExpiry: {
+            type: Date,
+            default: null,
+            select: false,
         },
 
         isEmailVerified: {
@@ -59,11 +79,6 @@ const userSchema = new mongoose.Schema(
             select: false,
         },
 
-        refreshTokenExpiry: {
-            type: Date,
-            default: null,
-        },
-
         resetPasswordToken: {
             type: String,
             default: null,
@@ -80,20 +95,16 @@ const userSchema = new mongoose.Schema(
 
 ///////////////////////////////////////////////////////////////
 // indexes
-
-userSchema.index({ email: 1 });
-userSchema.index({ username: 1 });
 userSchema.index({ role: 1 }); // fast role-based filtering (admin dashboards)
 
 ///////////////////////////////////////////////////////////////
 // hashing password before save
 
-userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) return;
 
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
-    next();
 });
 
 ///////////////////////////////////////////////////////////////
@@ -117,17 +128,27 @@ userSchema.methods.generateResetPasswordToken = async function () {
 };
 
 ///////////////////////////////////////////////////////////////
-// Strip sensitive fields whenever doc is serialized to JSON
-userSchema.methods.toJSON = function () {
-    const obj = this.toObject();
+// Strip sensitive fields
+const transform = (doc, ret) => {
+    delete ret.password;
+    delete ret.refreshToken;
+    delete ret.emailVerificationToken;
+    delete ret.emailVerificationExpiry;
+    delete ret.resetPasswordToken;
+    delete ret.resetPasswordExpiry;
 
-    delete obj.password;
-    delete obj.refreshToken;
-    delete obj.resetPasswordToken;
-    delete obj.resetPasswordExpiry;
-
-    return obj;
+    return ret;
 };
+
+userSchema.set("toJSON", {
+    versionKey: false,
+    transform,
+});
+
+userSchema.set("toObject", {
+    versionKey: false,
+    transform,
+});
 
 ///////////////////////////////////////////////////////////////
 // export

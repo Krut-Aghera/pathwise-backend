@@ -1,9 +1,9 @@
 const REGEX_VALIDATIONS = {
     username: {
-        PATTERN: /^[a-zA-Z0-9]+$/,
+        PATTERN: /^(?!_)(?!.*__)[a-zA-Z0-9_]+(?<!_)$/,
         MESSAGE:
-            "Username can only contain letters and numbers. Special characters and spaces are not allowed.",
-        HINT: "Only letters (A-Z, a-z) and numbers (0-9). Maximum 30 characters.",
+            "Username can only contain letters, numbers, and underscores. Spaces and other special characters are not allowed.",
+        HINT: "Use letters (A-Z, a-z), numbers (0-9), and underscores (_). No spaces or special characters. Maximum 30 characters.",
     },
 
     email: {

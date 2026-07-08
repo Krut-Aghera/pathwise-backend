@@ -1,7 +1,7 @@
 import { body } from "express-validator";
-import REGEX_VALIDATIONS from "../../constants/regex-validation";
+import REGEX_VALIDATIONS from "../../constants/regex-validation.js";
 
-export const registerUserValidation = [
+const registerUserValidation = [
     body("username")
         .trim()
         .notEmpty()
@@ -28,4 +28,4 @@ export const registerUserValidation = [
         .withMessage(REGEX_VALIDATIONS.password.MESSAGE),
 ];
 
-export { registerUserValidations };
+export { registerUserValidation };

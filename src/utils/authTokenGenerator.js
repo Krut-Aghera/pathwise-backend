@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
 import { jwtConfig } from "../config/env.config.js";
 
-const generateAuthTokens = (userId, userEmail) => {
+const generateAuthTokens = (user) => {
     const accessToken = jwt.sign(
         {
-            userId,
-            userEmail
+            userId: user._id,
+            userEmail: user.email,
         },
         jwtConfig.JWT_ACCESS_SECRET,
         {
@@ -15,8 +15,8 @@ const generateAuthTokens = (userId, userEmail) => {
 
     const refreshToken = jwt.sign(
         {
-            userId,
-            userEmail
+            userId: user._id,
+            userEmail: user.emil,
         },
         jwtConfig.JWT_REFRESH_SECRET,
         {

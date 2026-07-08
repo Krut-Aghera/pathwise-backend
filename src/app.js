@@ -3,12 +3,16 @@ import cors from "cors";
 import hpp from "hpp";
 import cookieParser from "cookie-parser";
 import morganLogger from "./config/morgan.config.js";
-import { serverAppConfig } from "./config/env.config.js";
-import { apiRateLimiter } from "./middlewares/ratelimit.middleware.js";
-import { globalErrorMiddleware, notFoundErrorMiddleware } from "./middlewares/error.middleware.js";
 import HTTP_STATUS from "./constants/http-status.js";
 import ApiResponse from "./utils/responsehandler.js";
 import helmetMiddleware from "./middlewares/helmet.middleware.js";
+import router from "./routes/index.js";
+import { serverAppConfig } from "./config/env.config.js";
+import { apiRateLimiter } from "./middlewares/ratelimit.middleware.js";
+import {
+    globalErrorMiddleware,
+    notFoundErrorMiddleware,
+} from "./middlewares/error.middleware.js";
 
 const app = express();
 
@@ -44,30 +48,15 @@ app.use(cookieParser());
 ///////////////////////////////////////////////////////////////
 // route middleware
 
-// testing route
-
-app.get("/", (req, res) => {
-    res.status(HTTP_STATUS.OK).json(
-        new ApiResponse({
-            statusCode: HTTP_STATUS.OK,
-            message: "home route is working fine",
-        })
-    );
-});
-
-app.get("/test", (req, res) => {
-    res.status(HTTP_STATUS.ACCEPTED).json(
-        new ApiResponse({
-            statusCode: HTTP_STATUS.ACCEPTED,
-            message: "test route is working fine",
-        })
-    );
-});
+app.use("/api/v1", router);
 
 ///////////////////////////////////////////////////////////////
 // error middlewares
 
 app.use(notFoundErrorMiddleware);
 app.use(globalErrorMiddleware);
+
+///////////////////////////////////////////////////////////////
+// export
 
 export default app;
