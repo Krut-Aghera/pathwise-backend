@@ -39,9 +39,21 @@ export const dbConfig = Object.freeze({
 
 export const jwtConfig = Object.freeze({
     JWT_ACCESS_SECRET: requireEnv("JWT_ACCESS_SECRET"),
-    JWT_REFRESH_SECRET: requireEnv("JWT_REFRESH_SECRET"),
     ACCESS_TOKEN_EXPIRY: requireEnv("ACCESS_TOKEN_EXPIRY"),
-    REFRESH_TOKEN_EXPIRY: requireEnv("REFRESH_TOKEN_EXPIRY"),
     ACCESS_TOKEN_COOKIE_EXPIRY: requireEnv("ACCESS_TOKEN_COOKIE_EXPIRY"),
+
+    JWT_REFRESH_SECRET: requireEnv("JWT_REFRESH_SECRET"),
+    REFRESH_TOKEN_EXPIRY: requireEnv("REFRESH_TOKEN_EXPIRY"),
     REFRESH_TOKEN_COOKIE_EXPIRY: requireEnv("REFRESH_TOKEN_COOKIE_EXPIRY"),
 });
+
+
+export const mailConfig = Object.freeze({
+    EMAIL_LOGO_URL : requireEnv("EMAIL_LOGO_URL"),
+
+    MAILTRAP_API_TOKEN : requireEnv("MAILTRAP_API_TOKEN"),
+    MAILTRAP_SENDER_EMAIL : requireEnv("MAILTRAP_SENDER_EMAIL"),
+    MAILTRAP_SENDER_NAME : requireEnv("MAILTRAP_SENDER_NAME"),
+
+    // RESEND_API_KEY : requireEnv("RESEND_API_KEY")
+})
