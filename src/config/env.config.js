@@ -47,13 +47,12 @@ export const jwtConfig = Object.freeze({
     REFRESH_TOKEN_COOKIE_EXPIRY: requireEnv("REFRESH_TOKEN_COOKIE_EXPIRY"),
 });
 
-
 export const mailConfig = Object.freeze({
-    EMAIL_LOGO_URL : requireEnv("EMAIL_LOGO_URL"),
+    EMAIL_LOGO_URL: requireEnv("EMAIL_LOGO_URL"),
 
-    MAILTRAP_API_TOKEN : requireEnv("MAILTRAP_API_TOKEN"),
-    MAILTRAP_SENDER_EMAIL : requireEnv("MAILTRAP_SENDER_EMAIL"),
-    MAILTRAP_SENDER_NAME : requireEnv("MAILTRAP_SENDER_NAME"),
+    MAILTRAP_API_TOKEN: requireEnv("MAILTRAP_API_TOKEN"),
+    MAILTRAP_SENDER_EMAIL: requireEnv("MAILTRAP_SENDER_EMAIL"),
+    MAILTRAP_SENDER_NAME: requireEnv("MAILTRAP_SENDER_NAME"),
 
     // RESEND_API_KEY : requireEnv("RESEND_API_KEY")
-})
+});
