@@ -9,7 +9,4 @@ const mailtrapClient = new MailtrapClient({
 
 const resendClient = new Resend(mailConfig.RESEND_API_KEY);
 
-const emailProvider =
-    serverAppConfig.NODE_ENV === "production" ? resendClient : mailtrapClient;
-
-export default emailProvider;
+export default { mailtrapClient, resendClient };
