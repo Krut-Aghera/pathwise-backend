@@ -1,5 +1,5 @@
 node_modules
-dist
+
 build
 coverage
 
@@ -9,3 +9,4 @@ logs
 
 *.log
 
+dist/

@@ -1,5 +1,5 @@
 import { render } from "@react-email/render";
-import { serverAppConfig } from "../../config/env.config";
+import { serverAppConfig } from "../../config/env.config.js";
 
 const renderEmail = async (emailTemplate) => {
     if (!emailTemplate) {

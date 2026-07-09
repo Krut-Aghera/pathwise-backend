@@ -1,10 +1,10 @@
 import { Section, Heading, Text } from "react-email";
 
-import BaseEmail from "../../emails/layouts/BaseEmail";
-import EmailHeader from "../../emails/components/EmailHeader";
-import EmailFooter from "../../emails/components/EmailFooter";
-import PrimaryButton from "../../emails/components/PrimaryButton";
-import EmailContent from "../components/EmailContent";
+import BaseEmail from "../layouts/BaseEmail.jsx";
+import EmailHeader from "../components/EmailHeader.jsx";
+import EmailContent from "../components/EmailContent.jsx";
+import PrimaryButton from "../components/PrimaryButton.jsx";
+import EmailFooter from "../components/EmailFooter.jsx";
 
 const WelcomeEmail = ({ username, actionUrl }) => {
     return (
