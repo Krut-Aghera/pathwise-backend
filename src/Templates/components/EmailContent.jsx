@@ -29,6 +29,7 @@ const EmailContent = ({ title, username, children }) => {
                         color: COLORS.textPrimary,
                         fontSize: TYPOGRAPHY.body.fontSize,
                         lineHeight: TYPOGRAPHY.body.lineHeight,
+                        fontWeight: 600,
                     }}
                 >
                     Hi {username},

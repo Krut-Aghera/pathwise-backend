@@ -1,5 +1,7 @@
+import { jwtConfig } from "../../config/env.config.js";
 import generateAuthTokens from "../../utils/authTokenGenerator.js";
 import * as authRepository from "./auth.repository.js";
+import crypto from "crypto";
 
 ///////////////////////////////////////////////////////////////
 // create session
@@ -7,7 +9,12 @@ import * as authRepository from "./auth.repository.js";
 const createUserSession = async (user) => {
     const { accessToken, refreshToken } = generateAuthTokens(user);
 
-    user.refreshToken = refreshToken;
+    const hashedRefreshToken = crypto
+        .createHash("sha256")
+        .update(refreshToken)
+        .digest("hex");
+
+    user.refreshToken = hashedRefreshToken;
     const savedUser = await authRepository.saveUser(user);
 
     return {

@@ -1,4 +1,4 @@
-import { mailtrapClient, resendClient } from "../../config/email.config.js";
+import emailProvider, { isProduction } from "../../config/email.config.js";
 import { mailConfig } from "../../config/env.config.js";
 import logger from "../../utils/pinoLogger.js";
 
@@ -6,9 +6,6 @@ const sendEmail = async ({ to, subject, html }) => {
     if (!to || !subject || !html) {
         throw new Error("sendEmail requires 'to', 'subject', and 'html'.");
     }
-    export const isProduction = serverAppConfig.NODE_ENV === "production";
-
-    const emailProvider = isProduction ? resendClient : mailtrapClient;
 
     const providerName = isProduction ? "Resend" : "Mailtrap";
 
@@ -31,6 +28,7 @@ const sendEmail = async ({ to, subject, html }) => {
                 html,
             });
         }
+
         logger.info(
             {
                 provider: providerName,

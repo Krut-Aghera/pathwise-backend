@@ -8,12 +8,12 @@ import {
     TYPOGRAPHY,
 } from "../theme.js";
 
-import BaseEmail from "../../emails/layouts/BaseEmail";
-import EmailHeader from "../../emails/components/EmailHeader";
-import EmailFooter from "../../emails/components/EmailFooter";
-import PrimaryButton from "../../emails/components/PrimaryButton";
-import InfoBox from "../../emails/components/InfoBox";
+import BaseEmail from "../layouts/BaseEmail.jsx";
+import EmailHeader from "../components/EmailHeader.jsx";
 import EmailContent from "../components/EmailContent.jsx";
+import PrimaryButton from "../components/PrimaryButton.jsx";
+import InfoBox from "../components/InfoBox.jsx";
+import EmailFooter from "../components/EmailFooter.jsx";
 
 const EmailVerifiedEmail = ({ username, actionUrl }) => {
     return (

@@ -8,12 +8,12 @@ import {
     TYPOGRAPHY,
 } from "../theme.js";
 
-import BaseEmail from "../layouts/BaseEmail";
-import EmailHeader from "../components/EmailHeader";
-import EmailContent from "../components/EmailContent";
-import PrimaryButton from "../components/PrimaryButton";
-import InfoBox from "../components/InfoBox";
-import EmailFooter from "../components/EmailFooter";
+import BaseEmail from "../layouts/BaseEmail.jsx";
+import EmailHeader from "../components/EmailHeader.jsx";
+import EmailContent from "../components/EmailContent.jsx";
+import PrimaryButton from "../components/PrimaryButton.jsx";
+import InfoBox from "../components/InfoBox.jsx";
+import EmailFooter from "../components/EmailFooter.jsx";
 
 const ResetPasswordEmail = ({ username, actionUrl }) => {
     return (

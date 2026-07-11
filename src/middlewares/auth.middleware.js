@@ -30,13 +30,6 @@ const tokenVerificationEngine = async (req, res, next) => {
         });
     }
 
-    if (!user.isActive) {
-        throw new ApiError({
-            statusCode: HTTP_STATUS.FORBIDDEN,
-            message: "This account has been deactivated",
-        });
-    }
-
     req.user = user;
     next();
 };
@@ -65,4 +58,53 @@ const authorizeRole = (...allowedRoles) => {
     };
 };
 
-export { tokenVerificationEngine, authorizeRole };
+///////////////////////////////////////////////////////////////
+//  require active account middleware
+
+const requireActiveAccount = (req, res, next) => {
+    if (!req.user) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.UNAUTHORIZED,
+            message: "Authentication required.",
+        });
+    }
+
+    if (!req.user.isActive) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.FORBIDDEN,
+            message:
+                "Your account has been deactivated. Please contact support if you believe this is an error.",
+        });
+    }
+
+    next();
+};
+
+///////////////////////////////////////////////////////////////
+//  require verified email middleware
+
+const requireVerifiedEmail = (req, res, next) => {
+    if (!req.user) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.UNAUTHORIZED,
+            message: "Authentication required.",
+        });
+    }
+
+    if (!req.user.isEmailVerified) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.FORBIDDEN,
+            message:
+                "Please verify your email address to access this resource.",
+        });
+    }
+
+    next();
+};
+
+export {
+    tokenVerificationEngine,
+    authorizeRole,
+    requireActiveAccount,
+    requireVerifiedEmail,
+};

@@ -5,19 +5,22 @@
     "main": "src/server.js",
     "type": "module",
     "scripts": {
-        "test": "echo \"No tests yet\" && exit 0",
-        "dev": "cross-env NODE_ENV=development nodemon src/server.js",
-        "start": "cross-env NODE_ENV=production node src/server.js",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "format": "prettier . --write",
-        "format:check": "prettier . --check"
+        "format:check": "prettier . --check",
+        "dev": "concurrently \"node build.mjs --watch\" \"cross-env NODE_ENV=development nodemon dist/server.js\"",
+        "build": "node build.mjs",
+        "start": "cross-env NODE_ENV=production node dist/server.js",
+        "test": "echo \"No tests yet\" && exit 0"
     },
     "author": "Krut Aghera",
     "license": "ISC",
     "devDependencies": {
         "@eslint/js": "^10.0.1",
+        "concurrently": "^10.0.3",
         "cross-env": "^10.1.0",
+        "esbuild": "^0.28.1",
         "eslint": "^10.6.0",
         "eslint-config-prettier": "^10.1.8",
         "globals": "^17.7.0",

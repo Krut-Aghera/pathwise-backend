@@ -1,16 +1,14 @@
 import renderEmail from "./email.renderer.js";
 import sendEmail from "./email.provider.js";
 
-import { EMAIL_SUBJECTS } from "../../constants/email.constants.js";
+import { EMAIL_SUBJECTS } from "../../constants/email-constans.js";
 
-import {
-    VerifyEmail,
-    WelcomeEmail,
-    EmailVerifiedEmail,
-    ResetPasswordEmail,
-    PasswordResetSuccessEmail,
-    CourseEnrollmentEmail,
-} from "../../templates/index.js";
+import WelcomeEmail from "../../Templates/mails/WelcomeEmail.jsx";
+import VerifyEmail from "../../Templates/mails/VerifyEmail.jsx";
+import EmailVerifiedEmail from "../../Templates/mails/EmailVerifiedEmail.jsx";
+import ResetPasswordEmail from "../../Templates/mails/ResetPasswordEmail.jsx";
+import PasswordResetSuccessEmail from "../../Templates/mails/PasswordResetSuccessEmail.jsx";
+import CourseEnrollmentEmail from "../../Templates/mails/CourseEnrollmentEmail.jsx";
 
 ///////////////////////////////////////////////////////////////
 // welcome email
@@ -21,9 +19,7 @@ import {
  * @param {string} params.actionUrl - CTA button URL.
  */
 const sendWelcomeEmail = async ({ email, username, actionUrl }) => {
-    const html = await renderEmail(
-        <WelcomeEmail username={username} actionUrl={actionUrl} />
-    );
+    const html = await renderEmail(WelcomeEmail({ username, actionUrl }));
 
     return sendEmail({
         to: email,
@@ -41,9 +37,7 @@ const sendWelcomeEmail = async ({ email, username, actionUrl }) => {
  * @param {string} params.actionUrl - Email verification URL.
  */
 const sendVerificationEmail = async ({ email, username, actionUrl }) => {
-    const html = await renderEmail(
-        <VerifyEmail username={username} actionUrl={actionUrl} />
-    );
+    const html = await renderEmail(VerifyEmail({ username, actionUrl }));
 
     return sendEmail({
         to: email,
@@ -62,9 +56,7 @@ const sendVerificationEmail = async ({ email, username, actionUrl }) => {
  */
 
 const sendEmailVerifiedEmail = async ({ email, username, actionUrl }) => {
-    const html = await renderEmail(
-        <EmailVerifiedEmail username={username} actionUrl={actionUrl} />
-    );
+    const html = await renderEmail(EmailVerifiedEmail({ username, actionUrl }));
 
     return sendEmail({
         to: email,
@@ -82,9 +74,7 @@ const sendEmailVerifiedEmail = async ({ email, username, actionUrl }) => {
  * @param {string} params.actionUrl - Password reset URL.
  */
 const sendPasswordResetEmail = async ({ email, username, actionUrl }) => {
-    const html = await renderEmail(
-        <ResetPasswordEmail username={username} actionUrl={actionUrl} />
-    );
+    const html = await renderEmail(ResetPasswordEmail({ username, actionUrl }));
 
     return sendEmail({
         to: email,
@@ -107,7 +97,7 @@ const sendPasswordResetSuccessEmail = async ({
     actionUrl,
 }) => {
     const html = await renderEmail(
-        <PasswordResetSuccessEmail username={username} actionUrl={actionUrl} />
+        PasswordResetSuccessEmail({ username, actionUrl })
     );
 
     return sendEmail({
@@ -135,12 +125,12 @@ const sendCourseEnrollmentEmail = async ({
     actionUrl,
 }) => {
     const html = await renderEmail(
-        <CourseEnrollmentEmail
-            username={username}
-            courseName={courseName}
-            instructorName={instructorName}
-            actionUrl={actionUrl}
-        />
+        CourseEnrollmentEmail({
+            username,
+            courseName,
+            instructorName,
+            actionUrl,
+        })
     );
 
     return sendEmail({

@@ -1,7 +1,7 @@
 import { Button, Section } from "react-email";
 import { BUTTON, COLORS, SPACING, TYPOGRAPHY } from "../theme.js";
 
-const PrimaryButton = ({ href, label }) => {
+const PrimaryButton = ({ href, children }) => {
     return (
         <Section
             style={{
@@ -22,7 +22,7 @@ const PrimaryButton = ({ href, label }) => {
                     textDecoration: "none",
                 }}
             >
-                {label}
+                {children}
             </Button>
         </Section>
     );
