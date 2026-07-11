@@ -1,18 +1,21 @@
 import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import HTTP_STATUS from "../../constants/http-status.js";
 import ApiError from "../../utils/errorHandler.js";
 import generateTokens from "../../utils/tokenGenerator.js";
-import generateAuthTokens from "../../utils/authTokenGenerator.js";
 import * as authRepository from "./auth.repository.js";
-import { createUserSession, destroyUserSession } from "./auth.session.js";
+import * as authSession from "./auth.session.js";
 import User from "../user/user.model.js";
 import {
     createEmailVerificationUrl,
     getEmailTokenExpiry,
 } from "../../services/email/email.helpers.js";
 import { EMAIL_CONFIG } from "../../constants/email-constans.js";
-import { sendVerificationEmail } from "../../services/email/email.services.js";
+import {
+    sendEmailVerifiedEmail,
+    sendVerificationEmail,
+    sendWelcomeEmail,
+} from "../../services/email/email.services.js";
 
 ///////////////////////////////////////////////////////////////
 // registration service
@@ -33,26 +36,59 @@ const userRegistration = async ({ username, email, password }) => {
         password,
     });
 
-    const { token, hashedToken } = generateTokens();
-    const emailVarificationTokenExpiry = getEmailTokenExpiry(
-        EMAIL_CONFIG.VERIFICATION_TOKEN_EXPIRY_MINUTES
-    );
+    const { user, accessToken, refreshToken } =
+        await authSession.createUserSession(createdUser);
 
-    createdUser.emailVerificationToken = hashedToken;
-    createdUser.emailVerificationExpiry = emailVarificationTokenExpiry;
-
-    const url = createEmailVerificationUrl(token);
-
-    console.log("Email verification URL:", url);
-    await authRepository.saveUser(createdUser);
-
-    await sendVerificationEmail({
-        email: createdUser.email,
-        username: createdUser.username,
-        actionUrl: url,
+    await sendWelcomeEmail({
+        email: user.email,
+        username: user.username,
+        // TODO : add user dashboard link
     });
 
-    return await createUserSession(createdUser);
+    return { user, accessToken, refreshToken };
+};
+
+///////////////////////////////////////////////////////////////
+// email verification service
+
+const userEmailVerification = async ({ token }) => {
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await authRepository
+        .findByEmailToken(hashedToken)
+        .select("+emailVerificationToken +emailVerificationExpiry");
+
+    if (!user) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message:
+                "Invalid or expired verification link. Please request a new verification email.",
+        });
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationToken = null;
+    user.emailVerificationExpiry = null;
+
+    await authRepository.saveUser(user);
+
+    try {
+        await sendEmailVerifiedEmail({
+            email: user.email,
+            username: user.username,
+            // actionUrl: `${serverAppConfig.CLIENT_URL}/dashboard`,
+        });
+    } catch (error) {
+        logger.warn(
+            {
+                err: error,
+                userId: user._id,
+            },
+            "Failed to send email verification confirmation"
+        );
+    }
+
+    return user;
 };
 
 ///////////////////////////////////////////////////////////////
@@ -86,17 +122,56 @@ const userLogin = async ({ email, password }) => {
         });
     }
 
-    return await createUserSession(existingUser);
+    return await authSession.createUserSession(existingUser);
 };
 
 ///////////////////////////////////////////////////////////////
 // logout service
 
 const userLogout = async (user) => {
-    return destroyUserSession(user);
+    return authSession.destroyUserSession(user);
+};
+
+///////////////////////////////////////////////////////////////
+// token rotation service
+
+const rotateAuthTokens = async ({ refreshToken }) => {
+    const { userId, userEmail } = jwt.verify(
+        refreshToken,
+        jwtConfig.JWT_REFRESH_SECRET
+    );
+
+    const user = await authRepository.findById(userId).select("+refreshToken");
+
+    if (!user) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.UNAUTHORIZED,
+            message: "Invalid or expired refresh token.",
+        });
+    }
+
+    const hashedRefreshToken = crypto
+        .createHash("sha256")
+        .update(refreshToken)
+        .digest("hex");
+
+    if (user.refreshToken !== hashedRefreshToken) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.UNAUTHORIZED,
+            message: "Invalid or expired refresh token.",
+        });
+    }
+
+    return authSession.createUserSession(user);
 };
 
 ///////////////////////////////////////////////////////////////
 // exports
 
-export { userRegistration, userLogin, userLogout };
+export {
+    userRegistration,
+    userEmailVerification,
+    userLogin,
+    userLogout,
+    rotateAuthTokens,
+};

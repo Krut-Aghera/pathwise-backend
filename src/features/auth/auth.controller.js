@@ -3,6 +3,7 @@ import {
     REFRESH_COOKIE_OPTIONS,
 } from "../../constants/cookie-options.js";
 import HTTP_STATUS from "../../constants/http-status.js";
+import ApiError from "../../utils/errorHandler.js";
 import logger from "../../utils/pinoLogger.js";
 import ApiResponse from "../../utils/responsehandler.js";
 import * as authService from "./auth.service.js";
@@ -13,7 +14,6 @@ import * as authService from "./auth.service.js";
 const registerUser = async (req, res) => {
     const { username, email, password } = req.body;
 
-    // registraion service
     const { user, accessToken, refreshToken } =
         await authService.userRegistration({
             username,
@@ -37,7 +37,26 @@ const registerUser = async (req, res) => {
 ///////////////////////////////////////////////////////////////
 // email verification controller
 
-const verifyEmail = () => {};
+const verifyEmail = async (req, res) => {
+    const { token } = req.params;
+
+    if (!token) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: "Email verificaiton token is missing",
+        });
+    }
+
+    const user = await authService.userEmailVerification({ token });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: "Email has been verified successfully",
+            data: user,
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // resend verification email controller
@@ -89,9 +108,38 @@ const logout = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// refresh access token controller
+// rotate auth tokens controller
 
-const refreshToken = () => {};
+const rotateTokens = async (req, res) => {
+    const { refreshToken: currentRefreshToken } = req.cookies;
+
+    if (!currentRefreshToken) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.UNAUTHORIZED,
+            message: "Refresh token not found.",
+        });
+    }
+
+    const {
+        user,
+        accessToken,
+        refreshToken: newRefreshToken,
+    } = await authService.rotateAuthTokens({
+        refreshToken: currentRefreshToken,
+    });
+
+    return res
+        .status(HTTP_STATUS.OK)
+        .cookie("accessToken", accessToken, ACCESS_COOKIE_OPTIONS)
+        .cookie("refreshToken", newRefreshToken, REFRESH_COOKIE_OPTIONS)
+        .json(
+            new ApiResponse({
+                statusCode: HTTP_STATUS.OK,
+                message: "Tokens rotated successfully.",
+                data: user,
+            })
+        );
+};
 
 ///////////////////////////////////////////////////////////////
 // forgot password controller
@@ -117,7 +165,7 @@ export {
     resendVerificationEmail,
     login,
     logout,
-    refreshToken,
+    rotateTokens,
     forgotPassword,
     resetPassword,
     changePassword,

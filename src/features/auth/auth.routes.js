@@ -36,6 +36,15 @@ authRouter.post(
 );
 
 ///////////////////////////////////////////////////////////////
+// token rotation route
+
+authRouter.post(
+    "/rotate-tokens",
+    authMiddlewares.requireActiveAccount,
+    authControllers.rotateTokens // re-generate jwt access and refreshtoken
+);
+
+///////////////////////////////////////////////////////////////
 // exports
 
 export default authRouter;

@@ -1,5 +1,7 @@
 import { Section, Heading, Text } from "react-email";
 
+import { COLORS, COMPANY, SPACING, TYPOGRAPHY } from "../theme.js";
+
 import BaseEmail from "../layouts/BaseEmail.jsx";
 import EmailHeader from "../components/EmailHeader.jsx";
 import EmailContent from "../components/EmailContent.jsx";
@@ -39,7 +41,19 @@ const WelcomeEmail = ({ username, actionUrl }) => {
                     skills at your own pace.
                 </Text>
 
-                <PrimaryButton href={actionUrl}>Your Profile</PrimaryButton>
+                <Text
+                    style={{
+                        color: COLORS.warning,
+                        fontSize: TYPOGRAPHY.body.fontSize,
+                        lineHeight: TYPOGRAPHY.body.lineHeight,
+                        fontWeight: 600,
+                    }}
+                >
+                    Verify your email to access all resources. Chekcout "Email
+                    Verification" in your Dashboard
+                </Text>
+
+                <PrimaryButton href={actionUrl}>Dashboard</PrimaryButton>
 
                 <Text
                     style={{
