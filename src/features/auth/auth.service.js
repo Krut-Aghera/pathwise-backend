@@ -1,21 +1,21 @@
 import jwt from "jsonwebtoken";
-import crypto from "crypto";
+import crypto, { Hash } from "crypto";
 import HTTP_STATUS from "../../constants/http-status.js";
 import ApiError from "../../utils/errorHandler.js";
-import generateTokens from "../../utils/tokenGenerator.js";
+import { generateTokens, getTokenExpiry } from "../../utils/tokenGenerator.js";
 import * as authRepository from "./auth.repository.js";
 import * as authSession from "./auth.session.js";
 import User from "../user/user.model.js";
 import {
-    createEmailVerificationUrl,
-    getEmailTokenExpiry,
-} from "../../services/email/email.helpers.js";
-import { EMAIL_CONFIG } from "../../constants/email-constans.js";
-import {
     sendEmailVerifiedEmail,
-    sendVerificationEmail,
+    sendPasswordResetEmail,
+    sendPasswordResetSuccessEmail,
     sendWelcomeEmail,
 } from "../../services/email/email.services.js";
+import ApiResponse from "../../utils/responsehandler.js";
+import { EMAIL_CONFIG } from "../../constants/email-constans.js";
+import { createPasswordResetUrl } from "../../services/email/email.helpers.js";
+import { error } from "console";
 
 ///////////////////////////////////////////////////////////////
 // registration service
@@ -135,7 +135,7 @@ const userLogout = async (user) => {
 ///////////////////////////////////////////////////////////////
 // token rotation service
 
-const rotateAuthTokens = async ({ refreshToken }) => {
+const userRotateAuthTokens = async ({ refreshToken }) => {
     const { userId, userEmail } = jwt.verify(
         refreshToken,
         jwtConfig.JWT_REFRESH_SECRET
@@ -166,6 +166,90 @@ const rotateAuthTokens = async ({ refreshToken }) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// forgot passwrod service
+
+const userForgotPassword = async ({ email }) => {
+    const user = await authRepository
+        .findByEmail(email)
+        .select("+resetPasswordToken +resetPasswordExpiry");
+
+    if (!user || !user.isActive) {
+        return;
+    }
+
+    const { token, hashedToken } = generateTokens();
+
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpiry = getTokenExpiry(
+        EMAIL_CONFIG.PASSWORD_RESET_TOKEN_EXPIRY_MINUTES
+    );
+
+    await authRepository.saveUser(user);
+
+    try {
+        await sendPasswordResetEmail({
+            email: user.email,
+            username: user.username,
+            // actionUrl: createPasswordResetUrl(token),
+            actionUrl: `http://localhost:8000/api/v1/auth/reset-password/${token}`,
+        });
+    } catch (error) {
+        user.resetPasswordToken = null;
+        user.resetPasswordExpiry = null;
+
+        await authRepository.saveUser(user);
+
+        throw error;
+    }
+};
+
+///////////////////////////////////////////////////////////////
+// reset passwrod service
+
+const userResetPassword = async ({ token, newPassword }) => {
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await authRepository.findByResetPasswordToken(hashedToken);
+
+    if (!user) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.UNAUTHORIZED,
+            message: "Invalid or expired token",
+        });
+    }
+
+    if (!user.isActive) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.FORBIDDEN,
+            message: "This account has been deactivated.",
+        });
+    }
+
+    user.password = newPassword;
+    user.resetPasswordToken = null;
+    user.resetPasswordExpiry = null;
+    user.refreshToken = null;
+
+    await authRepository.saveUser(user, true);
+
+    try {
+        await sendPasswordResetSuccessEmail({
+            email: user.email,
+            username: user.username,
+            //TODO add login page action url
+        });
+    } catch (error) {
+        logger.warn(
+            {
+                err: error,
+                userId: user._id,
+            },
+            "Failed to send password reset success email."
+        );
+    }
+};
+
+///////////////////////////////////////////////////////////////
 // exports
 
 export {
@@ -173,5 +257,7 @@ export {
     userEmailVerification,
     userLogin,
     userLogout,
-    rotateAuthTokens,
+    userRotateAuthTokens,
+    userForgotPassword,
+    userResetPassword,
 };

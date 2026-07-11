@@ -8,4 +8,8 @@ const generateTokens = () => {
     return { token, hashedToken };
 };
 
-export default generateTokens;
+const getTokenExpiry = (minutes) => {
+    return new Date(Date.now() + minutes * 60 * 1000);
+};
+
+export { generateTokens, getTokenExpiry };

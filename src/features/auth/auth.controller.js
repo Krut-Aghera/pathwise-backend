@@ -124,7 +124,7 @@ const rotateTokens = async (req, res) => {
         user,
         accessToken,
         refreshToken: newRefreshToken,
-    } = await authService.rotateAuthTokens({
+    } = await authService.userRotateAuthTokens({
         refreshToken: currentRefreshToken,
     });
 
@@ -144,12 +144,47 @@ const rotateTokens = async (req, res) => {
 ///////////////////////////////////////////////////////////////
 // forgot password controller
 
-const forgotPassword = () => {};
+const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+
+    await authService.userForgotPassword({ email });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message:
+                "If an account with that email exists, we've sent a password reset link.",
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // reset password controller
 
-const resetPassword = () => {};
+const resetPassword = async (req, res) => {
+    const { token } = req.params;
+
+    if (!token) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: "Password reset token is missing",
+        });
+    }
+
+    const { newPassword } = req.body;
+
+    await authService.userResetPassword({ token, newPassword });
+
+    res.status(HTTP_STATUS.OK)
+        .clearCookie("accessToken", ACCESS_COOKIE_OPTIONS)
+        .clearCookie("refreshToken", REFRESH_COOKIE_OPTIONS)
+        .json(
+            new ApiResponse({
+                statusCode: HTTP_STATUS.OK,
+                message: "Password has been reset successfully.",
+            })
+        );
+};
 
 ///////////////////////////////////////////////////////////////
 // change password controller

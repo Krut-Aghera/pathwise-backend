@@ -69,6 +69,9 @@ const registerRateLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
 
+    skipSuccessfulRequests: false,
+    skipFailedRequests: false,
+
     handler: (req, res) => {
         return rateLimitResponse(
             req,
@@ -79,6 +82,28 @@ const registerRateLimiter = rateLimit({
 });
 
 ///////////////////////////////////////////////////////////////
+// forgot password rate limiter
+
+const forgotPasswordRateLimiter = rateLimit({
+    windowMs: RATE_LIMIT.FORGOT_PASSWORD.WINDOW_MS,
+    limit: RATE_LIMIT.FORGOT_PASSWORD.LIMIT,
+
+    standardHeaders: true,
+    legacyHeaders: false,
+
+    skipSuccessfulRequests: false,
+    skipFailedRequests: false,
+
+    handler: (req, res) => {
+        return rateLimitResponse(
+            req,
+            res,
+            "Too many password reset requests. Please try again later."
+        );
+    },
+});
+
+///////////////////////////////////////////////////////////////
 // exports
 
-export { apiRateLimiter, loginRateLimiter };
+export { apiRateLimiter, loginRateLimiter, forgotPasswordRateLimiter };

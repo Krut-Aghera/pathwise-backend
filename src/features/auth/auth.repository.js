@@ -31,7 +31,7 @@ const findById = (_id) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// find by emailtoken
+// find by email token
 
 const findByEmailToken = (hashedToken) => {
     return User.findOne({
@@ -41,6 +41,23 @@ const findByEmailToken = (hashedToken) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// find by reset password token
+
+const findByResetPasswordToken = (hashedToken) => {
+    return User.findOne({
+        resetPasswordToken: hashedToken,
+        resetPasswordExpiry: { $gt: new Date() },
+    });
+};
+
+///////////////////////////////////////////////////////////////
 // exports
 
-export { createUser, findByEmail, saveUser, findById, findByEmailToken };
+export {
+    createUser,
+    findByEmail,
+    saveUser,
+    findById,
+    findByEmailToken,
+    findByResetPasswordToken,
+};
