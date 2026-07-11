@@ -30,6 +30,13 @@ const passwordValidator = body("password")
     .matches(REGEX_VALIDATIONS.password.PATTERN)
     .withMessage(REGEX_VALIDATIONS.password.MESSAGE);
 
+const currentPasswordValidator = body("currentPassword")
+    .notEmpty()
+    .withMessage("Current password is required")
+    .bail()
+    .matches(REGEX_VALIDATIONS.password.PATTERN)
+    .withMessage(REGEX_VALIDATIONS.password.MESSAGE);
+
 const newPasswordValidator = body("newPassword")
     .notEmpty()
     .withMessage("New password is required")
@@ -85,4 +92,9 @@ const forgotPassword = [emailValidator];
 
 const resetPassword = [newPasswordValidator, confirmPasswordValidator];
 
-export { registerUser, login, forgotPassword, resetPassword };
+///////////////////////////////////////////////////////////////
+// change Password Validation
+
+const changePassword = [currentPasswordValidator, newPasswordValidator];
+
+export { registerUser, login, forgotPassword, resetPassword, changePassword };

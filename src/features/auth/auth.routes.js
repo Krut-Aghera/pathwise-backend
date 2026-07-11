@@ -3,7 +3,7 @@ import validationEngine from "../../middlewares/validation.middleware.js";
 import * as authMiddlewares from "../../middlewares/auth.middleware.js";
 import * as authControllers from "./auth.controller.js";
 import * as authValidations from "./auth.validators.js";
-import { forgotPasswordRateLimiter } from "../../middlewares/ratelimit.middleware.js";
+import { passwordRateLimiter } from "../../middlewares/ratelimit.middleware.js";
 
 const authRouter = express.Router();
 
@@ -50,7 +50,7 @@ authRouter.post(
 
 authRouter.post(
     "/forgot-password",
-    forgotPasswordRateLimiter,
+    passwordRateLimiter,
     authValidations.forgotPassword,
     validationEngine,
     authControllers.forgotPassword
@@ -64,6 +64,19 @@ authRouter.post(
     authValidations.resetPassword,
     validationEngine,
     authControllers.resetPassword
+);
+
+///////////////////////////////////////////////////////////////
+// change password route
+
+authRouter.post(
+    "/change-password",
+    passwordRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.requireActiveAccount,
+    authValidations.changePassword,
+    validationEngine,
+    authControllers.changePassword
 );
 
 ///////////////////////////////////////////////////////////////

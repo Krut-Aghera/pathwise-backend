@@ -82,10 +82,10 @@ const registerRateLimiter = rateLimit({
 });
 
 ///////////////////////////////////////////////////////////////
-// forgot password rate limiter
+// password rate limiter
 
-const forgotPasswordRateLimiter = rateLimit({
-    windowMs: RATE_LIMIT.FORGOT_PASSWORD.WINDOW_MS,
+const passwordRateLimiter = rateLimit({
+    windowMs: RATE_LIMIT.FORGOT_PASSWORD.WINDOW_MS, // works same for change password functionality
     limit: RATE_LIMIT.FORGOT_PASSWORD.LIMIT,
 
     standardHeaders: true,
@@ -106,4 +106,4 @@ const forgotPasswordRateLimiter = rateLimit({
 ///////////////////////////////////////////////////////////////
 // exports
 
-export { apiRateLimiter, loginRateLimiter, forgotPasswordRateLimiter };
+export { apiRateLimiter, loginRateLimiter, passwordRateLimiter };

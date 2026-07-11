@@ -189,7 +189,26 @@ const resetPassword = async (req, res) => {
 ///////////////////////////////////////////////////////////////
 // change password controller
 
-const changePassword = () => {};
+const changePassword = async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user._id;
+
+    await authService.userChangePassword({
+        userId,
+        currentPassword,
+        newPassword,
+    });
+
+    res.status(HTTP_STATUS.OK)
+        .clearCookie("accessToken", ACCESS_COOKIE_OPTIONS)
+        .clearCookie("refreshToken", REFRESH_COOKIE_OPTIONS)
+        .json(
+            new ApiResponse({
+                statusCode: HTTP_STATUS.OK,
+                message: "Password has been changed successfully.",
+            })
+        );
+};
 
 ///////////////////////////////////////////////////////////////
 // exports

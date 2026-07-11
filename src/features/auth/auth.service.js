@@ -15,7 +15,6 @@ import {
 import ApiResponse from "../../utils/responsehandler.js";
 import { EMAIL_CONFIG } from "../../constants/email-constans.js";
 import { createPasswordResetUrl } from "../../services/email/email.helpers.js";
-import { error } from "console";
 
 ///////////////////////////////////////////////////////////////
 // registration service
@@ -250,6 +249,59 @@ const userResetPassword = async ({ token, newPassword }) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// change passwrod service
+
+const userChangePassword = async ({ userId, currentPassword, newPassword }) => {
+    const user = await authRepository.findById(userId).select("+password");
+
+    if (!user) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "User not found.",
+        });
+    }
+
+    const isValidPassword = await user.comparePassword(currentPassword);
+
+    if (!isValidPassword) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.UNAUTHORIZED,
+            message: "Current password is incorrect.",
+        });
+    }
+
+    const isSamePassword = await user.comparePassword(newPassword);
+
+    if (isSamePassword) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: "New password must be different from your current password.",
+        });
+    }
+
+    user.password = newPassword;
+    user.refreshToken = null;
+
+    await authRepository.saveUser(user, true);
+
+    try {
+        await sendPasswordResetSuccessEmail({
+            email: user.email,
+            username: user.username,
+            //TODO add login page action url
+        });
+    } catch (error) {
+        logger.warn(
+            {
+                err: error,
+                userId: user._id,
+            },
+            "Failed to send password change success email."
+        );
+    }
+};
+
+///////////////////////////////////////////////////////////////
 // exports
 
 export {
@@ -260,4 +312,5 @@ export {
     userRotateAuthTokens,
     userForgotPassword,
     userResetPassword,
+    userChangePassword,
 };
