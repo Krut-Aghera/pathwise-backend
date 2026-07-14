@@ -1,4 +1,4 @@
-import { Heading, Section, Text } from "react-email";
+import { Text } from "react-email";
 
 import {
     COLORS,
@@ -15,13 +15,13 @@ import PrimaryButton from "../components/PrimaryButton.jsx";
 import InfoBox from "../components/InfoBox.jsx";
 import EmailFooter from "../components/EmailFooter.jsx";
 
-const EmailVerifiedEmail = ({ username, actionUrl }) => {
+const EmailChangeVerificationEmail = ({ username, actionUrl }) => {
     return (
-        <BaseEmail preview={`Your ${COMPANY.name} account has been verified`}>
+        <BaseEmail preview={`Confirm your new ${COMPANY.name} email address`}>
             <EmailHeader />
 
             <EmailContent
-                title="Email Verified Successfully 🎉"
+                title="Confirm Your New Email Address"
                 username={username}
             >
                 <Text
@@ -31,9 +31,8 @@ const EmailVerifiedEmail = ({ username, actionUrl }) => {
                         lineHeight: TYPOGRAPHY.body.lineHeight,
                     }}
                 >
-                    Great news! Your email address has been successfully
-                    verified and your <strong>{COMPANY.name}</strong> account is
-                    now fully activated.
+                    We received a request to update the email address associated
+                    with your <strong>{COMPANY.name}</strong> account.
                 </Text>
 
                 <Text
@@ -43,13 +42,15 @@ const EmailVerifiedEmail = ({ username, actionUrl }) => {
                         lineHeight: TYPOGRAPHY.body.lineHeight,
                     }}
                 >
-                    You can now access all platform features, enroll in courses,
-                    track your progress, and continue your learning journey.
+                    To complete this change, please verify ownership of your new
+                    email address by clicking the button below.
                 </Text>
 
-                <PrimaryButton href={actionUrl}>Go to Dashboard</PrimaryButton>
+                <PrimaryButton href={actionUrl}>
+                    Confirm Email Address
+                </PrimaryButton>
 
-                <InfoBox variant={INFO_BOX_TYPES.SUCCESS}>
+                <InfoBox variant={INFO_BOX_TYPES.WARNING}>
                     <Text
                         style={{
                             margin: 0,
@@ -59,9 +60,21 @@ const EmailVerifiedEmail = ({ username, actionUrl }) => {
                             textAlign: "center",
                         }}
                     >
-                        Your account is now verified and ready to use.
+                        This verification link will expire in 15 minutes.
                     </Text>
                 </InfoBox>
+
+                <Text
+                    style={{
+                        color: COLORS.textSecondary,
+                        fontSize: TYPOGRAPHY.small.fontSize,
+                        lineHeight: TYPOGRAPHY.small.lineHeight,
+                    }}
+                >
+                    If you didn't request this change, you can safely ignore
+                    this email. Your account email address will remain
+                    unchanged.
+                </Text>
 
                 <Text
                     style={{
@@ -72,7 +85,7 @@ const EmailVerifiedEmail = ({ username, actionUrl }) => {
                         marginTop: SPACING.md,
                     }}
                 >
-                    Happy Learning!
+                    Stay secure,
                     <br />
                     The {COMPANY.name} Team
                 </Text>
@@ -83,4 +96,4 @@ const EmailVerifiedEmail = ({ username, actionUrl }) => {
     );
 };
 
-export default EmailVerifiedEmail;
+export default EmailChangeVerificationEmail;

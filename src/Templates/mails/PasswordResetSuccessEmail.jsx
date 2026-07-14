@@ -38,8 +38,18 @@ const PasswordResetSuccessEmail = ({ username, actionUrl }) => {
                 <PrimaryButton href={actionUrl}>Sign In</PrimaryButton>
 
                 <InfoBox variant={INFO_BOX_TYPES.DANGER}>
-                    If you didn't make this change, contact our support team
-                    immediately and secure your account.
+                    <Text
+                        style={{
+                            margin: 0,
+                            color: COLORS.warning,
+                            fontSize: TYPOGRAPHY.small.fontSize,
+                            lineHeight: TYPOGRAPHY.small.lineHeight,
+                            textAlign: "center",
+                        }}
+                    >
+                        If you didn't make this change, contact our support team
+                        immediately and secure your account.
+                    </Text>
                 </InfoBox>
 
                 <Text

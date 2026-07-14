@@ -275,7 +275,8 @@ const userChangePassword = async ({ userId, currentPassword, newPassword }) => {
     if (isSamePassword) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: "New password must be different from your current password.",
+            message:
+                "New password must be different from your current password.",
         });
     }
 

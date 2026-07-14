@@ -85,8 +85,8 @@ const registerRateLimiter = rateLimit({
 // password rate limiter
 
 const passwordRateLimiter = rateLimit({
-    windowMs: RATE_LIMIT.FORGOT_PASSWORD.WINDOW_MS, // works same for change password functionality
-    limit: RATE_LIMIT.FORGOT_PASSWORD.LIMIT,
+    windowMs: RATE_LIMIT.PASSWORD.WINDOW_MS, // works same for change password functionality
+    limit: RATE_LIMIT.PASSWORD.LIMIT,
 
     standardHeaders: true,
     legacyHeaders: false,
@@ -104,6 +104,33 @@ const passwordRateLimiter = rateLimit({
 });
 
 ///////////////////////////////////////////////////////////////
+// update profile rate limiter
+
+const updateProfileRateLimiter = rateLimit({
+    windowMs: RATE_LIMIT.UPDATE_PROFILE.WINDOW_MS, // works same for change password functionality
+    limit: RATE_LIMIT.UPDATE_PROFILE.LIMIT,
+
+    standardHeaders: true,
+    legacyHeaders: false,
+
+    skipSuccessfulRequests: false,
+    skipFailedRequests: false,
+
+    handler: (req, res) => {
+        return rateLimitResponse(
+            req,
+            res,
+            "Too many update profile requests. Please try again later."
+        );
+    },
+});
+
+///////////////////////////////////////////////////////////////
 // exports
 
-export { apiRateLimiter, loginRateLimiter, passwordRateLimiter };
+export {
+    apiRateLimiter,
+    loginRateLimiter,
+    passwordRateLimiter,
+    updateProfileRateLimiter,
+};

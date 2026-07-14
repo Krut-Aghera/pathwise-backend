@@ -46,7 +46,17 @@ const ResetPasswordEmail = ({ username, actionUrl }) => {
                 <PrimaryButton href={actionUrl}>Reset Password</PrimaryButton>
 
                 <InfoBox variant={INFO_BOX_TYPES.WARNING}>
-                    This password reset link will expire in 15 minutes.
+                    <Text
+                        style={{
+                            margin: 0,
+                            color: COLORS.warning,
+                            fontSize: TYPOGRAPHY.small.fontSize,
+                            lineHeight: TYPOGRAPHY.small.lineHeight,
+                            textAlign: "center",
+                        }}
+                    >
+                        This password reset link will expire in 15 minutes.
+                    </Text>
                 </InfoBox>
 
                 <Text

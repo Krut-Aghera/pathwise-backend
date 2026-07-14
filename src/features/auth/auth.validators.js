@@ -76,7 +76,6 @@ const login = [
     body("password")
         .notEmpty()
         .withMessage("Password is required")
-        .withMessage("Password is required")
         .bail()
         .matches(REGEX_VALIDATIONS.password.PATTERN)
         .withMessage("Invalid credentials."),
@@ -97,4 +96,12 @@ const resetPassword = [newPasswordValidator, confirmPasswordValidator];
 
 const changePassword = [currentPasswordValidator, newPasswordValidator];
 
-export { registerUser, login, forgotPassword, resetPassword, changePassword };
+export {
+    usernameValidator,
+    emailValidator,
+    registerUser,
+    login,
+    forgotPassword,
+    resetPassword,
+    changePassword,
+};

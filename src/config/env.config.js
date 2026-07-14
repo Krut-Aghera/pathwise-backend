@@ -25,9 +25,6 @@ const requireEnv = (key) => {
 ////////////////////////////////////////////////////////////////////////////////
 // Server Configuration
 
-console.log("NODE_ENV:", process.env.NODE_ENV);
-console.log("APP_NAME:", process.env.APP_NAME);
-
 export const serverAppConfig = Object.freeze({
     NODE_ENV: process.env.NODE_ENV,
     APP_NAME: requireEnv("APP_NAME"),

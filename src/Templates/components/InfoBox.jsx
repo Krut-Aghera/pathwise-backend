@@ -1,10 +1,10 @@
-import { Section, Text } from "react-email";
+import { Section } from "react-email";
+
 import {
     INFO_BOX_TYPES,
     INFO_BOX_VARIANTS,
     RADIUS,
     SPACING,
-    TYPOGRAPHY,
 } from "../theme.js";
 
 const InfoBox = ({ variant = INFO_BOX_TYPES.DEFAULT, children }) => {
@@ -21,17 +21,7 @@ const InfoBox = ({ variant = INFO_BOX_TYPES.DEFAULT, children }) => {
                 borderRadius: RADIUS.md,
             }}
         >
-            <Text
-                style={{
-                    margin: 0,
-                    color: styles.text,
-                    fontSize: TYPOGRAPHY.small.fontSize,
-                    lineHeight: TYPOGRAPHY.small.lineHeight,
-                    textAlign: "center",
-                }}
-            >
-                {children}
-            </Text>
+            {children}
         </Section>
     );
 };

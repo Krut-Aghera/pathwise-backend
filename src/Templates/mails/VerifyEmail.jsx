@@ -36,7 +36,17 @@ const VerifyEmail = ({ username, actionUrl }) => {
                 <PrimaryButton href={actionUrl}>Verify Email</PrimaryButton>
 
                 <InfoBox variant={INFO_BOX_TYPES.WARNING}>
-                    This verification link will expire in 24 hours.
+                    <Text
+                        style={{
+                            margin: 0,
+                            color: COLORS.warning,
+                            fontSize: TYPOGRAPHY.small.fontSize,
+                            lineHeight: TYPOGRAPHY.small.lineHeight,
+                            textAlign: "center",
+                        }}
+                    >
+                        This verification link will expire in 24 hours.
+                    </Text>
                 </InfoBox>
 
                 <Text

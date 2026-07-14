@@ -1,4 +1,4 @@
-import { Heading, Section, Text } from "react-email";
+import { Text } from "react-email";
 
 import {
     COLORS,
@@ -11,19 +11,17 @@ import {
 import BaseEmail from "../layouts/BaseEmail.jsx";
 import EmailHeader from "../components/EmailHeader.jsx";
 import EmailContent from "../components/EmailContent.jsx";
-import PrimaryButton from "../components/PrimaryButton.jsx";
 import InfoBox from "../components/InfoBox.jsx";
 import EmailFooter from "../components/EmailFooter.jsx";
 
-const EmailVerifiedEmail = ({ username, actionUrl }) => {
+const AccountDeactivatedEmail = ({ username }) => {
     return (
-        <BaseEmail preview={`Your ${COMPANY.name} account has been verified`}>
+        <BaseEmail
+            preview={`Your ${COMPANY.name} account has been deactivated`}
+        >
             <EmailHeader />
 
-            <EmailContent
-                title="Email Verified Successfully 🎉"
-                username={username}
-            >
+            <EmailContent title="Account Deactivated" username={username}>
                 <Text
                     style={{
                         color: COLORS.textSecondary,
@@ -31,23 +29,9 @@ const EmailVerifiedEmail = ({ username, actionUrl }) => {
                         lineHeight: TYPOGRAPHY.body.lineHeight,
                     }}
                 >
-                    Great news! Your email address has been successfully
-                    verified and your <strong>{COMPANY.name}</strong> account is
-                    now fully activated.
+                    Your <strong>{COMPANY.name}</strong> account has been
+                    successfully deactivated.
                 </Text>
-
-                <Text
-                    style={{
-                        color: COLORS.textSecondary,
-                        fontSize: TYPOGRAPHY.body.fontSize,
-                        lineHeight: TYPOGRAPHY.body.lineHeight,
-                    }}
-                >
-                    You can now access all platform features, enroll in courses,
-                    track your progress, and continue your learning journey.
-                </Text>
-
-                <PrimaryButton href={actionUrl}>Go to Dashboard</PrimaryButton>
 
                 <InfoBox variant={INFO_BOX_TYPES.SUCCESS}>
                     <Text
@@ -59,9 +43,22 @@ const EmailVerifiedEmail = ({ username, actionUrl }) => {
                             textAlign: "center",
                         }}
                     >
-                        Your account is now verified and ready to use.
+                        Your account is no longer accessible, and you have been
+                        signed out from all active sessions.
                     </Text>
                 </InfoBox>
+
+                <Text
+                    style={{
+                        color: COLORS.textSecondary,
+                        fontSize: TYPOGRAPHY.body.fontSize,
+                        lineHeight: TYPOGRAPHY.body.lineHeight,
+                    }}
+                >
+                    If this was not you, or you believe your account was
+                    deactivated accidentally, please contact our support team as
+                    soon as possible.
+                </Text>
 
                 <Text
                     style={{
@@ -72,9 +69,9 @@ const EmailVerifiedEmail = ({ username, actionUrl }) => {
                         marginTop: SPACING.md,
                     }}
                 >
-                    Happy Learning!
+                    Thank you for being part of {COMPANY.name}.
                     <br />
-                    The {COMPANY.name} Team
+                    We hope to see you again in the future.
                 </Text>
             </EmailContent>
 
@@ -83,4 +80,4 @@ const EmailVerifiedEmail = ({ username, actionUrl }) => {
     );
 };
 
-export default EmailVerifiedEmail;
+export default AccountDeactivatedEmail;

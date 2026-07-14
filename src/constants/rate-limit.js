@@ -14,14 +14,14 @@ const RATE_LIMIT = Object.freeze({
         LIMIT: 5,
     },
 
-    FORGOT_PASSWORD: {
+    PASSWORD: {
         WINDOW_MS: 60 * 60 * 1000, // 1 hour
         LIMIT: 3,
     },
 
-    RESET_PASSWORD: {
-        WINDOW_MS: 15 * 60 * 1000, // 15 minutes
-        LIMIT: 5,
+    UPDATE_PROFILE: {
+        WINDOW_MS: 60 * 60 * 1000, // 1 hour
+        LIMIT: 3,
     },
 });
 

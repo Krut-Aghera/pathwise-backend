@@ -46,7 +46,9 @@ const findByEmailToken = (hashedToken) => {
 const findByResetPasswordToken = (hashedToken) => {
     return User.findOne({
         resetPasswordToken: hashedToken,
-        resetPasswordExpiry: { $gt: new Date() },
+        resetPasswordExpiry: {
+            $gt: new Date(),
+        },
     });
 };
 

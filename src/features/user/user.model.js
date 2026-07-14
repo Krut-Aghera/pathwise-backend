@@ -79,6 +79,24 @@ const userSchema = new mongoose.Schema(
             select: false,
         },
 
+        pendingEmail: {
+            type: String,
+            default: null,
+            select: false,
+        },
+
+        emailChangeToken: {
+            type: String,
+            select: false,
+            default: null,
+        },
+
+        emailChangeTokenExpiry: {
+            type: Date,
+            select: false,
+            default: null,
+        },
+
         resetPasswordToken: {
             type: String,
             default: null,
@@ -86,6 +104,17 @@ const userSchema = new mongoose.Schema(
         },
 
         resetPasswordExpiry: {
+            type: Date,
+            default: null,
+            select: false,
+        },
+
+        accountDeactivationOtp: {
+            type: String,
+            select: false,
+        },
+
+        accountDeactivationOtpExpiry: {
             type: Date,
             default: null,
             select: false,

@@ -65,9 +65,19 @@ const CourseEnrollmentEmail = ({
                 <PrimaryButton href={actionUrl}>Start Learning</PrimaryButton>
 
                 <InfoBox variant={INFO_BOX_TYPES.SUCCESS}>
-                    Your course is now available in your dashboard. Your
-                    learning progress will be saved automatically as you
-                    complete lessons.
+                    <Text
+                        style={{
+                            margin: 0,
+                            color: COLORS.warning,
+                            fontSize: TYPOGRAPHY.small.fontSize,
+                            lineHeight: TYPOGRAPHY.small.lineHeight,
+                            textAlign: "center",
+                        }}
+                    >
+                        Your course is now available in your dashboard. Your
+                        learning progress will be saved automatically as you
+                        complete lessons.
+                    </Text>
                 </InfoBox>
 
                 <Text

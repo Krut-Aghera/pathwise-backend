@@ -61,6 +61,7 @@ authRouter.post(
 
 authRouter.post(
     "/reset-password/:token",
+    passwordRateLimiter,
     authValidations.resetPassword,
     validationEngine,
     authControllers.resetPassword

@@ -175,7 +175,8 @@ const resetPassword = async (req, res) => {
 
     await authService.userResetPassword({ token, newPassword });
 
-    res.status(HTTP_STATUS.OK)
+    return res
+        .status(HTTP_STATUS.OK)
         .clearCookie("accessToken", ACCESS_COOKIE_OPTIONS)
         .clearCookie("refreshToken", REFRESH_COOKIE_OPTIONS)
         .json(
@@ -199,7 +200,8 @@ const changePassword = async (req, res) => {
         newPassword,
     });
 
-    res.status(HTTP_STATUS.OK)
+    return res
+        .status(HTTP_STATUS.OK)
         .clearCookie("accessToken", ACCESS_COOKIE_OPTIONS)
         .clearCookie("refreshToken", REFRESH_COOKIE_OPTIONS)
         .json(
