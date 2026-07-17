@@ -109,6 +109,18 @@ const userSchema = new mongoose.Schema(
             select: false,
         },
 
+        instructorAccessToken: {
+            type: String,
+            select: false,
+            default: null,
+        },
+
+        instructorAccessTokenExpiry: {
+            type: Date,
+            select: false,
+            default: null,
+        },
+
         accountDeactivationOtp: {
             type: String,
             select: false,

@@ -9,7 +9,6 @@ const router = Router();
 // routes configuration
 
 router.use("/auth", authRouter);
-
 router.use("/user", userRouter);
 
 ///////////////////////////////////////////////////////////////

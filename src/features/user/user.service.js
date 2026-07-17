@@ -1,20 +1,25 @@
-import { USER_PROFILE } from "./user-profile.js";
+import { USER_PROFILE } from "./user.constants.js";
 import * as userRepository from "./user.repository.js";
 import generateOtp from "../../utils/otpGenerator.js";
 import ApiError from "../../utils/errorHandler.js";
 import HTTP_STATUS from "../../constants/http-status.js";
 import { generateTokens, getTokenExpiry } from "../../utils/tokenGenerator.js";
-import { EMAIL_CONFIG } from "../../services/email/email.constans.js";
+import { EMAIL_EXPIRY_MINUTES } from "../../services/email/email.constans.js";
 import {
     sendEmailChangedSuccessfullyEmail,
     sendEmailChangeVerificationEmail,
+    sendInstructorAccessVerificationEmail,
+    sendInstructorAccessGrantedEmail,
     sendAccountDeactivationOtpEmail,
     sendAccountDeactivatedEmail,
 } from "../../services/email/email.services.js";
-import { createEmailChangeVerificationUrl } from "../../services/email/email.helpers.js";
+import {
+    createEmailChangeVerificationUrl,
+    createInstructorAccessVerificationUrl,
+} from "../../services/email/email.helpers.js";
 import logger from "../../utils/pinoLogger.js";
 import crypto from "crypto";
-
+import { ROLES } from "./user.constants.js";
 ///////////////////////////////////////////////////////////////
 // update username service
 
@@ -67,7 +72,7 @@ const requestEmailUpdation = async ({ user, password, newEmail }) => {
     dbUser.pendingEmail = newEmail;
     dbUser.emailChangeToken = hashedToken;
     dbUser.emailChangeTokenExpiry = getTokenExpiry(
-        EMAIL_CONFIG.CHANGE_EMAIL_TOKEN_EXPIRY_MINUTES
+        EMAIL_EXPIRY_MINUTES.CHANGE_EMAIL_TOKEN_EXPIRY
     );
 
     await userRepository.saveUser(dbUser);
@@ -155,6 +160,112 @@ const confirmEmailUpdation = async ({ user, token }) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// request instructor access service
+
+const requestInstructorAccess = async ({ user }) => {
+    const dbUser = await userRepository.findById(user._id);
+
+    if (!dbUser) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "User not found.",
+        });
+    }
+
+    if (dbUser.role === ROLES.INSTRUCTOR) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: "You already have instructor access.",
+        });
+    }
+
+    const { token, hashedToken } = generateTokens();
+
+    dbUser.instructorAccessToken = hashedToken;
+    dbUser.instructorAccessTokenExpiry = getTokenExpiry(
+        EMAIL_EXPIRY_MINUTES.INSTRUCTOR_ACCESS_TOKEN_EXPIRY
+    );
+
+    await userRepository.saveUser(dbUser);
+
+    try {
+        await sendInstructorAccessVerificationEmail({
+            email: dbUser.email,
+            username: dbUser.username,
+            actionUrl: createInstructorAccessVerificationUrl(token),
+        });
+    } catch (error) {
+        dbUser.instructorAccessToken = null;
+        dbUser.instructorAccessTokenExpiry = null;
+
+        await userRepository.saveUser(dbUser);
+
+        logger.error(
+            {
+                err: error,
+                userId: dbUser._id,
+            },
+            "Failed to send instructor access verification email."
+        );
+
+        throw error;
+    }
+};
+
+///////////////////////////////////////////////////////////////
+// confirm instructor access service
+
+const confirmInstructorAccess = async ({ user, token }) => {
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const dbUser =
+        await userRepository.findByInstructorAccessToken(hashedToken);
+
+    if (!dbUser) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.UNAUTHORIZED,
+            message: "Invalid or expired verification link.",
+        });
+    }
+
+    if (!dbUser._id.equals(user._id)) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.FORBIDDEN,
+            message: "You are not authorized to perform this action.",
+        });
+    }
+
+    if (dbUser.role === ROLES.INSTRUCTOR) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: "You already have instructor access.",
+        });
+    }
+
+    dbUser.role = ROLES.INSTRUCTOR;
+
+    dbUser.instructorAccessToken = null;
+    dbUser.instructorAccessTokenExpiry = null;
+
+    await userRepository.saveUser(dbUser);
+
+    try {
+        await sendInstructorAccessGrantedEmail({
+            email: dbUser.email,
+            username: dbUser.username,
+        });
+    } catch (error) {
+        logger.warn(
+            {
+                err: error,
+                userId: dbUser._id,
+            },
+            "Failed to send instructor access confirmation email."
+        );
+    }
+};
+
+///////////////////////////////////////////////////////////////
 // get instructor profile service
 
 const instructorProfile = () => {};
@@ -186,7 +297,7 @@ const requestAccountDeactivation = async ({ user, password }) => {
     dbUser.accountDeactivationOtp = hashedOtp;
 
     dbUser.accountDeactivationOtpExpiry = getTokenExpiry(
-        EMAIL_CONFIG.ACCOUNT_DEACTIVATION_OTP_EXPIRY_MINUTES
+        EMAIL_EXPIRY_MINUTES.ACCOUNT_DEACTIVATION_OTP_EXPIRY
     );
 
     await userRepository.saveUser(dbUser);
@@ -267,6 +378,8 @@ export {
     instructorProfile,
     requestAccountDeactivation,
     confirmAccountDeactivation,
+    requestInstructorAccess,
+    confirmInstructorAccess,
     requestEmailUpdation,
     confirmEmailUpdation,
 };

@@ -6,6 +6,8 @@ export const EMAIL_SUBJECTS = {
     EMAIL_VERIFIED: "Email verified successfully",
     EMAIL_CHANGE_VERIFICATION: "Confirm your new email address",
     EMAIL_CHANGED_SUCCESSFULLY: "Email address updated successfully",
+    INSTRUCTOR_ACCESS_VERIFICATION: "Verify your instructor access request",
+    INSTRUCTOR_ACCESS_GRANTED: "Instructor access granted",
     COURSE_ENROLLMENT: "Course enrollment successful",
     ACCOUNT_DEACTIVATION_OTP: "Confirm Your Pathwise Account Deactivation",
     ACCOUNT_DEACTIVATED: "Your Pathwise Account Has Been Deactivated",
@@ -15,5 +17,6 @@ export const EMAIL_EXPIRY_MINUTES = {
     VERIFICATION_TOKEN_EXPIRY: 5,
     CHANGE_EMAIL_TOKEN_EXPIRY: 5,
     PASSWORD_RESET_TOKEN_EXPIRY: 5,
+    INSTRUCTOR_ACCESS_TOKEN_EXPIRY: 5,
     ACCOUNT_DEACTIVATION_OTP_EXPIRY: 5,
 };

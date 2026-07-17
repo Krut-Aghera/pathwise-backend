@@ -27,6 +27,18 @@ const findByEmailChangeToken = (hashedToken) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// find user by instructor access  token
+
+const findByInstructorAccessToken = (hashedToken) => {
+    return User.findOne({
+        instructorAccessToken: hashedToken,
+        instructorAccessTokenExpiry: {
+            $gt: Date.now(),
+        },
+    });
+};
+
+///////////////////////////////////////////////////////////////
 // save user document
 
 const saveUser = (user, validateBeforeSave = false) => {
@@ -38,4 +50,10 @@ const saveUser = (user, validateBeforeSave = false) => {
 ///////////////////////////////////////////////////////////////
 // export
 
-export { findById, findByEmail, findByEmailChangeToken, saveUser };
+export {
+    findById,
+    findByEmail,
+    findByEmailChangeToken,
+    findByInstructorAccessToken,
+    saveUser,
+};

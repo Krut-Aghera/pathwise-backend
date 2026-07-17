@@ -60,6 +60,28 @@ userRouter.post(
 );
 
 ///////////////////////////////////////////////////////////////
+// Request instructor access
+
+userRouter.post(
+    "/me/instructor/request",
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    userControllers.requestInstructorAccess
+);
+
+///////////////////////////////////////////////////////////////
+// Confirm instructor access
+
+userRouter.post(
+    "/me/instructor/confirm/:token",
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    userControllers.confirmInstructorAccess
+);
+
+///////////////////////////////////////////////////////////////
 // get instructor profile route
 
 userRouter.get("/instructor/:id", userControllers.getInstructorProfile);

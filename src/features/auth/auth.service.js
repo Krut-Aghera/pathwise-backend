@@ -13,7 +13,7 @@ import {
     sendWelcomeEmail,
 } from "../../services/email/email.services.js";
 import ApiResponse from "../../utils/responsehandler.js";
-import { EMAIL_CONFIG } from "../../services/email/email.constans.js";
+import { EMAIL_EXPIRY_MINUTES } from "../../services/email/email.constans.js";
 import { createPasswordResetUrl } from "../../services/email/email.helpers.js";
 
 ///////////////////////////////////////////////////////////////
@@ -180,7 +180,7 @@ const userForgotPassword = async ({ email }) => {
 
     user.resetPasswordToken = hashedToken;
     user.resetPasswordExpiry = getTokenExpiry(
-        EMAIL_CONFIG.PASSWORD_RESET_TOKEN_EXPIRY_MINUTES
+        EMAIL_EXPIRY_MINUTES.PASSWORD_RESET_TOKEN_EXPIRY
     );
 
     await authRepository.saveUser(user);

@@ -13,6 +13,8 @@ import EmailVerifiedEmail from "../../Templates/mails/EmailVerifiedEmail.jsx";
 import ResetPasswordEmail from "../../Templates/mails/ResetPasswordEmail.jsx";
 import PasswordResetSuccessEmail from "../../Templates/mails/PasswordResetSuccessEmail.jsx";
 import CourseEnrollmentEmail from "../../Templates/mails/CourseEnrollmentEmail.jsx";
+import InstructorAccessVerificationEmail from "../../Templates/mails/InstructorAccessVerificationEmail.jsx";
+import InstructorAccessGrantedEmail from "../../Templates/mails/InstructorAccessGrantedEmail.jsx";
 
 ///////////////////////////////////////////////////////////////
 // welcome email
@@ -195,6 +197,56 @@ const sendEmailChangedSuccessfullyEmail = async ({ email, username }) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// instructor access verification email
+
+/**
+ * @param {Object} params
+ * @param {string} params.email - Recipient email address.
+ * @param {string} params.username - User's display name.
+ * @param {string} params.actionUrl - Instructor access verification URL.
+ */
+const sendInstructorAccessVerificationEmail = async ({
+    email,
+    username,
+    actionUrl,
+}) => {
+    const html = await renderEmail(
+        InstructorAccessVerificationEmail({
+            username,
+            actionUrl,
+        })
+    );
+
+    return sendEmail({
+        to: email,
+        subject: EMAIL_SUBJECTS.INSTRUCTOR_ACCESS_VERIFICATION,
+        html,
+    });
+};
+
+///////////////////////////////////////////////////////////////
+// instructor access granted email
+
+/**
+ * @param {Object} params
+ * @param {string} params.email - Recipient email address.
+ * @param {string} params.username - User's display name.
+ */
+const sendInstructorAccessGrantedEmail = async ({ email, username }) => {
+    const html = await renderEmail(
+        InstructorAccessGrantedEmail({
+            username,
+        })
+    );
+
+    return sendEmail({
+        to: email,
+        subject: EMAIL_SUBJECTS.INSTRUCTOR_ACCESS_GRANTED,
+        html,
+    });
+};
+
+///////////////////////////////////////////////////////////////
 // account deactivation OTP email
 
 /**
@@ -251,6 +303,8 @@ export {
     sendPasswordResetSuccessEmail,
     sendEmailChangeVerificationEmail,
     sendEmailChangedSuccessfullyEmail,
+    sendInstructorAccessVerificationEmail,
+    sendInstructorAccessGrantedEmail,
     sendCourseEnrollmentEmail,
     sendAccountDeactivationOtpEmail,
     sendAccountDeactivatedEmail,

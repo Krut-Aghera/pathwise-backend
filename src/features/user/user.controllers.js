@@ -92,6 +92,50 @@ const confirmEmailUpdation = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// Request instructor access controller
+
+const requestInstructorAccess = async (req, res) => {
+    await userServices.requestInstructorAccess({
+        user: req.user,
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message:
+                "We've sent a verification link to your email address. Verify it to become an instructor.",
+        })
+    );
+};
+
+///////////////////////////////////////////////////////////////
+// Confirm instructor access controller
+
+const confirmInstructorAccess = async (req, res) => {
+    const { token } = req.params;
+
+    if (!token) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: "Instructor verification token is missing.",
+        });
+    }
+
+    await userServices.confirmInstructorAccess({
+        user: req.user,
+        token,
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message:
+                "Congratulations! Your instructor account has been activated successfully.",
+        })
+    );
+};
+
+///////////////////////////////////////////////////////////////
 // get instructor profile controller
 
 const getInstructorProfile = async (req, res) => {};
@@ -146,6 +190,8 @@ export {
     usernameUpdation,
     requestEmailUpdation,
     confirmEmailUpdation,
+    requestInstructorAccess,
+    confirmInstructorAccess,
     getInstructorProfile,
     requestAccountDeactivation,
     confirmAccountDeactivation,
