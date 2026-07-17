@@ -3,7 +3,7 @@ import validationEngine from "../../middlewares/validation.middleware.js";
 import * as authMiddlewares from "../../middlewares/auth.middleware.js";
 import * as authControllers from "./auth.controller.js";
 import * as authValidations from "./auth.validators.js";
-import { passwordRateLimiter } from "../../middlewares/ratelimit.middleware.js";
+import { passwordRateLimiter } from "../../middlewares/ratelimiter/ratelimit.middleware.js";
 
 const authRouter = express.Router();
 
@@ -22,7 +22,7 @@ authRouter.post(
 
 authRouter.post(
     "/login",
-    authValidations.login, // express validatior array => email || password
+    authValidations.login,
     validationEngine,
     authControllers.login
 );

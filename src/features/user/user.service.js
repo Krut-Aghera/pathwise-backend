@@ -1,10 +1,10 @@
-import { USER_PROFILE } from "../../constants/user-profile";
+import { USER_PROFILE } from "./user-profile.js";
 import * as userRepository from "./user.repository.js";
 import generateOtp from "../../utils/otpGenerator.js";
 import ApiError from "../../utils/errorHandler.js";
 import HTTP_STATUS from "../../constants/http-status.js";
 import { generateTokens, getTokenExpiry } from "../../utils/tokenGenerator.js";
-import { EMAIL_CONFIG } from "../../constants/email-constans.js";
+import { EMAIL_CONFIG } from "../../services/email/email.constans.js";
 import {
     sendEmailChangedSuccessfullyEmail,
     sendEmailChangeVerificationEmail,

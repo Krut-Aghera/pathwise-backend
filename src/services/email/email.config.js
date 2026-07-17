@@ -1,7 +1,7 @@
 import { MailtrapClient } from "mailtrap";
 import { Resend } from "resend";
 
-import { mailConfig, serverAppConfig } from "./env.config.js";
+import { mailConfig, serverAppConfig } from "../../config/env.config.js";
 
 export const isProduction = serverAppConfig.NODE_ENV === "production";
 

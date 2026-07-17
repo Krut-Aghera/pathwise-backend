@@ -1,4 +1,4 @@
-const RATE_LIMIT = Object.freeze({
+export const RATE_LIMIT = Object.freeze({
     API: {
         WINDOW_MS: 15 * 60 * 1000, // 15 minutes
         LIMIT: 100,
@@ -6,7 +6,7 @@ const RATE_LIMIT = Object.freeze({
 
     LOGIN: {
         WINDOW_MS: 1 * 60 * 1000, // 1 minute
-        LIMIT: 5,
+        LIMIT: 3,
     },
 
     REGISTER: {
@@ -16,7 +16,7 @@ const RATE_LIMIT = Object.freeze({
 
     PASSWORD: {
         WINDOW_MS: 60 * 60 * 1000, // 1 hour
-        LIMIT: 3,
+        LIMIT: 13,
     },
 
     UPDATE_PROFILE: {
@@ -25,4 +25,10 @@ const RATE_LIMIT = Object.freeze({
     },
 });
 
-export default RATE_LIMIT;
+export const RATE_LIMITER_OPTIONS = Object.freeze({
+    standardHeaders: true,
+    legacyHeaders: false,
+
+    skipSuccessfulRequests: false,
+    skipFailedRequests: false,
+});

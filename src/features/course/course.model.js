@@ -1,0 +1,192 @@
+import mongoose from "mongoose";
+import {
+    COURSE_LANGUAGES,
+    COURSE_LANGUAGES_ARRAY,
+    COURSE_LEVELS,
+    COURSE_LEVELS_ARRAY,
+    COURSE_STATUS,
+    COURSE_STATUS_ARRAY,
+} from "./course-constans.js";
+
+const courseSchema = new mongoose.Schema(
+    {
+        instructor: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: [true, "Instructor is required"],
+            index: true,
+        },
+
+        title: {
+            type: String,
+            required: [true, "Title is required"],
+            trim: true,
+            minlength: [5, "Title must be at least 5 characters"],
+            maxlength: [120, "Title cannot exceed 120 characters"],
+        },
+
+        subtitle: {
+            type: String,
+            trim: true,
+            maxlength: [180, "Subtitle cannot exceed 180 characters"],
+            default: "",
+        },
+
+        slug: {
+            type: String,
+            required: [true, "Slug is required"],
+            unique: true,
+            trim: true,
+            lowercase: true,
+            index: true,
+        },
+
+        description: {
+            type: String,
+            required: [true, "Description is required"],
+            trim: true,
+            maxlength: [10000, "Description cannot exceed 10000 characters"],
+        },
+
+        thumbnail: {
+            url: {
+                type: String,
+                default: "",
+            },
+            publicId: {
+                type: String,
+                default: "",
+            },
+        },
+
+        price: {
+            type: Number,
+            required: [true, "Price is required"],
+            min: [0, "Price must be greater than or equal to 0"],
+        },
+
+        language: {
+            type: String,
+            enum: {
+                values: COURSE_LANGUAGES_ARRAY,
+                message: `Language must be one of: ${COURSE_LANGUAGES_ARRAY.join(", ")}`,
+            },
+            default: COURSE_LANGUAGES.ENGLISH,
+        },
+
+        level: {
+            type: String,
+            enum: {
+                values: COURSE_LEVELS_ARRAY,
+                message: `Level must be one of: ${COURSE_LEVELS_ARRAY.join(", ")}`,
+            },
+            default: COURSE_LEVELS.BEGINNER,
+        },
+
+        learningOutcomes: {
+            type: [
+                {
+                    type: String,
+                    trim: true,
+                },
+            ],
+            default: [],
+            validate: {
+                validator: (arr) => arr.length <= 20,
+                message: "Maximum 20 learning outcomes are allowed.",
+            },
+        },
+
+        requirements: {
+            type: [
+                {
+                    type: String,
+                    trim: true,
+                },
+            ],
+            default: [],
+            validate: {
+                validator: (arr) => arr.length <= 20,
+                message: "Maximum 20 requirements are allowed.",
+            },
+        },
+
+        targetAudience: {
+            type: [
+                {
+                    type: String,
+                    trim: true,
+                },
+            ],
+            default: [],
+            validate: {
+                validator: (arr) => arr.length <= 20,
+                message: "Maximum 20 target audience items are allowed.",
+            },
+        },
+
+        status: {
+            type: String,
+            enum: {
+                values: COURSE_STATUS_ARRAY,
+                message: `Status must be one of: ${COURSE_STATUS_ARRAY.join(", ")}`,
+            },
+            default: COURSE_STATUS.DRAFT,
+            index: true,
+        },
+
+        totalSections: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
+
+        totalLectures: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
+
+        // Duration in seconds
+        totalDuration: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
+
+        // Cached statistics
+        totalEnrollments: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
+
+        averageRating: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 5,
+        },
+
+        totalRatings: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
+    },
+    {
+        timestamps: true,
+        versionKey: false,
+    }
+);
+
+// Text search
+courseSchema.index({
+    title: "text",
+    subtitle: "text",
+    description: "text",
+});
+
+const Course = mongoose.model("Course", courseSchema);
+
+export default Course;

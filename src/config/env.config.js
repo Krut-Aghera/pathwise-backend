@@ -56,3 +56,9 @@ export const mailConfig = Object.freeze({
 
     // RESEND_API_KEY : requireEnv("RESEND_API_KEY")
 });
+
+export const cloudinaryConfig = Object.freeze({
+    CLOUDINARY_CLOUD_NAME: requireEnv("CLOUDINARY_CLOUD_NAME"),
+    CLOUDINARY_API_KEY: requireEnv("CLOUDINARY_API_KEY"),
+    CLOUDINARY_API_SECRET: requireEnv("CLOUDINARY_API_SECRET"),
+});

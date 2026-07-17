@@ -2,11 +2,11 @@ import * as userServices from "./user.service.js";
 import ApiResponse from "../../utils/responsehandler.js";
 import ApiError from "../../utils/errorHandler.js";
 import HTTP_STATUS from "../../constants/http-status.js";
-import { USER_PROFILE_LIST } from "../../constants/user-profile.js";
 import {
     ACCESS_COOKIE_OPTIONS,
     REFRESH_COOKIE_OPTIONS,
 } from "../../constants/cookie-options.js";
+import { USER_PROFILE_LIST } from "./user.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // get current user controller

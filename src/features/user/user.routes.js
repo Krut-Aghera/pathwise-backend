@@ -6,7 +6,7 @@ import validationEngine from "../../middlewares/validation.middleware.js";
 import {
     passwordRateLimiter,
     updateProfileRateLimiter,
-} from "../../middlewares/ratelimit.middleware.js";
+} from "../../middlewares/ratelimiter/ratelimit.middleware.js";
 
 const userRouter = express.Router();
 
@@ -38,7 +38,7 @@ userRouter.patch(
 
 userRouter.post(
     "/me/email/request",
-    // updateProfileRateLimiter,
+    updateProfileRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
     authMiddlewares.requireVerifiedEmail,
@@ -52,7 +52,7 @@ userRouter.post(
 
 userRouter.post(
     "/me/email/confirm/:token",
-    // updateProfileRateLimiter,
+    updateProfileRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
     authMiddlewares.requireVerifiedEmail,

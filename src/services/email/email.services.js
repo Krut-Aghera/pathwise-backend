@@ -1,7 +1,7 @@
 import renderEmail from "./email.renderer.js";
 import sendEmail from "./email.provider.js";
 
-import { EMAIL_SUBJECTS } from "../../constants/email-constans.js";
+import { EMAIL_SUBJECTS } from "./email.constans.js";
 
 import WelcomeEmail from "../../Templates/mails/WelcomeEmail.jsx";
 import VerifyEmail from "../../Templates/mails/VerifyEmail.jsx";

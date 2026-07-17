@@ -1,6 +1,7 @@
 import ApiError from "../utils/errorHandler.js";
 import logger from "../utils/pinoLogger.js";
 import HTTP_STATUS from "../constants/http-status.js";
+import multer from "multer";
 
 ///////////////////////////////////////////////////////////////
 // not found error middleware
@@ -70,6 +71,39 @@ const globalErrorMiddleware = (err, req, res, next) => {
             statusCode: HTTP_STATUS.UNAUTHORIZED,
             message: "Token is not active yet",
         });
+    }
+
+    // ------------ Multer Errors ------------
+
+    if (err instanceof multer.MulterError) {
+        switch (err.code) {
+            case "LIMIT_FILE_SIZE":
+                err = new ApiError({
+                    statusCode: HTTP_STATUS.PAYLOAD_TOO_LARGE,
+                    message: "Uploaded file exceeds the maximum allowed size.",
+                });
+                break;
+
+            case "LIMIT_FILE_COUNT":
+                err = new ApiError({
+                    statusCode: HTTP_STATUS.BAD_REQUEST,
+                    message: "Only one file can be uploaded.",
+                });
+                break;
+
+            case "LIMIT_UNEXPECTED_FILE":
+                err = new ApiError({
+                    statusCode: HTTP_STATUS.BAD_REQUEST,
+                    message: `Unexpected upload field: ${err.field}.`,
+                });
+                break;
+
+            default:
+                err = new ApiError({
+                    statusCode: HTTP_STATUS.BAD_REQUEST,
+                    message: err.message || "File upload failed.",
+                });
+        }
     }
 
     // ------------ custom / unknown Errors ------------

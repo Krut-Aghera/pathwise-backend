@@ -1,4 +1,4 @@
-import emailProvider, { isProduction } from "../../config/email.config.js";
+import emailProvider, { isProduction } from "./email.config.js";
 import { mailConfig } from "../../config/env.config.js";
 import logger from "../../utils/pinoLogger.js";
 

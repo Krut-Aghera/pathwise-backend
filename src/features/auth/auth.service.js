@@ -13,7 +13,7 @@ import {
     sendWelcomeEmail,
 } from "../../services/email/email.services.js";
 import ApiResponse from "../../utils/responsehandler.js";
-import { EMAIL_CONFIG } from "../../constants/email-constans.js";
+import { EMAIL_CONFIG } from "../../services/email/email.constans.js";
 import { createPasswordResetUrl } from "../../services/email/email.helpers.js";
 
 ///////////////////////////////////////////////////////////////
