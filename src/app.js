@@ -2,7 +2,9 @@ import express from "express";
 import cors from "cors";
 import hpp from "hpp";
 import cookieParser from "cookie-parser";
-import router from "./routes/index.js";
+import authRouter from "./features/auth/auth.routes.js";
+import userRouter from "./features/user/user.routes.js";
+import courseRouter from "./features/course/course.routes.js";
 import ApiResponse from "./utils/responsehandler.js";
 import HTTP_STATUS from "./constants/http-status.js";
 import { serverAppConfig } from "./config/env.config.js";
@@ -48,7 +50,9 @@ app.use(cookieParser());
 ///////////////////////////////////////////////////////////////
 // route middleware
 
-app.use("/api/v1", router);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/course", courseRouter);
 
 ///////////////////////////////////////////////////////////////
 // error middlewares

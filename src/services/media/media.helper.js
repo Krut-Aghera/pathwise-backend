@@ -1,4 +1,4 @@
-const validateUploadInput = ({ localFilePath, folder, type }) => {
+export const validateUploadInput = ({ localFilePath, folder, type }) => {
     if (!localFilePath) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,

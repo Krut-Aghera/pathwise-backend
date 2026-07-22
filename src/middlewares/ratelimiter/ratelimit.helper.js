@@ -1,3 +1,5 @@
+import HTTP_STATUS from "../../constants/http-status.js";
+
 ///////////////////////////////////////////////////////////////
 // shared response handler for all rate limiter
 

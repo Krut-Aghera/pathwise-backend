@@ -93,6 +93,24 @@ const updateProfileRateLimiter = rateLimit({
 });
 
 ///////////////////////////////////////////////////////////////
+// course rate limiter
+
+const courseCreationRateLimiter = rateLimit({
+    windowMs: RATE_LIMIT.CREATE_COURSE.WINDOW_MS, // works same for change password functionality
+    limit: RATE_LIMIT.CREATE_COURSE.LIMIT,
+
+    ...RATE_LIMITER_OPTIONS,
+
+    handler: (req, res) => {
+        return rateLimitResponse(
+            req,
+            res,
+            "Too many course creation requests. Please try again later."
+        );
+    },
+});
+
+///////////////////////////////////////////////////////////////
 // exports
 
 export {
@@ -100,4 +118,5 @@ export {
     loginRateLimiter,
     passwordRateLimiter,
     updateProfileRateLimiter,
+    courseCreationRateLimiter,
 };

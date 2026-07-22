@@ -1,12 +1,19 @@
-import { v2 as cloudinary } from "cloudinary";
-
+import cloudinary from "./media.config.js";
 import ApiError from "../../utils/errorHandler.js";
+import logger from "../../utils/pinoLogger.js";
+
 import HTTP_STATUS from "../../constants/http-status.js";
-import { validateMediaUploadInput } from "./media.helper.js";
+import { validateUploadInput } from "./media.helper.js";
+import { MEDIA_RESOURCE_TYPES } from "./media.constants.js";
+import { localFileCleanup } from "../../utils/fileHandler.js";
 
 ///////////////////////////////////////////////////////////////
 // Upload image
-
+/**
+ * @param {Object} params
+ * @param {string} params.localFilePath - course thumbnail temp file address.
+ * @param {string} params.folder - folder to save course thumbnail on cloud provider.
+ */
 const uploadImageMedia = async ({ localFilePath, folder }) => {
     validateUploadInput({
         localFilePath,
@@ -27,11 +34,24 @@ const uploadImageMedia = async ({ localFilePath, folder }) => {
             publicId: uploadedImage.public_id,
         };
     } catch (error) {
+        logger.error("Cloudinary upload failed", {
+            folder,
+            localFilePath,
+            error: error.message,
+        });
+
         throw new ApiError({
             statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
             message: "Image upload failed.",
             details: error.message,
         });
+    } finally {
+        if (!localFilePath) {
+            return
+        }
+
+        await localFileCleanup(localFilePath)
+        logger.error("local image file got removed from temp dir");
     }
 };
 
@@ -73,7 +93,7 @@ const uploadVideoMedia = async ({ localFilePath, folder }) => {
 ///////////////////////////////////////////////////////////////
 // Delete media
 
-const deleteMedia = async ({
+const destroyMedia = async ({
     publicId,
     resourceType = MEDIA_RESOURCE_TYPES.IMAGE,
 }) => {
@@ -110,4 +130,4 @@ const deleteMedia = async ({
 ///////////////////////////////////////////////////////////////
 // exports
 
-export { uploadImageMedia, uploadVideoMedia, deleteMedia };
+export { uploadImageMedia, uploadVideoMedia, destroyMedia };

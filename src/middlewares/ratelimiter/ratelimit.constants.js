@@ -23,6 +23,13 @@ export const RATE_LIMIT = Object.freeze({
         WINDOW_MS: 60 * 60 * 1000, // 1 hour
         LIMIT: 3,
     },
+
+    // course related
+
+    CREATE_COURSE: {
+        WINDOW_MS: 60 * 60 * 1000, // 1 hour
+        LIMIT: 10,
+    },
 });
 
 export const RATE_LIMITER_OPTIONS = Object.freeze({

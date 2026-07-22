@@ -1,8 +1,6 @@
 const COURSE_ALLOWED_FIELDS = [
-    "instructor",
     "title",
     "subtitle",
-    "slug",
     "description",
     "price",
     "language",
@@ -19,15 +17,14 @@ const COURSE_LANGUAGES = Object.freeze({
 });
 
 const COURSE_LEVELS = Object.freeze({
-    BEGINNER: "Beginner",
-    INTERMEDIATE: "Intermediate",
-    ADVANCED: "Advanced",
+    BEGINNER: "beginner",
+    INTERMEDIATE: "intermediate",
+    ADVANCED: "advanced",
 });
 
 const COURSE_STATUS = Object.freeze({
-    DRAFT: "Draft",
-    PUBLISHED: "Published",
-    ARCHIVED: "Archived",
+    DRAFT: "draft",
+    PUBLISHED: "published",
 });
 
 const COURSE_LANGUAGES_ARRAY = Object.values(COURSE_LANGUAGES);

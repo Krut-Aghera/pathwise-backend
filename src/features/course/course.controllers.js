@@ -1,31 +1,93 @@
-import { COURSE_ALLOWED_FIELDS } from "./course-constans.js";
+import { COURSE_ALLOWED_FIELDS } from "./course.constans.js";
 import HTTP_STATUS from "../../constants/http-status.js";
-import apiResponse from "../../utils/responsehandler.js";
+import ApiResponse from "../../utils/responsehandler.js";
+import ApiError from "../../utils/errorHandler.js";
 import * as courseService from "./course.service.js";
 
 ///////////////////////////////////////////////////////////////
 // create course controller
 
 const createCourse = async (req, res) => {
-    const courseData = COURSE_ALLOWED_FIELDS.reduce((acc, field) => {
-        if (req.body[field] !== undefined) {
-            acc[field] = req.body[field];
-        }
+    const courseData = COURSE_ALLOWED_FIELDS.reduce((acc, key) => {
+        acc[key] = req.body[key];
         return acc;
     }, {});
 
-    const course = await courseService.createCourse(courseData);
+    const courseThumbnailTempPath = req.file?.path;
+
+    if (!courseThumbnailTempPath) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: "Thumbnail image is required",
+        });
+    }
+
+    const course = await courseService.createCourse({
+        instructorId: req.user._id,
+        courseData,
+        courseThumbnailTempPath,
+    });
 
     res.status(HTTP_STATUS.CREATED).json(
-        new apiResponse({
+        new ApiResponse({
             statusCode: HTTP_STATUS.CREATED,
-            message: "Course created successfully",
+            message: "New Course created successfully.",
             data: course,
         })
     );
 };
 
 ///////////////////////////////////////////////////////////////
+// update course controller
+
+const updateCourse = async (req, res) => {};
+
+///////////////////////////////////////////////////////////////
+// remove course controller
+
+const removeCourse = async (req, res) => {};
+
+///////////////////////////////////////////////////////////////
+// update thumbnail controller
+
+const updateThumbnail = async (req, res) => {};
+
+///////////////////////////////////////////////////////////////
+// publish course controller
+
+const publishCourse = async (req, res) => {};
+
+///////////////////////////////////////////////////////////////
+// unpublish course controller
+
+const unpublishCourse = async (req, res) => {};
+
+///////////////////////////////////////////////////////////////
+// fetch courses controller
+
+const fetchCourses = async (req, res) => {};
+
+///////////////////////////////////////////////////////////////
+// fetch current course controller
+
+const fetchCurrentCourse = async (req, res) => {};
+
+///////////////////////////////////////////////////////////////
+// fetch Instructor courses controller
+
+const fetchInstructorCourses = async (req, res) => {};
+
+///////////////////////////////////////////////////////////////
 // exports
 
-export { createCourse };
+export {
+    createCourse,
+    updateCourse,
+    removeCourse,
+    updateThumbnail,
+    publishCourse,
+    unpublishCourse,
+    fetchCourses,
+    fetchCurrentCourse,
+    fetchInstructorCourses,
+};

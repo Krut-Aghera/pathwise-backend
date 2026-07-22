@@ -4,7 +4,7 @@ import ApiError from "../../utils/errorHandler.js";
 import {
     ALLOWED_IMAGE_MIME_TYPES,
     ALLOWED_VIDEO_MIME_TYPES,
-} from "./multer-constants.js";
+} from "./multer.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // Generic MIME type filter

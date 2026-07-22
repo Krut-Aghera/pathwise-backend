@@ -6,7 +6,7 @@ import {
     COURSE_LEVELS_ARRAY,
     COURSE_STATUS,
     COURSE_STATUS_ARRAY,
-} from "./course-constans.js";
+} from "./course.constans.js";
 
 const courseSchema = new mongoose.Schema(
     {
@@ -28,6 +28,7 @@ const courseSchema = new mongoose.Schema(
         subtitle: {
             type: String,
             trim: true,
+            required: [true, "Subtitle is required."],
             maxlength: [180, "Subtitle cannot exceed 180 characters"],
             default: "",
         },
@@ -35,10 +36,9 @@ const courseSchema = new mongoose.Schema(
         slug: {
             type: String,
             required: [true, "Slug is required"],
-            unique: true,
             trim: true,
             lowercase: true,
-            index: true,
+            unique: true,
         },
 
         description: {
@@ -180,13 +180,19 @@ const courseSchema = new mongoose.Schema(
     }
 );
 
-// Text search
-courseSchema.index({
-    title: "text",
-    subtitle: "text",
-    description: "text",
-});
+///////////////////////////////////////////////////////////////
+// text search
+courseSchema.index(
+    {
+        title: "text",
+        slug: "text",
+        subtitle: "text",
+        description: "text",
+    },
+    {
+        language_override: "textSearchLanguage",
+    }
+);
 
 const Course = mongoose.model("Course", courseSchema);
-
 export default Course;

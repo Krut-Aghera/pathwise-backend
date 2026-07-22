@@ -15,5 +15,10 @@ export const ALLOWED_VIDEO_MIME_TYPES = [
     "video/quicktime",
 ];
 
+export const FILE_FIELDS = Object.freeze({
+    THUMBNAIL: "thumbnail",
+    VIDEO: "video",
+});
+
 export const IMAGE_MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 export const VIDEO_MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5 GB
