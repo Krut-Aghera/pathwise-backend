@@ -3,18 +3,49 @@ import Course from "./course.model.js";
 ///////////////////////////////////////////////////////////////
 // create course
 
-const createCourse = async (courseData) => {
-    return await Course.create(courseData);
+const createCourse = (courseData) => {
+    return Course.create(courseData);
+};
+
+///////////////////////////////////////////////////////////////
+// save course
+
+const saveCourse = (course, validateBeforeSave = false) => {
+    return course.save({
+        validateBeforeSave,
+    });
+};
+
+///////////////////////////////////////////////////////////////
+// find course by id
+
+const findCourseById = (id) => {
+    return Course.findById(id);
+};
+
+///////////////////////////////////////////////////////////////
+// find instructor course by id
+const findInstructorCourseById = ({ courseId, instructorId }) => {
+    return Course.findOne({
+        _id: courseId,
+        instructor: instructorId,
+    });
 };
 
 ///////////////////////////////////////////////////////////////
 // find course by slug
 
-const findCourseBySlug = async (slug) => {
-    return await Course.findOne({ slug });
+const findCourseBySlug = (slug) => {
+    return Course.findOne({ slug });
 };
 
 ///////////////////////////////////////////////////////////////
 // exports
 
-export { createCourse, findCourseBySlug };
+export {
+    createCourse,
+    saveCourse,
+    findInstructorCourseById,
+    findCourseById,
+    findCourseBySlug,
+};

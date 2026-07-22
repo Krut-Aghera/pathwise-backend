@@ -89,7 +89,74 @@ const updateThumbnail = async ({
     courseId,
     instructorId,
     courseThumbnailTempPath,
-}) => {};
+}) => {
+    const course = await courseRepository.findInstructorCourseById({
+        courseId,
+        instructorId,
+    });
+
+    if (!course) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "Course not found.",
+        });
+    }
+
+    const previousThumbnail = {
+        ...course.thumbnail,
+    };
+
+    let thumbnail = null;
+
+    try {
+        thumbnail = await uploadImageMedia({
+            localFilePath: courseThumbnailTempPath,
+            folder: CLOUDINARY_FOLDERS.COURSE_THUMBNAILS,
+        });
+
+        course.thumbnail = thumbnail;
+
+        await courseRepository.saveCourse(course);
+
+        logger.info(
+            `Course thumbnail updated successfully. Course: ${course._id}, Instructor: ${instructorId}`
+        );
+
+        if (previousThumbnail?.publicId) {
+            try {
+                await destroyMedia({
+                    publicId: previousThumbnail.publicId,
+                    resourceType: MEDIA_RESOURCE_TYPES.IMAGE,
+                });
+
+                logger.info(
+                    `Previous thumbnail deleted successfully. Public ID: ${previousThumbnail.publicId}`
+                );
+            } catch (error) {
+                logger.error(
+                    `Failed to delete previous thumbnail ${previousThumbnail.publicId}: ${error.message}`
+                );
+            }
+        }
+
+        return thumbnail;
+    } catch (error) {
+        if (thumbnail?.publicId) {
+            await destroyMedia({
+                publicId: thumbnail.publicId,
+                resourceType: MEDIA_RESOURCE_TYPES.IMAGE,
+            });
+
+            logger.info(
+                `Rolled back uploaded thumbnail after database failure. Public ID: ${thumbnail.publicId}`
+            );
+
+            course.thumbnail = previousThumbnail;
+            await courseRepository.saveCourse(course);
+        }
+        throw error;
+    }
+};
 
 ///////////////////////////////////////////////////////////////
 // publish course service

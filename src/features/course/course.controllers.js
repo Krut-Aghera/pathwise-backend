@@ -50,7 +50,30 @@ const removeCourse = async (req, res) => {};
 ///////////////////////////////////////////////////////////////
 // update thumbnail controller
 
-const updateThumbnail = async (req, res) => {};
+const updateThumbnail = async (req, res) => {
+    const courseThumbnailTempPath = req.file?.path;
+
+    if (!courseThumbnailTempPath) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: "Thumbnail image is required.",
+        });
+    }
+
+    const thumbnail = await courseService.updateThumbnail({
+        courseId: req.params.id,
+        instructorId: req.user._id,
+        courseThumbnailTempPath,
+    });
+
+    res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: "Course thumbnail updated successfully.",
+            data: thumbnail,
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // publish course controller

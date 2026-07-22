@@ -29,6 +29,10 @@ const uploadImageMedia = async ({ localFilePath, folder }) => {
             invalidate: true,
         });
 
+        logger.info(
+            `Thumbnail uploaded successfully. Public ID: ${uploadedImage.public_id}`
+        );
+
         return {
             url: uploadedImage.secure_url,
             publicId: uploadedImage.public_id,
@@ -47,11 +51,11 @@ const uploadImageMedia = async ({ localFilePath, folder }) => {
         });
     } finally {
         if (!localFilePath) {
-            return
+            return;
         }
 
-        await localFileCleanup(localFilePath)
-        logger.error("local image file got removed from temp dir");
+        await localFileCleanup(localFilePath);
+        logger.info("local image file got removed from temp dir");
     }
 };
 
@@ -92,7 +96,11 @@ const uploadVideoMedia = async ({ localFilePath, folder }) => {
 
 ///////////////////////////////////////////////////////////////
 // Delete media
-
+/**
+ * @param {Object} params
+ * @param {string} params.publicId - Cloud provider public ID.
+ * @param {string} params.resourceType - Media resource type.
+ */
 const destroyMedia = async ({
     publicId,
     resourceType = MEDIA_RESOURCE_TYPES.IMAGE,
@@ -116,8 +124,16 @@ const destroyMedia = async ({
             resource_type: resourceType,
             invalidate: true,
         });
+        
+        if (result.result === "ok" || result.result === "not found") {
+            return true;
+        }
 
-        return result.result === "ok";
+        logger.warn(
+            `Unexpected Cloudinary destroy response for "${publicId}": ${result.result}`
+        );
+
+        return false;
     } catch (error) {
         throw new ApiError({
             statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
