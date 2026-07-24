@@ -55,13 +55,6 @@ const levelValidator = body("level")
     .isIn(COURSE_LEVELS_ARRAY)
     .withMessage(`Level must be one of: ${COURSE_LEVELS_ARRAY.join(", ")}`);
 
-const statusValidator = body("status")
-    .notEmpty()
-    .withMessage("Status is required")
-    .bail()
-    .isIn(COURSE_STATUS_ARRAY)
-    .withMessage(`Level must be one of: ${COURSE_STATUS_ARRAY.join(", ")}`);
-
 const learningOutcomesValidator = body("learningOutcomes")
     .isArray({ max: 20 })
     .withMessage("Learning outcomes must be an array with at most 20 items");
@@ -105,7 +98,6 @@ export const createCourse = [
     priceValidator,
     languageValidator,
     levelValidator,
-    statusValidator,
     learningOutcomesValidator,
     learningOutcomeItemsValidator,
     requirementsValidator,

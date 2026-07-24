@@ -8,7 +8,6 @@ const COURSE_ALLOWED_FIELDS = [
     "learningOutcomes",
     "requirements",
     "targetAudience",
-    "status",
 ];
 
 const COURSE_LANGUAGES = Object.freeze({

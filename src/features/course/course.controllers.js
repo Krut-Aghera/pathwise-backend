@@ -40,7 +40,26 @@ const createCourse = async (req, res) => {
 ///////////////////////////////////////////////////////////////
 // update course controller
 
-const updateCourse = async (req, res) => {};
+const updateCourse = async (req, res) => {
+    const courseData = COURSE_ALLOWED_FIELDS.reduce((acc, key) => {
+        acc[key] = req.body[key];
+        return acc;
+    }, {});
+
+    const course = await courseService.updateCourse({
+        courseId: req.params.id,
+        instructorId: req.user._id,
+        courseData,
+    });
+
+    res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: "Course updated successfully.",
+            data: course,
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // remove course controller
@@ -87,7 +106,7 @@ const publishCourse = async (req, res) => {
     res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: "Course has been published successfully",
+            message: "Course published successfully",
             data: course,
         })
     );
@@ -97,6 +116,24 @@ const publishCourse = async (req, res) => {
 // unpublish course controller
 
 const unpublishCourse = async (req, res) => {};
+
+///////////////////////////////////////////////////////////////
+// Save course as draft
+
+const saveCourseAsDraft = async (req, res) => {
+    const course = await courseService.saveCourseAsDraft({
+        courseId: req.params.id,
+        instructorId: req.user._id,
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: "Course has been saved as draft successfully.",
+            data: course,
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // fetch courses controller
@@ -123,6 +160,7 @@ export {
     updateThumbnail,
     publishCourse,
     unpublishCourse,
+    saveCourseAsDraft,
     fetchCourses,
     fetchCurrentCourse,
     fetchInstructorCourses,

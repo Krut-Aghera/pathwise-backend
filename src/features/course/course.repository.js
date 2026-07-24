@@ -3,13 +3,15 @@ import Course from "./course.model.js";
 import { COURSE_STATUS } from "./course.constans.js";
 
 ///////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////
+// create course
+
 const createCourse = (courseData) => {
     return Course.create(courseData);
 };
 
 ///////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////
+// save course
+
 const saveCourse = (course, validateBeforeSave = false) => {
     return course.save({
         validateBeforeSave,
@@ -35,13 +37,32 @@ const publishCourse = async (courseId) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// Save course as draft
+
+const saveCourseAsDraft = async (courseId) => {
+    return Course.findByIdAndUpdate(
+        courseId,
+        {
+            $set: {
+                status: COURSE_STATUS.DRAFT,
+            },
+        },
+        {
+            returnDocument: "after",
+        }
+    );
+};
+
 ///////////////////////////////////////////////////////////////
+// find course by id
+
 const findCourseById = (courseId) => {
     return Course.findById(courseId);
 };
 
 ///////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////
+// find instructor course by id
+
 const findInstructorCourseById = ({ courseId, instructorId }) => {
     return Course.findOne({
         _id: courseId,
@@ -50,13 +71,15 @@ const findInstructorCourseById = ({ courseId, instructorId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////
+// find course by slug
+
 const findCourseBySlug = (slug) => {
     return Course.findOne({ slug });
 };
 
 ///////////////////////////////////////////////////////////////
 // fetch course publish validation data
+
 const getCoursePublishValidationData = async ({ courseId, instructorId }) => {
     return Course.aggregate([
         // Find the course and verify it belongs to the instructor
@@ -168,6 +191,7 @@ export {
     createCourse,
     saveCourse,
     publishCourse,
+    saveCourseAsDraft,
     findInstructorCourseById,
     findCourseById,
     findCourseBySlug,

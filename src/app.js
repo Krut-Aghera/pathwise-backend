@@ -21,7 +21,7 @@ const app = express();
 ///////////////////////////////////////////////////////////////
 // security middleware
 
-app.use(apiRateLimiter);
+// app.use(apiRateLimiter);
 app.use(helmetMiddleware);
 app.use(hpp());
 app.use(

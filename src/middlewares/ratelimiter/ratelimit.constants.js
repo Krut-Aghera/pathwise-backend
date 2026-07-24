@@ -5,7 +5,7 @@ export const RATE_LIMIT = Object.freeze({
     },
 
     LOGIN: {
-        WINDOW_MS: 1 * 60 * 1000, // 1 minute
+        WINDOW_MS: 1 * 60 * 1000, // 1 minutes
         LIMIT: 3,
     },
 
@@ -32,13 +32,18 @@ export const RATE_LIMIT = Object.freeze({
     },
 
     UPDATE_THUMBNAIL: {
-        WINDOW_MS: 60 * 60 * 1000, // 1 hour
+        WINDOW_MS: 30 * 60 * 1000, // 30 minutes
         LIMIT: 5,
     },
 
-    PUBLISH_COURSE: {
+    UPDATE_COURSE: {
         WINDOW_MS: 1 * 60 * 1000, // 1 minute
         LIMIT: 10,
+    },
+
+    COURSE_STATUS_CHANGE: {
+        WINDOW_MS: 1 * 60 * 1000, // 1 minute
+        LIMIT: 5,
     },
 });
 

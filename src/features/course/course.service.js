@@ -76,7 +76,42 @@ const createCourse = async ({
 ///////////////////////////////////////////////////////////////
 // update course service
 
-const updateCourse = async ({ courseId, instructorId, courseData }) => {};
+const updateCourse = async ({ courseId, instructorId, courseData }) => {
+    const course = await courseRepository.findInstructorCourseById({
+        courseId,
+        instructorId,
+    });
+
+    if (!course) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "Course not found.",
+        });
+    }
+
+    // Only regenerate slug if title changed
+    if (course.title !== courseData.title) {
+        const slug = generateSlug(courseData.title);
+
+        const existingCourse = await courseRepository.findCourseBySlug(slug);
+
+        if (
+            existingCourse &&
+            existingCourse._id.toString() !== course._id.toString()
+        ) {
+            throw new ApiError({
+                statusCode: HTTP_STATUS.CONFLICT,
+                message: "A course with this title already exists.",
+            });
+        }
+
+        course.slug = slug;
+    }
+
+    Object.assign(course, courseData);
+
+    return await courseRepository.saveCourse(course, true);
+};
 
 ///////////////////////////////////////////////////////////////
 // remove course service
@@ -194,6 +229,32 @@ const publishCourse = async ({ courseId, instructorId }) => {
 const unpublishCourse = async ({ courseId, instructorId }) => {};
 
 ///////////////////////////////////////////////////////////////
+// Save course as draft
+
+const saveCourseAsDraft = async ({ courseId, instructorId }) => {
+    const course = await courseRepository.findInstructorCourseById({
+        courseId,
+        instructorId,
+    });
+
+    if (!course) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "Course not found.",
+        });
+    }
+
+    if (course.status === COURSE_STATUS.DRAFT) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: "Course is already saved as draft.",
+        });
+    }
+
+    return await courseRepository.saveCourseAsDraft(courseId);
+};
+
+///////////////////////////////////////////////////////////////
 // fetch courses service
 
 const fetchCourses = async ({ page, limit, search, sort, filters }) => {};
@@ -224,6 +285,7 @@ export {
     updateThumbnail,
     publishCourse,
     unpublishCourse,
+    saveCourseAsDraft,
     fetchCourses,
     fetchCurrentCourse,
     fetchInstructorCourses,

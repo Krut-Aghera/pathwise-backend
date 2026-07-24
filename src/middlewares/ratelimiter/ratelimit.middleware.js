@@ -111,6 +111,24 @@ const courseCreationRateLimiter = rateLimit({
 });
 
 ///////////////////////////////////////////////////////////////
+// course updation rate limiter
+
+const courseUpdationRateLimiter = rateLimit({
+    windowMs: RATE_LIMIT.UPDATE_COURSE.WINDOW_MS,
+    limit: RATE_LIMIT.UPDATE_COURSE.LIMIT,
+
+    ...RATE_LIMITER_OPTIONS,
+
+    handler: (req, res) => {
+        return rateLimitResponse(
+            req,
+            res,
+            "Too many course updation requests. Please try again later."
+        );
+    },
+});
+
+///////////////////////////////////////////////////////////////
 // thumbnail updation rate limiter
 
 const thumbnailUpdationRateLimiter = rateLimit({
@@ -132,8 +150,8 @@ const thumbnailUpdationRateLimiter = rateLimit({
 // publish course rate limiter
 
 const publishCourseRateLimiter = rateLimit({
-    windowMs: RATE_LIMIT.PUBLISH_COURSE.WINDOW_MS,
-    limit: RATE_LIMIT.PUBLISH_COURSE.LIMIT,
+    windowMs: RATE_LIMIT.COURSE_STATUS_CHANGE.WINDOW_MS,
+    limit: RATE_LIMIT.COURSE_STATUS_CHANGE.LIMIT,
 
     ...RATE_LIMITER_OPTIONS,
 
@@ -142,6 +160,24 @@ const publishCourseRateLimiter = rateLimit({
             req,
             res,
             "Too many requests for publish course. Please try again later."
+        );
+    },
+});
+
+///////////////////////////////////////////////////////////////
+// save course as draft rate limiter
+
+const saveCourseAsDraftRateLimiter = rateLimit({
+    windowMs: RATE_LIMIT.COURSE_STATUS_CHANGE.WINDOW_MS,
+    limit: RATE_LIMIT.COURSE_STATUS_CHANGE.LIMIT,
+
+    ...RATE_LIMITER_OPTIONS,
+
+    handler: (req, res) => {
+        return rateLimitResponse(
+            req,
+            res,
+            "Too many requests for save course as draft. Please try again later."
         );
     },
 });
@@ -156,5 +192,7 @@ export {
     updateProfileRateLimiter,
     courseCreationRateLimiter,
     thumbnailUpdationRateLimiter,
+    courseUpdationRateLimiter,
     publishCourseRateLimiter,
+    saveCourseAsDraftRateLimiter,
 };

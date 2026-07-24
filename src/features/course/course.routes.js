@@ -8,7 +8,9 @@ import { imageUpload } from "../../middlewares/multer/multer.middleware.js";
 import { FILE_FIELDS } from "../../middlewares/multer/multer.constants.js";
 import {
     courseCreationRateLimiter,
+    courseUpdationRateLimiter,
     publishCourseRateLimiter,
+    saveCourseAsDraftRateLimiter,
     thumbnailUpdationRateLimiter,
 } from "../../middlewares/ratelimiter/ratelimit.middleware.js";
 import { validateMongoIdParam } from "../../validations/common.validators.js";
@@ -46,6 +48,25 @@ courseRouter.patch(
 );
 
 ///////////////////////////////////////////////////////////////
+// Update course details
+
+courseRouter.patch(
+    "/:id",
+    courseUpdationRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    validateMongoIdParam({
+        paramName: "id",
+        fieldName: "Course ID",
+    }),
+    courseValidations.updateCourse,
+    validationEngine,
+    courseControllers.updateCourse
+);
+
+///////////////////////////////////////////////////////////////
 // publish course route
 
 courseRouter.patch(
@@ -61,6 +82,24 @@ courseRouter.patch(
     }),
     validationEngine,
     courseControllers.publishCourse
+);
+
+///////////////////////////////////////////////////////////////
+// Save course as draft
+
+courseRouter.patch(
+    "/:id/draft",
+    saveCourseAsDraftRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    validateMongoIdParam({
+        paramName: "id",
+        fieldName: "Course ID",
+    }),
+    validationEngine,
+    courseControllers.saveCourseAsDraft
 );
 
 ///////////////////////////////////////////////////////////////
