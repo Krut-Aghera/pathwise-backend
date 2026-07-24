@@ -114,7 +114,7 @@ const courseCreationRateLimiter = rateLimit({
 // thumbnail updation rate limiter
 
 const thumbnailUpdationRateLimiter = rateLimit({
-    windowMs: RATE_LIMIT.UPDATE_THUMBNAIL.WINDOW_MS, // works same for change password functionality
+    windowMs: RATE_LIMIT.UPDATE_THUMBNAIL.WINDOW_MS,
     limit: RATE_LIMIT.UPDATE_THUMBNAIL.LIMIT,
 
     ...RATE_LIMITER_OPTIONS,
@@ -129,6 +129,24 @@ const thumbnailUpdationRateLimiter = rateLimit({
 });
 
 ///////////////////////////////////////////////////////////////
+// publish course rate limiter
+
+const publishCourseRateLimiter = rateLimit({
+    windowMs: RATE_LIMIT.PUBLISH_COURSE.WINDOW_MS,
+    limit: RATE_LIMIT.PUBLISH_COURSE.LIMIT,
+
+    ...RATE_LIMITER_OPTIONS,
+
+    handler: (req, res) => {
+        return rateLimitResponse(
+            req,
+            res,
+            "Too many requests for publish course. Please try again later."
+        );
+    },
+});
+
+///////////////////////////////////////////////////////////////
 // exports
 
 export {
@@ -138,4 +156,5 @@ export {
     updateProfileRateLimiter,
     courseCreationRateLimiter,
     thumbnailUpdationRateLimiter,
+    publishCourseRateLimiter,
 };

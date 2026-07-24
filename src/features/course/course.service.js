@@ -11,6 +11,7 @@ import ApiError from "../../utils/errorHandler.js";
 import generateSlug from "../../utils/slugGenerator.js";
 import logger from "../../utils/pinoLogger.js";
 import * as courseRepository from "./course.repository.js";
+import { validateCoursePublishEligibility } from "./course.utility.js";
 
 ///////////////////////////////////////////////////////////////
 // create course service
@@ -161,7 +162,31 @@ const updateThumbnail = async ({
 ///////////////////////////////////////////////////////////////
 // publish course service
 
-const publishCourse = async ({ courseId, instructorId }) => {};
+const publishCourse = async ({ courseId, instructorId }) => {
+    const [course] = await courseRepository.getCoursePublishValidationData({
+        courseId,
+        instructorId,
+    });
+
+    if (!course) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "Course not found",
+        });
+    }
+
+    const { isValid, errors } = validateCoursePublishEligibility(course);
+
+    if (!isValid && errors.length > 0) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: "Course is not eligible to be published.",
+            errors,
+        });
+    }
+
+    return await courseRepository.publishCourse(courseId);
+};
 
 ///////////////////////////////////////////////////////////////
 // unpublish course service

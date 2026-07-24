@@ -35,6 +35,11 @@ export const RATE_LIMIT = Object.freeze({
         WINDOW_MS: 60 * 60 * 1000, // 1 hour
         LIMIT: 5,
     },
+
+    PUBLISH_COURSE: {
+        WINDOW_MS: 1 * 60 * 1000, // 1 minute
+        LIMIT: 10,
+    },
 });
 
 export const RATE_LIMITER_OPTIONS = Object.freeze({

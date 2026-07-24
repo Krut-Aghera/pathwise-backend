@@ -124,7 +124,7 @@ const destroyMedia = async ({
             resource_type: resourceType,
             invalidate: true,
         });
-        
+
         if (result.result === "ok" || result.result === "not found") {
             return true;
         }

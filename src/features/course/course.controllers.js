@@ -78,7 +78,20 @@ const updateThumbnail = async (req, res) => {
 ///////////////////////////////////////////////////////////////
 // publish course controller
 
-const publishCourse = async (req, res) => {};
+const publishCourse = async (req, res) => {
+    const course = await courseService.publishCourse({
+        courseId: req.params.id,
+        instructorId: req.user._id,
+    });
+
+    res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: "Course has been published successfully",
+            data: course,
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // unpublish course controller

@@ -1,9 +1,13 @@
 import { body } from "express-validator";
+import { param } from "express-validator";
+
 import {
     COURSE_LANGUAGES_ARRAY,
     COURSE_LEVELS_ARRAY,
     COURSE_STATUS_ARRAY,
 } from "./course.constans.js";
+
+// course.validators.js
 
 const titleValidator = body("title")
     .trim()

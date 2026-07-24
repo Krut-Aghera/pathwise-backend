@@ -8,8 +8,10 @@ import { imageUpload } from "../../middlewares/multer/multer.middleware.js";
 import { FILE_FIELDS } from "../../middlewares/multer/multer.constants.js";
 import {
     courseCreationRateLimiter,
+    publishCourseRateLimiter,
     thumbnailUpdationRateLimiter,
 } from "../../middlewares/ratelimiter/ratelimit.middleware.js";
+import { validateMongoIdParam } from "../../validations/common.validators.js";
 
 const courseRouter = express.Router();
 
@@ -41,6 +43,24 @@ courseRouter.patch(
     authMiddlewares.requireVerifiedEmail,
     imageUpload.single(FILE_FIELDS.THUMBNAIL),
     courseControllers.updateThumbnail
+);
+
+///////////////////////////////////////////////////////////////
+// publish course route
+
+courseRouter.patch(
+    "/:id/publish",
+    publishCourseRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    validateMongoIdParam({
+        paramName: "id",
+        fieldName: "Course ID",
+    }),
+    validationEngine,
+    courseControllers.publishCourse
 );
 
 ///////////////////////////////////////////////////////////////
