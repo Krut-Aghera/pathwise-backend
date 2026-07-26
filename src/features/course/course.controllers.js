@@ -1,4 +1,7 @@
-import { COURSE_ALLOWED_FIELDS } from "./course.constans.js";
+import {
+    COURSE_ALLOWED_FIELDS,
+    COURSE_FETCH_QUERY_FIELDS,
+} from "./course.constans.js";
 import HTTP_STATUS from "../../constants/http-status.js";
 import ApiResponse from "../../utils/responsehandler.js";
 import ApiError from "../../utils/errorHandler.js";
@@ -28,7 +31,7 @@ const createCourse = async (req, res) => {
         courseThumbnailTempPath,
     });
 
-    res.status(HTTP_STATUS.CREATED).json(
+    return res.status(HTTP_STATUS.CREATED).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.CREATED,
             message: "New Course created successfully.",
@@ -52,7 +55,7 @@ const updateCourse = async (req, res) => {
         courseData,
     });
 
-    res.status(HTTP_STATUS.OK).json(
+    return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
             message: "Course updated successfully.",
@@ -64,7 +67,19 @@ const updateCourse = async (req, res) => {
 ///////////////////////////////////////////////////////////////
 // remove course controller
 
-const removeCourse = async (req, res) => {};
+const removeCourse = async (req, res) => {
+    await courseService.removeCourse({
+        courseId: req.params.id,
+        instructorId: req.user._id,
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: "Course deleted successfully.",
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // update thumbnail controller
@@ -85,7 +100,7 @@ const updateThumbnail = async (req, res) => {
         courseThumbnailTempPath,
     });
 
-    res.status(HTTP_STATUS.OK).json(
+    return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
             message: "Course thumbnail updated successfully.",
@@ -103,7 +118,7 @@ const publishCourse = async (req, res) => {
         instructorId: req.user._id,
     });
 
-    res.status(HTTP_STATUS.OK).json(
+    return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
             message: "Course published successfully",
@@ -111,11 +126,6 @@ const publishCourse = async (req, res) => {
         })
     );
 };
-
-///////////////////////////////////////////////////////////////
-// unpublish course controller
-
-const unpublishCourse = async (req, res) => {};
 
 ///////////////////////////////////////////////////////////////
 // Save course as draft
@@ -136,14 +146,63 @@ const saveCourseAsDraft = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// fetch instructor current course controller
+
+const fetchInstructorCourse = async (req, res) => {
+    const course = await courseService.fetchInstructorCourse({
+        courseId: req.params.id,
+        instructorId: req.user._id,
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: `${course.title} fetched successfully.`,
+            data: course,
+        })
+    );
+};
+
+///////////////////////////////////////////////////////////////
 // fetch courses controller
 
-const fetchCourses = async (req, res) => {};
+const fetchCourses = async (req, res) => {
+    const queryData = COURSE_FETCH_QUERY_FIELDS.reduce((acc, key) => {
+        if (req.query[key] !== undefined) {
+            acc[key] = req.query[key];
+        }
+
+        return acc;
+    }, {});
+
+    const { courses, metadata } = await courseService.fetchCourses(queryData);
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: "Courses fetched successfully.",
+            data: courses,
+            meta: metadata,
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // fetch current course controller
 
-const fetchCurrentCourse = async (req, res) => {};
+const fetchCurrentCourse = async (req, res) => {
+    const course = await courseService.fetchCurrentCourse({
+        courseId: req.params.id,
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: `${course.title} fetched successfully.`,
+            data: course,
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // fetch Instructor courses controller
@@ -159,9 +218,9 @@ export {
     removeCourse,
     updateThumbnail,
     publishCourse,
-    unpublishCourse,
     saveCourseAsDraft,
     fetchCourses,
     fetchCurrentCourse,
+    fetchInstructorCourse,
     fetchInstructorCourses,
 };

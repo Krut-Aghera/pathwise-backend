@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 import Course from "./course.model.js";
-import { COURSE_STATUS } from "./course.constans.js";
+import {
+    COURSE_LIST_SELECT_FIELDS,
+    COURSE_STATUS,
+    SORT_ORDERS,
+} from "./course.constans.js";
 
 ///////////////////////////////////////////////////////////////
 // create course
@@ -19,6 +23,24 @@ const saveCourse = (course, validateBeforeSave = false) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// soft delete course
+
+const softDeleteCourse = (courseId) => {
+    return Course.findByIdAndUpdate(
+        courseId,
+        {
+            $set: {
+                isDeleted: true,
+                status: COURSE_STATUS.DRAFT,
+            },
+        },
+        {
+            returnDocument: "after",
+        }
+    );
+};
+
+///////////////////////////////////////////////////////////////
 // publish course
 
 const publishCourse = async (courseId) => {
@@ -27,7 +49,6 @@ const publishCourse = async (courseId) => {
         {
             $set: {
                 status: COURSE_STATUS.PUBLISHED,
-                publishedAt: new Date(),
             },
         },
         {
@@ -57,7 +78,11 @@ const saveCourseAsDraft = async (courseId) => {
 // find course by id
 
 const findCourseById = (courseId) => {
-    return Course.findById(courseId);
+    return Course.findOne({
+        _id: courseId,
+        status: COURSE_STATUS.PUBLISHED,
+        isDeleted: false,
+    });
 };
 
 ///////////////////////////////////////////////////////////////
@@ -67,6 +92,7 @@ const findInstructorCourseById = ({ courseId, instructorId }) => {
     return Course.findOne({
         _id: courseId,
         instructor: instructorId,
+        isDeleted: false,
     });
 };
 
@@ -74,7 +100,96 @@ const findInstructorCourseById = ({ courseId, instructorId }) => {
 // find course by slug
 
 const findCourseBySlug = (slug) => {
-    return Course.findOne({ slug });
+    return Course.findOne({
+        slug,
+        status: COURSE_STATUS.PUBLISHED,
+        isDeleted: false,
+    });
+};
+
+///////////////////////////////////////////////////////////////
+// fecth courses
+
+const fetchCourses = async (options) => {
+    const { pagination, filters, sort, search } = options;
+
+    const { by, order } = sort;
+    const { page, limit } = pagination;
+
+    const filterQuery = {
+        status: COURSE_STATUS.PUBLISHED,
+        isDeleted: false,
+    };
+
+    Object.assign(filterQuery, filters);
+
+    if (search) {
+        const escapedSearch = escapeRegex(search);
+
+        filterQuery.$or = [
+            {
+                title: {
+                    $regex: escapedSearch,
+                    $options: "i",
+                },
+            },
+            {
+                subtitle: {
+                    $regex: escapedSearch,
+                    $options: "i",
+                },
+            },
+            {
+                description: {
+                    $regex: escapedSearch,
+                    $options: "i",
+                },
+            },
+        ];
+    }
+
+    const sortQuery = {
+        [by]: order === SORT_ORDERS.ASC ? 1 : -1,
+    };
+
+    const skip = (page - 1) * limit;
+
+    const [courses, totalItems] = await Promise.all([
+        Course.find(filterQuery)
+            .select(COURSE_LIST_SELECT_FIELDS)
+            .populate("instructor", "username")
+            .sort({
+                ...sortQuery,
+                _id: 1,
+            })
+            .skip(skip)
+            .limit(limit)
+            .lean(),
+
+        Course.countDocuments(filterQuery),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / limit);
+    const currentPage = page;
+    const itemsPerPage = limit;
+    const hasNextPage = currentPage < totalPages;
+    const hasPreviousPage = currentPage > 1;
+
+    return {
+        courses,
+        metadata: {
+            pagination: {
+                totalItems,
+                currentPage,
+                totalPages,
+                itemsPerPage,
+                hasNextPage,
+                hasPreviousPage,
+                nextPage: hasNextPage ? currentPage + 1 : null,
+                previousPage: hasPreviousPage ? currentPage - 1 : null,
+            },
+        },
+    };
 };
 
 ///////////////////////////////////////////////////////////////
@@ -87,6 +202,7 @@ const getCoursePublishValidationData = async ({ courseId, instructorId }) => {
             $match: {
                 _id: new mongoose.Types.ObjectId(courseId),
                 instructor: new mongoose.Types.ObjectId(instructorId),
+                isDeleted: false,
             },
         },
 
@@ -190,10 +306,12 @@ const getCoursePublishValidationData = async ({ courseId, instructorId }) => {
 export {
     createCourse,
     saveCourse,
+    softDeleteCourse,
     publishCourse,
     saveCourseAsDraft,
     findInstructorCourseById,
     findCourseById,
     findCourseBySlug,
     getCoursePublishValidationData,
+    fetchCourses,
 };

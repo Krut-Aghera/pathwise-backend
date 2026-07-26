@@ -129,6 +129,24 @@ const courseUpdationRateLimiter = rateLimit({
 });
 
 ///////////////////////////////////////////////////////////////
+// course deletion rate limiter
+
+const courseDeletionRateLimiter = rateLimit({
+    windowMs: RATE_LIMIT.DELETE_COURSE.WINDOW_MS,
+    limit: RATE_LIMIT.DELETE_COURSE.LIMIT,
+
+    ...RATE_LIMITER_OPTIONS,
+
+    handler: (req, res) => {
+        return rateLimitResponse(
+            req,
+            res,
+            "Too many course deletion requests. Please try again later."
+        );
+    },
+});
+
+///////////////////////////////////////////////////////////////
 // thumbnail updation rate limiter
 
 const thumbnailUpdationRateLimiter = rateLimit({
@@ -183,6 +201,42 @@ const saveCourseAsDraftRateLimiter = rateLimit({
 });
 
 ///////////////////////////////////////////////////////////////
+// fetch courses rate limiter
+
+const fetchCoursesRateLimiter = rateLimit({
+    windowMs: RATE_LIMIT.COURSE_FETCH_LIST.WINDOW_MS,
+    limit: RATE_LIMIT.COURSE_FETCH_LIST.LIMIT,
+
+    ...RATE_LIMITER_OPTIONS,
+
+    handler: (req, res) => {
+        return rateLimitResponse(
+            req,
+            res,
+            "Too many requests for fetching course list. Please try again later."
+        );
+    },
+});
+
+///////////////////////////////////////////////////////////////
+// fetch current course rate limiter
+
+const fetchCurrentCourseRateLimiter = rateLimit({
+    windowMs: RATE_LIMIT.COURSE_FETCH_ONE.WINDOW_MS,
+    limit: RATE_LIMIT.COURSE_FETCH_ONE.LIMIT,
+
+    ...RATE_LIMITER_OPTIONS,
+
+    handler: (req, res) => {
+        return rateLimitResponse(
+            req,
+            res,
+            "Too many requests for fetching current course details. Please try again later."
+        );
+    },
+});
+
+///////////////////////////////////////////////////////////////
 // exports
 
 export {
@@ -191,8 +245,11 @@ export {
     passwordRateLimiter,
     updateProfileRateLimiter,
     courseCreationRateLimiter,
-    thumbnailUpdationRateLimiter,
     courseUpdationRateLimiter,
+    courseDeletionRateLimiter,
+    thumbnailUpdationRateLimiter,
     publishCourseRateLimiter,
     saveCourseAsDraftRateLimiter,
+    fetchCurrentCourseRateLimiter,
+    fetchCoursesRateLimiter
 };

@@ -12,6 +12,7 @@ import generateSlug from "../../utils/slugGenerator.js";
 import logger from "../../utils/pinoLogger.js";
 import * as courseRepository from "./course.repository.js";
 import { validateCoursePublishEligibility } from "./course.utility.js";
+import { COURSE_QUERY_DEFAULTS } from "./course.constans.js";
 
 ///////////////////////////////////////////////////////////////
 // create course service
@@ -110,13 +111,27 @@ const updateCourse = async ({ courseId, instructorId, courseData }) => {
 
     Object.assign(course, courseData);
 
-    return await courseRepository.saveCourse(course, true);
+    return courseRepository.saveCourse(course, true);
 };
 
 ///////////////////////////////////////////////////////////////
 // remove course service
 
-const removeCourse = async ({ courseId, instructorId }) => {};
+const removeCourse = async ({ courseId, instructorId }) => {
+    const course = await courseRepository.findInstructorCourseById({
+        courseId,
+        instructorId,
+    });
+
+    if (!course) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "Course not found.",
+        });
+    }
+
+    courseRepository.softDeleteCourse(courseId);
+};
 
 ///////////////////////////////////////////////////////////////
 // update thumbnail service
@@ -220,13 +235,8 @@ const publishCourse = async ({ courseId, instructorId }) => {
         });
     }
 
-    return await courseRepository.publishCourse(courseId);
+    return courseRepository.publishCourse(courseId);
 };
-
-///////////////////////////////////////////////////////////////
-// unpublish course service
-
-const unpublishCourse = async ({ courseId, instructorId }) => {};
 
 ///////////////////////////////////////////////////////////////
 // Save course as draft
@@ -251,18 +261,81 @@ const saveCourseAsDraft = async ({ courseId, instructorId }) => {
         });
     }
 
-    return await courseRepository.saveCourseAsDraft(courseId);
+    return courseRepository.saveCourseAsDraft(courseId);
 };
 
 ///////////////////////////////////////////////////////////////
-// fetch courses service
+// fetch instructor current course service
 
-const fetchCourses = async ({ page, limit, search, sort, filters }) => {};
+const fetchInstructorCourse = async ({ courseId, instructorId }) => {
+    const course = await courseRepository.findInstructorCourseById({
+        courseId,
+        instructorId,
+    });
+
+    if (!course) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "course not found",
+        });
+    }
+
+    return course;
+};
 
 ///////////////////////////////////////////////////////////////
-// fetch current course service
+// fetch courses service // public
 
-const fetchCurrentCourse = async ({ courseId, userId }) => {};
+const fetchCourses = async (queryData) => {
+    const { page, limit, search, sortBy, sortOrder, level, language } =
+        queryData;
+
+    const filters = {};
+
+    if (level) {
+        filters.level = level;
+    }
+
+    if (language) {
+        filters.language = language;
+    }
+
+    const options = {
+        pagination: {
+            page: page ?? COURSE_QUERY_DEFAULTS.PAGE,
+            limit: limit ?? COURSE_QUERY_DEFAULTS.LIMIT,
+        },
+
+        filters,
+
+        sort: {
+            by: sortBy ?? COURSE_QUERY_DEFAULTS.SORT_BY,
+            order: sortOrder ?? COURSE_QUERY_DEFAULTS.SORT_ORDER,
+        },
+    };
+
+    if (search) {
+        options.search = search;
+    }
+
+    return courseRepository.fetchCourses(options);
+};
+
+///////////////////////////////////////////////////////////////
+// fetch current course service // public
+
+const fetchCurrentCourse = async ({ courseId }) => {
+    const course = await courseRepository.findCourseById(courseId);
+
+    if (!course) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "course not found",
+        });
+    }
+
+    return course;
+};
 
 ///////////////////////////////////////////////////////////////
 // fetch instructor courses service
@@ -284,9 +357,9 @@ export {
     removeCourse,
     updateThumbnail,
     publishCourse,
-    unpublishCourse,
     saveCourseAsDraft,
     fetchCourses,
     fetchCurrentCourse,
+    fetchInstructorCourse,
     fetchInstructorCourses,
 };

@@ -135,6 +135,12 @@ const courseSchema = new mongoose.Schema(
             index: true,
         },
 
+        isDeleted: {
+            type: Boolean,
+            default: false,
+            index: true,
+        },
+
         totalSections: {
             type: Number,
             default: 0,

@@ -1,10 +1,13 @@
-import { body } from "express-validator";
+import { body, query } from "express-validator";
 import { param } from "express-validator";
 
 import {
+    COURSE_LANGUAGES,
     COURSE_LANGUAGES_ARRAY,
     COURSE_LEVELS_ARRAY,
+    COURSE_SORT_FIELDS,
     COURSE_STATUS_ARRAY,
+    SORT_ORDERS_ARRAY,
 } from "./course.constans.js";
 
 // course.validators.js
@@ -90,6 +93,42 @@ const requirementItemsValidator = body("requirements.*")
     .bail()
     .isLength({ max: 200 })
     .withMessage("Target audience item cannot exceed 200 characters");
+
+export const fetchCoursesValidator = [
+    query("page")
+        .optional()
+        .isInt({ min: 1 })
+        .withMessage("Page must be a positive integer.")
+        .toInt(),
+
+    query("limit")
+        .optional()
+        .isInt({ min: 1, max: 100 })
+        .withMessage("Limit must be between 1 and 100.")
+        .toInt(),
+
+    query("search").optional().trim().isLength({ max: 100 }),
+
+    query("sortBy")
+        .optional()
+        .isIn(COURSE_SORT_FIELDS)
+        .withMessage("Invalid sort field."),
+
+    query("sortOrder")
+        .optional()
+        .isIn(SORT_ORDERS_ARRAY)
+        .withMessage("Sort order must be either 'asc' or 'desc'."),
+
+    query("level")
+        .optional()
+        .isIn(COURSE_LEVELS_ARRAY)
+        .withMessage("Invalid course level."),
+
+    query("language")
+        .optional()
+        .isIn(COURSE_LANGUAGES)
+        .withMessage("Invalid course language."),
+];
 
 export const createCourse = [
     titleValidator,

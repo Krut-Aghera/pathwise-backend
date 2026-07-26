@@ -31,19 +31,34 @@ export const RATE_LIMIT = Object.freeze({
         LIMIT: 10,
     },
 
-    UPDATE_THUMBNAIL: {
-        WINDOW_MS: 30 * 60 * 1000, // 30 minutes
-        LIMIT: 5,
-    },
-
     UPDATE_COURSE: {
         WINDOW_MS: 1 * 60 * 1000, // 1 minute
         LIMIT: 10,
     },
 
+    DELETE_COURSE: {
+        WINDOW_MS: 1 * 60 * 1000, // 1 minute
+        LIMIT: 5,
+    },
+
+    UPDATE_THUMBNAIL: {
+        WINDOW_MS: 30 * 60 * 1000, // 30 minutes
+        LIMIT: 5,
+    },
+
     COURSE_STATUS_CHANGE: {
         WINDOW_MS: 1 * 60 * 1000, // 1 minute
         LIMIT: 5,
+    },
+
+    COURSE_FETCH_ONE: {
+        WINDOW_MS: 60 * 1000, // 1 minute
+        LIMIT: 120,
+    },
+
+    COURSE_FETCH_LIST: {
+        WINDOW_MS: 60 * 1000, // 1 minute
+        LIMIT: 60,
     },
 });
 

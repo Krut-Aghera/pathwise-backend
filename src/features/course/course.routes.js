@@ -8,7 +8,10 @@ import { imageUpload } from "../../middlewares/multer/multer.middleware.js";
 import { FILE_FIELDS } from "../../middlewares/multer/multer.constants.js";
 import {
     courseCreationRateLimiter,
+    courseDeletionRateLimiter,
     courseUpdationRateLimiter,
+    fetchCoursesRateLimiter,
+    fetchCurrentCourseRateLimiter,
     publishCourseRateLimiter,
     saveCourseAsDraftRateLimiter,
     thumbnailUpdationRateLimiter,
@@ -67,6 +70,24 @@ courseRouter.patch(
 );
 
 ///////////////////////////////////////////////////////////////
+// Delete course
+
+courseRouter.delete(
+    "/:id",
+    courseDeletionRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    validateMongoIdParam({
+        paramName: "id",
+        fieldName: "Course ID",
+    }),
+    validationEngine,
+    courseControllers.removeCourse
+);
+
+///////////////////////////////////////////////////////////////
 // publish course route
 
 courseRouter.patch(
@@ -101,6 +122,49 @@ courseRouter.patch(
     validationEngine,
     courseControllers.saveCourseAsDraft
 );
+
+///////////////////////////////////////////////////////////////
+// fetch instructor course
+
+courseRouter.get(
+    "/:id/me",
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    validateMongoIdParam({
+        paramName: "id",
+        fieldName: "Course ID",
+    }),
+    validationEngine,
+    courseControllers.fetchInstructorCourse
+);
+
+///////////////////////////////////////////////////////////////
+// fetch course // public
+
+courseRouter.get(
+    "/",
+    fetchCoursesRateLimiter,
+    courseValidations.fetchCoursesValidator,
+    validationEngine,
+    courseControllers.fetchCourses
+);
+
+///////////////////////////////////////////////////////////////
+// fetch current course // public
+
+courseRouter.get(
+    "/:id",
+    fetchCurrentCourseRateLimiter,
+    validateMongoIdParam({
+        paramName: "id",
+        fieldName: "Course ID",
+    }),
+    validationEngine,
+    courseControllers.fetchCurrentCourse
+);
+
 
 ///////////////////////////////////////////////////////////////
 // export

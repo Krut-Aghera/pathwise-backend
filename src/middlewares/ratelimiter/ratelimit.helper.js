@@ -12,3 +12,8 @@ export const rateLimitResponse = (req, res, message) => {
         timestamp: new Date().toISOString(),
     });
 };
+
+///////////////////////////////////////////////////////////////
+// create rate limiter
+
+export const createRateLimiter = () => {};
