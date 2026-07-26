@@ -1,11 +1,11 @@
 import cloudinary from "./media.config.js";
-import ApiError from "../../utils/errorHandler.js";
-import logger from "../../utils/pinoLogger.js";
+import ApiError from "../../utils/error-handler.utility.js";
+import logger from "../../utils/pino-logger.utility.js";
 
 import HTTP_STATUS from "../../constants/http-status.js";
-import { validateUploadInput } from "./media.helper.js";
+import { validateUploadInput } from "./media.utility.js";
 import { MEDIA_RESOURCE_TYPES } from "./media.constants.js";
-import { localFileCleanup } from "../../utils/fileHandler.js";
+import { localFileCleanup } from "../../utils/file-handler.utility.js";
 
 ///////////////////////////////////////////////////////////////
 // Upload image

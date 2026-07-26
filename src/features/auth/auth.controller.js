@@ -3,9 +3,9 @@ import {
     REFRESH_COOKIE_OPTIONS,
 } from "../../constants/cookie-options.js";
 import HTTP_STATUS from "../../constants/http-status.js";
-import ApiError from "../../utils/errorHandler.js";
-import logger from "../../utils/pinoLogger.js";
-import ApiResponse from "../../utils/responsehandler.js";
+import ApiError from "../../utils/error-handler.utility.js";
+import logger from "../../utils/pino-logger.utility.js";
+import ApiResponse from "../../utils/response-handler.utility.js";
 import * as authService from "./auth.service.js";
 
 ///////////////////////////////////////////////////////////////
@@ -14,12 +14,11 @@ import * as authService from "./auth.service.js";
 const registerUser = async (req, res) => {
     const { username, email, password } = req.body;
 
-    const { user, accessToken, refreshToken } =
-        await authService.userRegistration({
-            username,
-            email,
-            password,
-        });
+    const { user, accessToken, refreshToken } = await authService.registerUser({
+        username,
+        email,
+        password,
+    });
 
     return res
         .status(HTTP_STATUS.CREATED)
@@ -47,7 +46,7 @@ const verifyEmail = async (req, res) => {
         });
     }
 
-    const user = await authService.userEmailVerification({ token });
+    const user = await authService.verifyEmail({ token });
 
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
@@ -69,7 +68,7 @@ const resendVerificationEmail = () => {};
 const login = async (req, res) => {
     const { email, password } = req.body;
 
-    const { user, accessToken, refreshToken } = await authService.userLogin({
+    const { user, accessToken, refreshToken } = await authService.login({
         email,
         password,
     });
@@ -93,7 +92,7 @@ const login = async (req, res) => {
 const logout = async (req, res) => {
     const { user } = req;
 
-    await authService.userLogout(user);
+    await authService.logout(user);
 
     return res
         .status(HTTP_STATUS.OK)
@@ -124,7 +123,7 @@ const rotateTokens = async (req, res) => {
         user,
         accessToken,
         refreshToken: newRefreshToken,
-    } = await authService.userRotateAuthTokens({
+    } = await authService.rotateTokens({
         refreshToken: currentRefreshToken,
     });
 
@@ -147,7 +146,7 @@ const rotateTokens = async (req, res) => {
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
 
-    await authService.userForgotPassword({ email });
+    await authService.forgotPassword({ email });
 
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
@@ -173,7 +172,7 @@ const resetPassword = async (req, res) => {
 
     const { newPassword } = req.body;
 
-    await authService.userResetPassword({ token, newPassword });
+    await authService.resetPassword({ token, newPassword });
 
     return res
         .status(HTTP_STATUS.OK)
@@ -194,7 +193,7 @@ const changePassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     const userId = req.user._id;
 
-    await authService.userChangePassword({
+    await authService.changePassword({
         userId,
         currentPassword,
         newPassword,

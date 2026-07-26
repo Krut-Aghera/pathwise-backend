@@ -3,8 +3,8 @@ import {
     COURSE_FETCH_QUERY_FIELDS,
 } from "./course.constans.js";
 import HTTP_STATUS from "../../constants/http-status.js";
-import ApiResponse from "../../utils/responsehandler.js";
-import ApiError from "../../utils/errorHandler.js";
+import ApiResponse from "../../utils/response-handler.utility.js";
+import ApiError from "../../utils/error-handler.utility.js";
 import * as courseService from "./course.service.js";
 
 ///////////////////////////////////////////////////////////////

@@ -1,9 +1,12 @@
 import { USER_PROFILE } from "./user.constants.js";
 import * as userRepository from "./user.repository.js";
-import generateOtp from "../../utils/otpGenerator.js";
-import ApiError from "../../utils/errorHandler.js";
+import generateSecureOtp from "../../utils/otp-generator.utility.js";
+import ApiError from "../../utils/error-handler.utility.js";
 import HTTP_STATUS from "../../constants/http-status.js";
-import { generateTokens, getTokenExpiry } from "../../utils/tokenGenerator.js";
+import {
+    generateSecureTokens,
+    getTokenExpiry,
+} from "../../utils/token-generator.utility.js";
 import { EMAIL_EXPIRY_MINUTES } from "../../services/email/email.constans.js";
 import {
     sendEmailChangedSuccessfullyEmail,
@@ -16,10 +19,11 @@ import {
 import {
     createEmailChangeVerificationUrl,
     createInstructorAccessVerificationUrl,
-} from "../../services/email/email.helpers.js";
-import logger from "../../utils/pinoLogger.js";
+} from "../../services/email/email.utility.js";
+import logger from "../../utils/pino-logger.utility.js";
 import crypto from "crypto";
 import { ROLES } from "./user.constants.js";
+
 ///////////////////////////////////////////////////////////////
 // update username service
 
@@ -67,7 +71,7 @@ const requestEmailUpdation = async ({ user, password, newEmail }) => {
         });
     }
 
-    const { token, hashedToken } = generateTokens();
+    const { token, hashedToken } = generateSecureTokens();
 
     dbUser.pendingEmail = newEmail;
     dbUser.emailChangeToken = hashedToken;
@@ -179,7 +183,7 @@ const requestInstructorAccess = async ({ user }) => {
         });
     }
 
-    const { token, hashedToken } = generateTokens();
+    const { token, hashedToken } = generateSecureTokens();
 
     dbUser.instructorAccessToken = hashedToken;
     dbUser.instructorAccessTokenExpiry = getTokenExpiry(
@@ -266,9 +270,9 @@ const confirmInstructorAccess = async ({ user, token }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// get instructor profile service
+// fetch instructor profile service
 
-const instructorProfile = () => {};
+const fetchInstructorProfile = () => {};
 
 ///////////////////////////////////////////////////////////////
 // user account deactivation request service
@@ -292,7 +296,7 @@ const requestAccountDeactivation = async ({ user, password }) => {
         });
     }
 
-    const { otp, hashedOtp } = generateOtp();
+    const { otp, hashedOtp } = generateSecureOtp();
 
     dbUser.accountDeactivationOtp = hashedOtp;
 
@@ -375,11 +379,11 @@ const confirmAccountDeactivation = async ({ user, otp }) => {
 
 export {
     updateUsername,
-    instructorProfile,
-    requestAccountDeactivation,
-    confirmAccountDeactivation,
-    requestInstructorAccess,
-    confirmInstructorAccess,
     requestEmailUpdation,
     confirmEmailUpdation,
+    requestInstructorAccess,
+    confirmInstructorAccess,
+    requestAccountDeactivation,
+    confirmAccountDeactivation,
+    fetchInstructorProfile,
 };

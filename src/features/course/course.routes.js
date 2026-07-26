@@ -4,19 +4,20 @@ import * as authMiddlewares from "../../middlewares/auth.middleware.js";
 import * as courseControllers from "./course.controllers.js";
 import * as courseValidations from "./course.validators.js";
 import { ROLES } from "../user/user.constants.js";
-import { imageUpload } from "../../middlewares/multer/multer.middleware.js";
+import { imageUpload } from "../../middlewares/multer/multer.uploaders.js";
 import { FILE_FIELDS } from "../../middlewares/multer/multer.constants.js";
+import { validateMongoIdParam } from "../../validations/common.validators.js";
 import {
-    courseCreationRateLimiter,
-    courseDeletionRateLimiter,
-    courseUpdationRateLimiter,
-    fetchCoursesRateLimiter,
+    createCourseRateLimiter,
+    removeCourseRateLimiter,
+    fetchCourseRateLimiter,
     fetchCurrentCourseRateLimiter,
+    fetchInstructorCourseRateLimiter,
     publishCourseRateLimiter,
     saveCourseAsDraftRateLimiter,
-    thumbnailUpdationRateLimiter,
-} from "../../middlewares/ratelimiter/ratelimit.middleware.js";
-import { validateMongoIdParam } from "../../validations/common.validators.js";
+    updateCourseRateLimiter,
+    updateCourseThumbnailRateLimiter,
+} from "../../middlewares/ratelimiter/limiters/course.ratelimit.js";
 
 const courseRouter = express.Router();
 
@@ -25,7 +26,7 @@ const courseRouter = express.Router();
 
 courseRouter.post(
     "/",
-    courseCreationRateLimiter,
+    createCourseRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
     authMiddlewares.requireActiveAccount,
@@ -41,7 +42,7 @@ courseRouter.post(
 
 courseRouter.patch(
     "/:id/thumbnail",
-    thumbnailUpdationRateLimiter,
+    updateCourseThumbnailRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
     authMiddlewares.requireActiveAccount,
@@ -55,7 +56,7 @@ courseRouter.patch(
 
 courseRouter.patch(
     "/:id",
-    courseUpdationRateLimiter,
+    updateCourseRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
     authMiddlewares.requireActiveAccount,
@@ -74,7 +75,7 @@ courseRouter.patch(
 
 courseRouter.delete(
     "/:id",
-    courseDeletionRateLimiter,
+    removeCourseRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
     authMiddlewares.requireActiveAccount,
@@ -128,6 +129,7 @@ courseRouter.patch(
 
 courseRouter.get(
     "/:id/me",
+    fetchInstructorCourseRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
     authMiddlewares.requireActiveAccount,
@@ -145,7 +147,7 @@ courseRouter.get(
 
 courseRouter.get(
     "/",
-    fetchCoursesRateLimiter,
+    fetchCourseRateLimiter,
     courseValidations.fetchCoursesValidator,
     validationEngine,
     courseControllers.fetchCourses
@@ -164,7 +166,6 @@ courseRouter.get(
     validationEngine,
     courseControllers.fetchCurrentCourse
 );
-
 
 ///////////////////////////////////////////////////////////////
 // export

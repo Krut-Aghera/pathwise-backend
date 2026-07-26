@@ -1,5 +1,5 @@
 import HTTP_STATUS from "../../constants/http-status.js";
-import ApiError from "../../utils/errorHandler.js";
+import ApiError from "../../utils/error-handler.utility.js";
 
 import {
     ALLOWED_IMAGE_MIME_TYPES,

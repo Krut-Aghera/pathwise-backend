@@ -1,5 +1,5 @@
-import ApiError from "../utils/errorHandler.js";
-import logger from "../utils/pinoLogger.js";
+import ApiError from "../utils/error-handler.utility.js";
+import logger from "../utils/pino-logger.utility.js";
 import HTTP_STATUS from "../constants/http-status.js";
 import multer from "multer";
 
@@ -7,7 +7,7 @@ import multer from "multer";
 // not found error middleware
 
 const notFoundErrorMiddleware = (req, res, next) => {
-    console.log("404 middleware triggered 💥");
+    logger.error("404 middleware triggered 💥");
 
     next(
         new ApiError({
@@ -21,7 +21,7 @@ const notFoundErrorMiddleware = (req, res, next) => {
 // global error middleware
 
 const globalErrorMiddleware = (err, req, res, next) => {
-    console.log("Global error middleware triggered 💥");
+    logger.error("Global error middleware triggered 💥");
 
     // ------------ Mongoose Errors ------------
 

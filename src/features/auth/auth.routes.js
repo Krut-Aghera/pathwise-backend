@@ -3,7 +3,16 @@ import validationEngine from "../../middlewares/validation.middleware.js";
 import * as authMiddlewares from "../../middlewares/auth.middleware.js";
 import * as authControllers from "./auth.controller.js";
 import * as authValidations from "./auth.validators.js";
-import { passwordRateLimiter } from "../../middlewares/ratelimiter/ratelimit.middleware.js";
+import {
+    changePasswordRateLimiter,
+    forgotPasswordRateLimiter,
+    loginRateLimiter,
+    registerRateLimiter,
+    resetPasswordRateLimiter,
+} from "../../middlewares/ratelimiter/limiters/auth.ratelimit.js";
+
+///////////////////////////////////////////////////////////////
+// create router
 
 const authRouter = express.Router();
 
@@ -12,8 +21,9 @@ const authRouter = express.Router();
 
 authRouter.post(
     "/register",
-    authValidations.registerUser, // express validatior array => username || email || password
-    validationEngine, // validation middleware => catches express validatior errors if exists
+    registerRateLimiter,
+    authValidations.registerUser,
+    validationEngine,
     authControllers.registerUser
 );
 
@@ -22,6 +32,7 @@ authRouter.post(
 
 authRouter.post(
     "/login",
+    loginRateLimiter,
     authValidations.login,
     validationEngine,
     authControllers.login
@@ -32,7 +43,7 @@ authRouter.post(
 
 authRouter.post(
     "/logout",
-    authMiddlewares.tokenVerificationEngine, // access token (login session) verificatioon
+    authMiddlewares.tokenVerificationEngine,
     authControllers.logout
 );
 
@@ -42,7 +53,7 @@ authRouter.post(
 authRouter.post(
     "/rotate-tokens",
     authMiddlewares.requireActiveAccount,
-    authControllers.rotateTokens // re-generate jwt access and refreshtoken
+    authControllers.rotateTokens
 );
 
 ///////////////////////////////////////////////////////////////
@@ -50,7 +61,7 @@ authRouter.post(
 
 authRouter.post(
     "/forgot-password",
-    passwordRateLimiter,
+    forgotPasswordRateLimiter,
     authValidations.forgotPassword,
     validationEngine,
     authControllers.forgotPassword
@@ -61,7 +72,7 @@ authRouter.post(
 
 authRouter.post(
     "/reset-password/:token",
-    passwordRateLimiter,
+    resetPasswordRateLimiter,
     authValidations.resetPassword,
     validationEngine,
     authControllers.resetPassword
@@ -72,7 +83,7 @@ authRouter.post(
 
 authRouter.post(
     "/change-password",
-    passwordRateLimiter,
+    changePasswordRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
     authValidations.changePassword,

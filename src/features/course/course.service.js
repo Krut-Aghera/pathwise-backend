@@ -7,9 +7,9 @@ import {
     destroyMedia,
     uploadImageMedia,
 } from "../../services/media/media.services.js";
-import ApiError from "../../utils/errorHandler.js";
-import generateSlug from "../../utils/slugGenerator.js";
-import logger from "../../utils/pinoLogger.js";
+import ApiError from "../../utils/error-handler.utility.js";
+import generateSlug from "../../utils/slug-generator.utility.js";
+import logger from "../../utils/pino-logger.utility.js";
 import * as courseRepository from "./course.repository.js";
 import { validateCoursePublishEligibility } from "./course.utility.js";
 import { COURSE_QUERY_DEFAULTS } from "./course.constans.js";
@@ -213,7 +213,7 @@ const updateThumbnail = async ({
 // publish course service
 
 const publishCourse = async ({ courseId, instructorId }) => {
-    const [course] = await courseRepository.getCoursePublishValidationData({
+    const [course] = await courseRepository.fetchCoursePublishValidationData({
         courseId,
         instructorId,
     });

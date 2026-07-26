@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import { cloudinaryConfig } from "../../config/env.config.js";
-import logger from "../../utils/pinoLogger.js";
+import logger from "../../utils/pino-logger.utility.js";
 
 cloudinary.config({
     cloud_name: cloudinaryConfig.CLOUDINARY_CLOUD_NAME,

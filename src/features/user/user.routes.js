@@ -4,9 +4,11 @@ import * as userControllers from "./user.controllers.js";
 import * as userValidations from "./user.validators.js";
 import validationEngine from "../../middlewares/validation.middleware.js";
 import {
-    passwordRateLimiter,
+    requestAccountDeletionRateLimiter,
+    requestEmailChangeRateLimiter,
+    requestInstructorAccessRateLimiter,
     updateProfileRateLimiter,
-} from "../../middlewares/ratelimiter/ratelimit.middleware.js";
+} from "../../middlewares/ratelimiter/limiters/user.ratelimit.js";
 
 const userRouter = express.Router();
 
@@ -17,7 +19,7 @@ userRouter.get(
     "/me",
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
-    userControllers.getCurrentUser
+    userControllers.currentUser
 );
 
 ///////////////////////////////////////////////////////////////
@@ -30,7 +32,7 @@ userRouter.patch(
     authMiddlewares.requireActiveAccount,
     userValidations.usernameUpdation,
     validationEngine,
-    userControllers.usernameUpdation
+    userControllers.updateUsername
 );
 
 ///////////////////////////////////////////////////////////////
@@ -38,7 +40,7 @@ userRouter.patch(
 
 userRouter.post(
     "/me/email/request",
-    updateProfileRateLimiter,
+    requestEmailChangeRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
     authMiddlewares.requireVerifiedEmail,
@@ -52,7 +54,6 @@ userRouter.post(
 
 userRouter.post(
     "/me/email/confirm/:token",
-    updateProfileRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
     authMiddlewares.requireVerifiedEmail,
@@ -64,6 +65,7 @@ userRouter.post(
 
 userRouter.post(
     "/me/instructor/request",
+    requestInstructorAccessRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
     authMiddlewares.requireVerifiedEmail,
@@ -84,14 +86,14 @@ userRouter.post(
 ///////////////////////////////////////////////////////////////
 // get instructor profile route
 
-userRouter.get("/instructor/:id", userControllers.getInstructorProfile);
+userRouter.get("/instructor/:id", userControllers.fetchInstructorProfile);
 
 ///////////////////////////////////////////////////////////////
 // deactivate account request route
 
 userRouter.post(
     "/me/deactivation/request",
-    passwordRateLimiter,
+    requestAccountDeletionRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
     userValidations.deactivateAccountRequest,
@@ -104,7 +106,6 @@ userRouter.post(
 
 userRouter.post(
     "/me/deactivation/confirm",
-    passwordRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
     userValidations.confirmAccountDeactivation,

@@ -1,7 +1,38 @@
 import { jwtConfig } from "../../config/env.config.js";
-import generateAuthTokens from "../../utils/authTokenGenerator.js";
 import * as authRepository from "./auth.repository.js";
 import crypto from "crypto";
+
+///////////////////////////////////////////////////////////////
+// generate auth tokens
+
+const generateAuthTokens = (user) => {
+    const accessToken = jwt.sign(
+        {
+            userId: user._id,
+            userEmail: user.email,
+        },
+        jwtConfig.JWT_ACCESS_SECRET,
+        {
+            expiresIn: jwtConfig.ACCESS_TOKEN_EXPIRY,
+        }
+    );
+
+    const refreshToken = jwt.sign(
+        {
+            userId: user._id,
+            userEmail: user.emil,
+        },
+        jwtConfig.JWT_REFRESH_SECRET,
+        {
+            expiresIn: jwtConfig.REFRESH_TOKEN_EXPIRY,
+        }
+    );
+
+    return {
+        accessToken,
+        refreshToken,
+    };
+};
 
 ///////////////////////////////////////////////////////////////
 // create session

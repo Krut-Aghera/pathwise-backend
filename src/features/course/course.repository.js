@@ -195,7 +195,7 @@ const fetchCourses = async (options) => {
 ///////////////////////////////////////////////////////////////
 // fetch course publish validation data
 
-const getCoursePublishValidationData = async ({ courseId, instructorId }) => {
+const fetchCoursePublishValidationData = async ({ courseId, instructorId }) => {
     return Course.aggregate([
         // Find the course and verify it belongs to the instructor
         {
@@ -312,6 +312,6 @@ export {
     findInstructorCourseById,
     findCourseById,
     findCourseBySlug,
-    getCoursePublishValidationData,
+    fetchCoursePublishValidationData,
     fetchCourses,
 };

@@ -1,8 +1,11 @@
 import jwt from "jsonwebtoken";
 import crypto, { Hash } from "crypto";
 import HTTP_STATUS from "../../constants/http-status.js";
-import ApiError from "../../utils/errorHandler.js";
-import { generateTokens, getTokenExpiry } from "../../utils/tokenGenerator.js";
+import ApiError from "../../utils/error-handler.utility.js";
+import {
+    generateSecureTokens,
+    getTokenExpiry,
+} from "../../utils/token-generator.utility.js";
 import * as authRepository from "./auth.repository.js";
 import * as authSession from "./auth.session.js";
 import User from "../user/user.model.js";
@@ -12,14 +15,13 @@ import {
     sendPasswordResetSuccessEmail,
     sendWelcomeEmail,
 } from "../../services/email/email.services.js";
-import ApiResponse from "../../utils/responsehandler.js";
 import { EMAIL_EXPIRY_MINUTES } from "../../services/email/email.constans.js";
-import { createPasswordResetUrl } from "../../services/email/email.helpers.js";
+import { createPasswordResetUrl } from "../../services/email/email.utility.js";
 
 ///////////////////////////////////////////////////////////////
 // registration service
 
-const userRegistration = async ({ username, email, password }) => {
+const registerUser = async ({ username, email, password }) => {
     const existingUser = await authRepository.findByEmail(email);
 
     if (existingUser) {
@@ -50,7 +52,7 @@ const userRegistration = async ({ username, email, password }) => {
 ///////////////////////////////////////////////////////////////
 // email verification service
 
-const userEmailVerification = async ({ token }) => {
+const verifyEmail = async ({ token }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const user = await authRepository
@@ -93,7 +95,7 @@ const userEmailVerification = async ({ token }) => {
 ///////////////////////////////////////////////////////////////
 // login service
 
-const userLogin = async ({ email, password }) => {
+const login = async ({ email, password }) => {
     const existingUser = await authRepository
         .findByEmail(email)
         .select("+password");
@@ -127,14 +129,14 @@ const userLogin = async ({ email, password }) => {
 ///////////////////////////////////////////////////////////////
 // logout service
 
-const userLogout = async (user) => {
+const logout = async (user) => {
     return authSession.destroyUserSession(user);
 };
 
 ///////////////////////////////////////////////////////////////
 // token rotation service
 
-const userRotateAuthTokens = async ({ refreshToken }) => {
+const rotateTokens = async ({ refreshToken }) => {
     const { userId, userEmail } = jwt.verify(
         refreshToken,
         jwtConfig.JWT_REFRESH_SECRET
@@ -167,7 +169,7 @@ const userRotateAuthTokens = async ({ refreshToken }) => {
 ///////////////////////////////////////////////////////////////
 // forgot passwrod service
 
-const userForgotPassword = async ({ email }) => {
+const forgotPassword = async ({ email }) => {
     const user = await authRepository
         .findByEmail(email)
         .select("+resetPasswordToken +resetPasswordExpiry");
@@ -176,7 +178,7 @@ const userForgotPassword = async ({ email }) => {
         return;
     }
 
-    const { token, hashedToken } = generateTokens();
+    const { token, hashedToken } = generateSecureTokens();
 
     user.resetPasswordToken = hashedToken;
     user.resetPasswordExpiry = getTokenExpiry(
@@ -205,7 +207,7 @@ const userForgotPassword = async ({ email }) => {
 ///////////////////////////////////////////////////////////////
 // reset passwrod service
 
-const userResetPassword = async ({ token, newPassword }) => {
+const resetPassword = async ({ token, newPassword }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const user = await authRepository.findByResetPasswordToken(hashedToken);
@@ -251,7 +253,7 @@ const userResetPassword = async ({ token, newPassword }) => {
 ///////////////////////////////////////////////////////////////
 // change passwrod service
 
-const userChangePassword = async ({ userId, currentPassword, newPassword }) => {
+const changePassword = async ({ userId, currentPassword, newPassword }) => {
     const user = await authRepository.findById(userId).select("+password");
 
     if (!user) {
@@ -306,12 +308,12 @@ const userChangePassword = async ({ userId, currentPassword, newPassword }) => {
 // exports
 
 export {
-    userRegistration,
-    userEmailVerification,
-    userLogin,
-    userLogout,
-    userRotateAuthTokens,
-    userForgotPassword,
-    userResetPassword,
-    userChangePassword,
+    registerUser,
+    verifyEmail,
+    login,
+    logout,
+    rotateTokens,
+    forgotPassword,
+    resetPassword,
+    changePassword,
 };

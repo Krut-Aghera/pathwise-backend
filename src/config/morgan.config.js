@@ -1,5 +1,5 @@
 import morgan from "morgan";
-import logger from "../utils/pinoLogger.js";
+import logger from "../utils/pino-logger.utility.js";
 
 const stream = {
     write: (message) => logger.info(message.trim()),

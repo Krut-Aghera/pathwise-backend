@@ -1,6 +1,6 @@
 import emailProvider, { isProduction } from "./email.config.js";
 import { mailConfig } from "../../config/env.config.js";
-import logger from "../../utils/pinoLogger.js";
+import logger from "../../utils/pino-logger.utility.js";
 
 const sendEmail = async ({ to, subject, html }) => {
     if (!to || !subject || !html) {

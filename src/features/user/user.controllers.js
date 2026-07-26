@@ -1,6 +1,6 @@
 import * as userServices from "./user.service.js";
-import ApiResponse from "../../utils/responsehandler.js";
-import ApiError from "../../utils/errorHandler.js";
+import ApiResponse from "../../utils/response-handler.utility.js";
+import ApiError from "../../utils/error-handler.utility.js";
 import HTTP_STATUS from "../../constants/http-status.js";
 import {
     ACCESS_COOKIE_OPTIONS,
@@ -9,9 +9,9 @@ import {
 import { USER_PROFILE_LIST } from "./user.constants.js";
 
 ///////////////////////////////////////////////////////////////
-// get current user controller
+// current user controller
 
-const getCurrentUser = (req, res) => {
+const currentUser = (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
@@ -24,7 +24,7 @@ const getCurrentUser = (req, res) => {
 ///////////////////////////////////////////////////////////////
 // username updation controller
 
-const usernameUpdation = async (req, res) => {
+const updateUsername = async (req, res) => {
     const user = await userServices.updateUsername({
         user: req.user,
         username: req.body.username,
@@ -38,6 +38,11 @@ const usernameUpdation = async (req, res) => {
         })
     );
 };
+
+///////////////////////////////////////////////////////////////
+// fetch instructor profile controller
+
+const fetchInstructorProfile = async (req, res) => {};
 
 ///////////////////////////////////////////////////////////////
 // request email updation controller
@@ -136,11 +141,6 @@ const confirmInstructorAccess = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// get instructor profile controller
-
-const getInstructorProfile = async (req, res) => {};
-
-///////////////////////////////////////////////////////////////
 // deactivate account request controller
 
 const requestAccountDeactivation = async (req, res) => {
@@ -185,14 +185,15 @@ const confirmAccountDeactivation = async (req, res) => {
 
 ///////////////////////////////////////////////////////////////
 // exports
+
 export {
-    getCurrentUser,
-    usernameUpdation,
+    currentUser,
+    updateUsername,
+    fetchInstructorProfile,
     requestEmailUpdation,
     confirmEmailUpdation,
     requestInstructorAccess,
     confirmInstructorAccess,
-    getInstructorProfile,
     requestAccountDeactivation,
     confirmAccountDeactivation,
 };

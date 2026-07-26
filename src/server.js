@@ -3,10 +3,8 @@ import "./config/env.config.js";
 import app from "./app.js";
 import { serverAppConfig } from "./config/env.config.js";
 import dbConnection from "./database/db.connection.js";
-import ensureUploadDirectories from "./utils/tempDirectoriesHandler.js";
-import logger from "./utils/pinoLogger.js";
-
-console.log("Welcome to Pathwise Backend!");
+import ensureUploadDirectories from "./utils/tempdir-handler.utility.js";
+import logger from "./utils/pino-logger.utility.js";
 
 const startServer = async () => {
     try {

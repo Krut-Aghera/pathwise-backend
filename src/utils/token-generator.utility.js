@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-const generateTokens = () => {
+const generateSecureTokens = () => {
     const token = crypto.randomBytes(32).toString("hex");
 
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
@@ -12,4 +12,4 @@ const getTokenExpiry = (minutes) => {
     return new Date(Date.now() + minutes * 60 * 1000);
 };
 
-export { generateTokens, getTokenExpiry };
+export { generateSecureTokens, getTokenExpiry };
