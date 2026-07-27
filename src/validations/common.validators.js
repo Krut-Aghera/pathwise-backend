@@ -4,12 +4,12 @@ export const validateMongoIdParam = ({
     paramName = "id",
     fieldName = "ID",
 } = {}) => [
-    param(paramName)
-        .notEmpty()
-        .withMessage(`${fieldName} is required.`)
-        .bail()
-        .isMongoId()
-        .withMessage(`Invalid ${fieldName}.`),
+    // param(paramName)
+    //     .notEmpty()
+    //     .withMessage(`${fieldName} is required.`)
+    //     .bail()
+    //     .isMongoId()
+    //     .withMessage(`Invalid ${fieldName}.`),
 ];
 
 export const validateCryptoTokenParam = ({

@@ -62,7 +62,7 @@ authRouter.post(
 // Initiates a password reset request.
 
 authRouter.post(
-    "/forgot-password",
+    "/password/forgot",
     forgotPasswordRateLimiter,
     authValidations.requestPasswordReset,
     validationEngine,
@@ -74,7 +74,7 @@ authRouter.post(
 // Resets the user's password using a valid password reset token.
 
 authRouter.post(
-    "/reset-password/:token",
+    "/password/reset/:token",
     validateCryptoTokenParam({
         paramName: "token",
         fieldName: "Password reset token",

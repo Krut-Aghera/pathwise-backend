@@ -24,6 +24,174 @@ import {
 // create router
 
 const courseRouter = express.Router();
+const instructorRouter = express.Router();
+
+//
+//
+//  ------------------------------------------------
+//   PRIVATE ROUTES [ INSTRUCTOR ] only
+//  ------------------------------------------------
+//
+//
+
+///////////////////////////////////////////////////////////////
+// GET /api/v1/courses/instructor
+// Retrieves all courses owned by the authenticated instructor.
+
+instructorRouter.get(
+    "/",
+    fetchInstructorCoursesRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    courseValidations.fetchInstructorCoursesValidator,
+    validationEngine,
+    courseControllers.fetchInstructorCourses
+);
+
+///////////////////////////////////////////////////////////////
+// GET /api/v1/courses/instructor/:courseId
+// Retrieves a specific course owned by the authenticated instructor.
+
+instructorRouter.get(
+    "/:courseId",
+    fetchInstructorCourseRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    validateMongoIdParam({
+        paramName: "courseId",
+        fieldName: "Course ID",
+    }),
+    validationEngine,
+    courseControllers.fetchInstructorCourse
+);
+
+///////////////////////////////////////////////////////////////
+// POST /api/v1/courses/instructor
+// Creates a new course for the authenticated instructor.
+
+instructorRouter.post(
+    "/",
+    createCourseRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    imageUpload.single(FILE_FIELDS.THUMBNAIL),
+    courseValidations.createCourse,
+    validationEngine,
+    courseControllers.createCourse
+);
+
+///////////////////////////////////////////////////////////////
+// PATCH /api/v1/courses/instructor/:courseId/thumbnail
+// Updates the thumbnail image of an instructor-owned course.
+
+instructorRouter.patch(
+    "/:courseId/thumbnail",
+    updateCourseThumbnailRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    validateMongoIdParam({
+        paramName: "courseId",
+        fieldName: "Course ID",
+    }),
+    validationEngine,
+    imageUpload.single(FILE_FIELDS.THUMBNAIL),
+    courseControllers.updateThumbnail
+);
+
+///////////////////////////////////////////////////////////////
+// PATCH /api/v1/courses/instructor/:courseId
+// Updates the details of an instructor-owned course.
+
+instructorRouter.patch(
+    "/:courseId",
+    updateCourseRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    validateMongoIdParam({
+        paramName: "courseId",
+        fieldName: "Course ID",
+    }),
+    courseValidations.updateCourse,
+    validationEngine,
+    courseControllers.updateCourse
+);
+
+///////////////////////////////////////////////////////////////
+// DELETE /api/v1/courses/instructor/:courseId
+// Soft deletes an instructor-owned course.
+
+instructorRouter.delete(
+    "/:courseId",
+    removeCourseRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    validateMongoIdParam({
+        paramName: "courseId",
+        fieldName: "Course ID",
+    }),
+    validationEngine,
+    courseControllers.removeCourse
+);
+
+///////////////////////////////////////////////////////////////
+// PATCH /api/v1/courses/instructor/:courseId/publish
+// Publishes an instructor-owned course.
+
+instructorRouter.patch(
+    "/:courseId/publish",
+    publishCourseRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    validateMongoIdParam({
+        paramName: "courseId",
+        fieldName: "Course ID",
+    }),
+    validationEngine,
+    courseControllers.publishCourse
+);
+
+///////////////////////////////////////////////////////////////
+// PATCH /api/v1/courses/instructor/:courseId/draft
+// Saves an instructor-owned course as a draft.
+
+instructorRouter.patch(
+    "/:courseId/draft",
+    saveCourseAsDraftRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    validateMongoIdParam({
+        paramName: "courseId",
+        fieldName: "Course ID",
+    }),
+    validationEngine,
+    courseControllers.saveCourseAsDraft
+);
+
+//
+//
+//  ----------------------------------------------------------
+//  mounting sub-router (Instructor router) into main router (course router)
+//  ----------------------------------------------------------
+//
+//
+
+courseRouter.use("/instructor", instructorRouter);
 
 //
 //
@@ -59,163 +227,6 @@ courseRouter.get(
     }),
     validationEngine,
     courseControllers.fetchCurrentCourse
-);
-
-//
-//
-//  ------------------------------------------------
-//   PRIVATE ROUTES [ INSTRUCTOR ] only
-//  ------------------------------------------------
-//
-//
-
-///////////////////////////////////////////////////////////////
-// GET /api/v1/courses/me/:courseId
-// Retrieves a specific course owned by the authenticated instructor.
-
-courseRouter.get(
-    "/me/:courseId",
-    fetchInstructorCourseRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
-    authMiddlewares.requireActiveAccount,
-    authMiddlewares.requireVerifiedEmail,
-    validateMongoIdParam({
-        paramName: "courseId",
-        fieldName: "Course ID",
-    }),
-    validationEngine,
-    courseControllers.fetchInstructorCourse
-);
-
-///////////////////////////////////////////////////////////////
-// GET /api/v1/courses/me
-// Retrieves all courses owned by the authenticated instructor.
-
-courseRouter.get(
-    "/me",
-    fetchInstructorCoursesRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
-    authMiddlewares.requireActiveAccount,
-    authMiddlewares.requireVerifiedEmail,
-    courseValidations.fetchInstructorCoursesValidator,
-    validationEngine,
-    courseControllers.fetchInstructorCourses
-);
-
-///////////////////////////////////////////////////////////////
-// POST /api/v1/courses
-// Creates a new course for the authenticated instructor.
-
-courseRouter.post(
-    "/",
-    createCourseRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
-    authMiddlewares.requireActiveAccount,
-    authMiddlewares.requireVerifiedEmail,
-    imageUpload.single(FILE_FIELDS.THUMBNAIL),
-    courseValidations.createCourse,
-    validationEngine,
-    courseControllers.createCourse
-);
-
-///////////////////////////////////////////////////////////////
-// PATCH /api/v1/courses/:courseId/thumbnail
-// Updates the thumbnail image of an instructor-owned course.
-
-courseRouter.patch(
-    "/:courseId/thumbnail",
-    updateCourseThumbnailRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
-    authMiddlewares.requireActiveAccount,
-    authMiddlewares.requireVerifiedEmail,
-    validateMongoIdParam({
-        paramName: "courseId",
-        fieldName: "Course ID",
-    }),
-    validationEngine,
-    imageUpload.single(FILE_FIELDS.THUMBNAIL),
-    courseControllers.updateThumbnail
-);
-
-///////////////////////////////////////////////////////////////
-// PATCH /api/v1/courses/:courseId
-// Updates the details of an instructor-owned course.
-
-courseRouter.patch(
-    "/:courseId",
-    updateCourseRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
-    authMiddlewares.requireActiveAccount,
-    authMiddlewares.requireVerifiedEmail,
-    validateMongoIdParam({
-        paramName: "courseId",
-        fieldName: "Course ID",
-    }),
-    courseValidations.updateCourse,
-    validationEngine,
-    courseControllers.updateCourse
-);
-
-///////////////////////////////////////////////////////////////
-// DELETE /api/v1/courses/:courseId
-// Soft deletes an instructor-owned course.
-
-courseRouter.delete(
-    "/:courseId",
-    removeCourseRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
-    authMiddlewares.requireActiveAccount,
-    authMiddlewares.requireVerifiedEmail,
-    validateMongoIdParam({
-        paramName: "courseId",
-        fieldName: "Course ID",
-    }),
-    validationEngine,
-    courseControllers.removeCourse
-);
-
-///////////////////////////////////////////////////////////////
-// PATCH /api/v1/courses/:courseId/publish
-// Publishes an instructor-owned course.
-
-courseRouter.patch(
-    "/:courseId/publish",
-    publishCourseRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
-    authMiddlewares.requireActiveAccount,
-    authMiddlewares.requireVerifiedEmail,
-    validateMongoIdParam({
-        paramName: "courseId",
-        fieldName: "Course ID",
-    }),
-    validationEngine,
-    courseControllers.publishCourse
-);
-
-///////////////////////////////////////////////////////////////
-// PATCH /api/v1/courses/:courseId/draft
-// Saves an instructor-owned course as a draft.
-
-courseRouter.patch(
-    "/:courseId/draft",
-    saveCourseAsDraftRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
-    authMiddlewares.requireActiveAccount,
-    authMiddlewares.requireVerifiedEmail,
-    validateMongoIdParam({
-        paramName: "courseId",
-        fieldName: "Course ID",
-    }),
-    validationEngine,
-    courseControllers.saveCourseAsDraft
 );
 
 ///////////////////////////////////////////////////////////////
