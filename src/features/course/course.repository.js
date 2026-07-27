@@ -75,42 +75,9 @@ const saveCourseAsDraft = async (courseId) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// find course by id
+// find courses
 
-const findCourseById = (courseId) => {
-    return Course.findOne({
-        _id: courseId,
-        status: COURSE_STATUS.PUBLISHED,
-        isDeleted: false,
-    });
-};
-
-///////////////////////////////////////////////////////////////
-// find instructor course by id
-
-const findInstructorCourseById = ({ courseId, instructorId }) => {
-    return Course.findOne({
-        _id: courseId,
-        instructor: instructorId,
-        isDeleted: false,
-    });
-};
-
-///////////////////////////////////////////////////////////////
-// find course by slug
-
-const findCourseBySlug = (slug) => {
-    return Course.findOne({
-        slug,
-        status: COURSE_STATUS.PUBLISHED,
-        isDeleted: false,
-    });
-};
-
-///////////////////////////////////////////////////////////////
-// fecth courses
-
-const fetchCourses = async (options) => {
+const findCourses = async (options) => {
     const { pagination, filters, sort, search } = options;
 
     const { by, order } = sort;
@@ -193,9 +160,90 @@ const fetchCourses = async (options) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// fetch course publish validation data
+// find course by id
 
-const fetchCoursePublishValidationData = async ({ courseId, instructorId }) => {
+const findCourseById = (courseId) => {
+    return Course.findOne({
+        _id: courseId,
+        status: COURSE_STATUS.PUBLISHED,
+        isDeleted: false,
+    });
+};
+
+///////////////////////////////////////////////////////////////
+// find course by slug
+
+const findCourseBySlug = (slug) => {
+    return Course.findOne({
+        slug,
+        status: COURSE_STATUS.PUBLISHED,
+        isDeleted: false,
+    });
+};
+
+///////////////////////////////////////////////////////////////
+// find instructor courses
+
+const findInstructorCourses = async (options) => {
+    const { instructor, page, limit } = options;
+
+    const filterQuery = {
+        instructor,
+        isDeleted: false,
+    };
+
+    const skip = (page - 1) * limit;
+
+    const [courses, totalItems] = await Promise.all([
+        Course.find(filterQuery)
+            .select(COURSE_LIST_SELECT_FIELDS)
+            .populate("instructor", "username")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean(),
+
+        Course.countDocuments(filterQuery),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / limit);
+    const currentPage = page;
+    const itemsPerPage = limit;
+    const hasNextPage = currentPage < totalPages;
+    const hasPreviousPage = currentPage > 1;
+
+    return {
+        courses,
+        metadata: {
+            pagination: {
+                totalItems,
+                currentPage,
+                totalPages,
+                itemsPerPage,
+                hasNextPage,
+                hasPreviousPage,
+                nextPage: hasNextPage ? currentPage + 1 : null,
+                previousPage: hasPreviousPage ? currentPage - 1 : null,
+            },
+        },
+    };
+};
+
+///////////////////////////////////////////////////////////////
+// find instructor course by id
+
+const findInstructorCourseById = ({ courseId, instructorId }) => {
+    return Course.findOne({
+        _id: courseId,
+        instructor: instructorId,
+        isDeleted: false,
+    });
+};
+
+///////////////////////////////////////////////////////////////
+// get course publish validation data
+
+const getCoursePublishValidationData = async ({ courseId, instructorId }) => {
     return Course.aggregate([
         // Find the course and verify it belongs to the instructor
         {
@@ -301,7 +349,7 @@ const fetchCoursePublishValidationData = async ({ courseId, instructorId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////
+// exports
 
 export {
     createCourse,
@@ -309,9 +357,10 @@ export {
     softDeleteCourse,
     publishCourse,
     saveCourseAsDraft,
-    findInstructorCourseById,
+    findCourses,
     findCourseById,
     findCourseBySlug,
-    fetchCoursePublishValidationData,
-    fetchCourses,
+    findInstructorCourses,
+    findInstructorCourseById,
+    getCoursePublishValidationData,
 };

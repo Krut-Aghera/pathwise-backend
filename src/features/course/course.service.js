@@ -15,6 +15,92 @@ import { validateCoursePublishEligibility } from "./course.utility.js";
 import { COURSE_QUERY_DEFAULTS } from "./course.constans.js";
 
 ///////////////////////////////////////////////////////////////
+// fetch courses service
+
+const fetchCourses = (queryData) => {
+    const { page, limit, search, sortBy, sortOrder, level, language } =
+        queryData;
+
+    const filters = {};
+
+    if (level) {
+        filters.level = level;
+    }
+
+    if (language) {
+        filters.language = language;
+    }
+
+    const options = {
+        pagination: {
+            page: Number(page) || COURSE_QUERY_DEFAULTS.PAGE,
+            limit: Number(limit) || COURSE_QUERY_DEFAULTS.LIMIT,
+        },
+
+        filters,
+
+        sort: {
+            by: sortBy ?? COURSE_QUERY_DEFAULTS.SORT_BY,
+            order: sortOrder ?? COURSE_QUERY_DEFAULTS.SORT_ORDER,
+        },
+    };
+
+    if (search) {
+        options.search = search;
+    }
+
+    return courseRepository.findCourses(options);
+};
+
+///////////////////////////////////////////////////////////////
+// fetch current course service
+
+const fetchCurrentCourse = async ({ courseId }) => {
+    const course = await courseRepository.findCourseById(courseId);
+
+    if (!course) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "course not found",
+        });
+    }
+
+    return course;
+};
+
+///////////////////////////////////////////////////////////////
+// fetch instructor courses service
+
+const fetchInstructorCourses = ({ instructorId, page, limit }) => {
+    const options = {
+        instructor: instructorId,
+        page: Number(page) || COURSE_QUERY_DEFAULTS.PAGE,
+        limit: Number(limit) || COURSE_QUERY_DEFAULTS.LIMIT,
+    };
+
+    return courseRepository.findInstructorCourses(options);
+};
+
+///////////////////////////////////////////////////////////////
+// fetch instructor current course service
+
+const fetchInstructorCourse = async ({ courseId, instructorId }) => {
+    const course = await courseRepository.findInstructorCourseById({
+        courseId,
+        instructorId,
+    });
+
+    if (!course) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "course not found",
+        });
+    }
+
+    return course;
+};
+
+///////////////////////////////////////////////////////////////
 // create course service
 
 const createCourse = async ({
@@ -115,25 +201,6 @@ const updateCourse = async ({ courseId, instructorId, courseData }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// remove course service
-
-const removeCourse = async ({ courseId, instructorId }) => {
-    const course = await courseRepository.findInstructorCourseById({
-        courseId,
-        instructorId,
-    });
-
-    if (!course) {
-        throw new ApiError({
-            statusCode: HTTP_STATUS.NOT_FOUND,
-            message: "Course not found.",
-        });
-    }
-
-    courseRepository.softDeleteCourse(courseId);
-};
-
-///////////////////////////////////////////////////////////////
 // update thumbnail service
 
 const updateThumbnail = async ({
@@ -210,10 +277,29 @@ const updateThumbnail = async ({
 };
 
 ///////////////////////////////////////////////////////////////
+// remove course service
+
+const removeCourse = async ({ courseId, instructorId }) => {
+    const course = await courseRepository.findInstructorCourseById({
+        courseId,
+        instructorId,
+    });
+
+    if (!course) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "Course not found.",
+        });
+    }
+
+    courseRepository.softDeleteCourse(courseId);
+};
+
+///////////////////////////////////////////////////////////////
 // publish course service
 
 const publishCourse = async ({ courseId, instructorId }) => {
-    const [course] = await courseRepository.fetchCoursePublishValidationData({
+    const [course] = await courseRepository.getCoursePublishValidationData({
         courseId,
         instructorId,
     });
@@ -265,101 +351,17 @@ const saveCourseAsDraft = async ({ courseId, instructorId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// fetch instructor current course service
-
-const fetchInstructorCourse = async ({ courseId, instructorId }) => {
-    const course = await courseRepository.findInstructorCourseById({
-        courseId,
-        instructorId,
-    });
-
-    if (!course) {
-        throw new ApiError({
-            statusCode: HTTP_STATUS.NOT_FOUND,
-            message: "course not found",
-        });
-    }
-
-    return course;
-};
-
-///////////////////////////////////////////////////////////////
-// fetch courses service // public
-
-const fetchCourses = async (queryData) => {
-    const { page, limit, search, sortBy, sortOrder, level, language } =
-        queryData;
-
-    const filters = {};
-
-    if (level) {
-        filters.level = level;
-    }
-
-    if (language) {
-        filters.language = language;
-    }
-
-    const options = {
-        pagination: {
-            page: page ?? COURSE_QUERY_DEFAULTS.PAGE,
-            limit: limit ?? COURSE_QUERY_DEFAULTS.LIMIT,
-        },
-
-        filters,
-
-        sort: {
-            by: sortBy ?? COURSE_QUERY_DEFAULTS.SORT_BY,
-            order: sortOrder ?? COURSE_QUERY_DEFAULTS.SORT_ORDER,
-        },
-    };
-
-    if (search) {
-        options.search = search;
-    }
-
-    return courseRepository.fetchCourses(options);
-};
-
-///////////////////////////////////////////////////////////////
-// fetch current course service // public
-
-const fetchCurrentCourse = async ({ courseId }) => {
-    const course = await courseRepository.findCourseById(courseId);
-
-    if (!course) {
-        throw new ApiError({
-            statusCode: HTTP_STATUS.NOT_FOUND,
-            message: "course not found",
-        });
-    }
-
-    return course;
-};
-
-///////////////////////////////////////////////////////////////
-// fetch instructor courses service
-
-const fetchInstructorCourses = async ({
-    instructorId,
-    page,
-    limit,
-    search,
-    sort,
-}) => {};
-
-///////////////////////////////////////////////////////////////
 // exports
 
 export {
-    createCourse,
-    updateCourse,
-    removeCourse,
-    updateThumbnail,
-    publishCourse,
-    saveCourseAsDraft,
     fetchCourses,
     fetchCurrentCourse,
-    fetchInstructorCourse,
     fetchInstructorCourses,
+    fetchInstructorCourse,
+    createCourse,
+    updateCourse,
+    updateThumbnail,
+    removeCourse,
+    publishCourse,
+    saveCourseAsDraft,
 };

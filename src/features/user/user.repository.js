@@ -1,41 +1,10 @@
 import User from "./user.model.js";
 
 ///////////////////////////////////////////////////////////////
-// find by _id
+// create user document
 
-const findById = (_id) => {
-    return User.findById(_id);
-};
-
-///////////////////////////////////////////////////////////////
-// find by email
-
-const findByEmail = (email) => {
-    return User.findOne({ email });
-};
-
-///////////////////////////////////////////////////////////////
-// find user by email change token
-
-const findByEmailChangeToken = (hashedToken) => {
-    return User.findOne({
-        emailChangeToken: hashedToken,
-        emailChangeTokenExpiry: {
-            $gt: new Date(),
-        },
-    });
-};
-
-///////////////////////////////////////////////////////////////
-// find user by instructor access  token
-
-const findByInstructorAccessToken = (hashedToken) => {
-    return User.findOne({
-        instructorAccessToken: hashedToken,
-        instructorAccessTokenExpiry: {
-            $gt: Date.now(),
-        },
-    });
+const createUser = (userData) => {
+    return User.create(userData);
 };
 
 ///////////////////////////////////////////////////////////////
@@ -48,12 +17,77 @@ const saveUser = (user, validateBeforeSave = false) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// find user by id
+
+const findUserById = (userId) => {
+    return User.findById(userId);
+};
+
+///////////////////////////////////////////////////////////////
+// find user by email
+
+const findUserByEmail = (email) => {
+    return User.findOne({ email });
+};
+
+///////////////////////////////////////////////////////////////
+// find user by email change token
+
+const findUserByEmailChangeToken = (hashedToken) => {
+    return User.findOne({
+        emailChangeToken: hashedToken,
+        emailChangeTokenExpiry: {
+            $gt: new Date(),
+        },
+    });
+};
+
+///////////////////////////////////////////////////////////////
+// find user by instructor access  token
+
+const findUserByInstructorAccessToken = (hashedToken) => {
+    return User.findOne({
+        instructorAccessToken: hashedToken,
+        instructorAccessTokenExpiry: {
+            $gt: Date.now(),
+        },
+    });
+};
+
+///////////////////////////////////////////////////////////////
+// find user by email verification token
+
+const findUserByEmailVerificationToken = (hashedToken) => {
+    return User.findOne({
+        emailVerificationToken: hashedToken,
+        emailVerificationExpiry: {
+            $gt: Date.now(),
+        },
+    });
+};
+
+///////////////////////////////////////////////////////////////
+// find user by reset password token
+
+const findUserByPasswordResetToken = (hashedToken) => {
+    return User.findOne({
+        resetPasswordToken: hashedToken,
+        resetPasswordExpiry: {
+            $gt: new Date(),
+        },
+    });
+};
+
+///////////////////////////////////////////////////////////////
 // export
 
 export {
-    findById,
-    findByEmail,
-    findByEmailChangeToken,
-    findByInstructorAccessToken,
+    createUser,
     saveUser,
+    findUserById,
+    findUserByEmail,
+    findUserByEmailChangeToken,
+    findUserByPasswordResetToken,
+    findUserByInstructorAccessToken,
+    findUserByEmailVerificationToken,
 };

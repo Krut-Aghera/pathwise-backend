@@ -12,12 +12,10 @@ import * as authService from "./auth.service.js";
 // registration controller
 
 const registerUser = async (req, res) => {
-    const { username, email, password } = req.body;
-
     const { user, accessToken, refreshToken } = await authService.registerUser({
-        username,
-        email,
-        password,
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
     });
 
     return res
@@ -34,19 +32,26 @@ const registerUser = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// email verification controller
+// request email verification controller
 
-const verifyEmail = async (req, res) => {
-    const { token } = req.params;
+const requestEmailVerification = async (req, res) => {
+    await authService.requestEmailVerification({ user: req.user });
 
-    if (!token) {
-        throw new ApiError({
-            statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: "Email verificaiton token is missing",
-        });
-    }
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: "We've sent a verification link to your email address.",
+        })
+    );
+};
 
-    const user = await authService.verifyEmail({ token });
+///////////////////////////////////////////////////////////////
+// confirm email verification controller
+
+const confirmEmailVerification = async (req, res) => {
+    const user = await authService.confirmEmailVerification({
+        token: req.params.token,
+    });
 
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
@@ -58,19 +63,12 @@ const verifyEmail = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// resend verification email controller
-
-const resendVerificationEmail = () => {};
-
-///////////////////////////////////////////////////////////////
 // login controller
 
 const login = async (req, res) => {
-    const { email, password } = req.body;
-
     const { user, accessToken, refreshToken } = await authService.login({
-        email,
-        password,
+        email: req.body.email,
+        password: req.body.password,
     });
 
     return res
@@ -90,9 +88,7 @@ const login = async (req, res) => {
 // logout controller
 
 const logout = async (req, res) => {
-    const { user } = req;
-
-    await authService.logout(user);
+    await authService.logout({ user: req.user });
 
     return res
         .status(HTTP_STATUS.OK)
@@ -141,12 +137,10 @@ const rotateTokens = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// forgot password controller
+// request password reset controller
 
-const forgotPassword = async (req, res) => {
-    const { email } = req.body;
-
-    await authService.forgotPassword({ email });
+const requestPasswordReset = async (req, res) => {
+    await authService.requestPasswordReset({ email: req.body.email });
 
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
@@ -161,18 +155,10 @@ const forgotPassword = async (req, res) => {
 // reset password controller
 
 const resetPassword = async (req, res) => {
-    const { token } = req.params;
-
-    if (!token) {
-        throw new ApiError({
-            statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: "Password reset token is missing",
-        });
-    }
-
-    const { newPassword } = req.body;
-
-    await authService.resetPassword({ token, newPassword });
+    await authService.resetPassword({
+        token: req.params.token,
+        newPassword: req.body.newPassword,
+    });
 
     return res
         .status(HTTP_STATUS.OK)
@@ -190,13 +176,10 @@ const resetPassword = async (req, res) => {
 // change password controller
 
 const changePassword = async (req, res) => {
-    const { currentPassword, newPassword } = req.body;
-    const userId = req.user._id;
-
     await authService.changePassword({
-        userId,
-        currentPassword,
-        newPassword,
+        userId: req.user._id,
+        currentPassword: req.body.currentPassword,
+        newPassword: req.body.newPassword,
     });
 
     return res
@@ -216,12 +199,12 @@ const changePassword = async (req, res) => {
 
 export {
     registerUser,
-    verifyEmail,
-    resendVerificationEmail,
+    requestEmailVerification,
+    confirmEmailVerification,
     login,
     logout,
     rotateTokens,
-    forgotPassword,
+    requestPasswordReset,
     resetPassword,
     changePassword,
 };

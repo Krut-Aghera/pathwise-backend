@@ -1,5 +1,5 @@
 import { jwtConfig } from "../../config/env.config.js";
-import * as authRepository from "./auth.repository.js";
+import * as userRepository from "../user/user.repository.js";
 import crypto from "crypto";
 
 ///////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ const createUserSession = async (user) => {
         .digest("hex");
 
     user.refreshToken = hashedRefreshToken;
-    const savedUser = await authRepository.saveUser(user);
+    const savedUser = await userRepository.saveUser(user);
 
     return {
         user: savedUser,
@@ -60,7 +60,7 @@ const createUserSession = async (user) => {
 
 const destroyUserSession = async (user) => {
     user.refreshToken = null;
-    await authRepository.saveUser(user);
+    await userRepository.saveUser(user);
 };
 
 ///////////////////////////////////////////////////////////////

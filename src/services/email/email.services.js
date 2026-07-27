@@ -42,7 +42,7 @@ const sendWelcomeEmail = async ({ email, username, actionUrl }) => {
  * @param {string} params.username - User's display name.
  * @param {string} params.actionUrl - Email verification URL.
  */
-const sendVerificationEmail = async ({ email, username, actionUrl }) => {
+const sendEmailVerificationEmail = async ({ email, username, actionUrl }) => {
     const html = await renderEmail(VerifyEmail({ username, actionUrl }));
 
     return sendEmail({
@@ -297,7 +297,7 @@ const sendAccountDeactivatedEmail = async ({ email, username }) => {
 
 export {
     sendWelcomeEmail,
-    sendVerificationEmail,
+    sendEmailVerificationEmail,
     sendEmailVerifiedEmail,
     sendPasswordResetEmail,
     sendPasswordResetSuccessEmail,

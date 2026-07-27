@@ -36,7 +36,9 @@ const updateUsername = async ({ user, username }) => {
 // request email updation service
 
 const requestEmailUpdation = async ({ user, password, newEmail }) => {
-    const dbUser = await userRepository.findById(user._id).select("+password");
+    const dbUser = await userRepository
+        .findUserById(user._id)
+        .select("+password");
 
     if (!dbUser) {
         throw new ApiError({
@@ -62,7 +64,7 @@ const requestEmailUpdation = async ({ user, password, newEmail }) => {
         });
     }
 
-    const existingUser = await userRepository.findByEmail(newEmail);
+    const existingUser = await userRepository.findUserByEmail(newEmail);
 
     if (existingUser) {
         throw new ApiError({
@@ -113,7 +115,7 @@ const confirmEmailUpdation = async ({ user, token }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const dbUser = await userRepository
-        .findByEmailChangeToken(hashedToken)
+        .findUserByEmailChangeToken(hashedToken)
         .select("+pendingEmail");
 
     if (!dbUser) {
@@ -167,7 +169,7 @@ const confirmEmailUpdation = async ({ user, token }) => {
 // request instructor access service
 
 const requestInstructorAccess = async ({ user }) => {
-    const dbUser = await userRepository.findById(user._id);
+    const dbUser = await userRepository.findUserById(user._id);
 
     if (!dbUser) {
         throw new ApiError({
@@ -223,7 +225,7 @@ const confirmInstructorAccess = async ({ user, token }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const dbUser =
-        await userRepository.findByInstructorAccessToken(hashedToken);
+        await userRepository.findUserByInstructorAccessToken(hashedToken);
 
     if (!dbUser) {
         throw new ApiError({
@@ -272,13 +274,35 @@ const confirmInstructorAccess = async ({ user, token }) => {
 ///////////////////////////////////////////////////////////////
 // fetch instructor profile service
 
-const fetchInstructorProfile = () => {};
+const fetchInstructorProfile = async ({ instructorId }) => {
+    const instructor = await userRepository.findUserById({
+        userId: instructorId,
+    });
+
+    if (!instructor) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "Instructor profile not found",
+        });
+    }
+
+    if (instructor.role !== ROLES.INSTRUCTOR) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "Instructor profile not found",
+        });
+    }
+
+    return instructor;
+};
 
 ///////////////////////////////////////////////////////////////
 // user account deactivation request service
 
 const requestAccountDeactivation = async ({ user, password }) => {
-    const dbUser = await userRepository.findById(user._id).select("+password");
+    const dbUser = await userRepository
+        .findUserById(user._id)
+        .select("+password");
 
     if (!dbUser) {
         throw new ApiError({
@@ -328,7 +352,7 @@ const confirmAccountDeactivation = async ({ user, otp }) => {
     const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
     const dbUser = await userRepository
-        .findById(user._id)
+        .findUserById(user._id)
         .select("+accountDeactivationOtp +accountDeactivationOtpExpiry");
 
     if (!dbUser) {

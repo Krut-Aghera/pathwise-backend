@@ -1,28 +1,33 @@
 import jwt from "jsonwebtoken";
-import crypto, { Hash } from "crypto";
+import crypto, { hash, Hash } from "crypto";
 import HTTP_STATUS from "../../constants/http-status.js";
 import ApiError from "../../utils/error-handler.utility.js";
 import {
     generateSecureTokens,
     getTokenExpiry,
 } from "../../utils/token-generator.utility.js";
-import * as authRepository from "./auth.repository.js";
+import * as userRepository from "../user/user.repository.js";
 import * as authSession from "./auth.session.js";
 import User from "../user/user.model.js";
 import {
+    sendEmailVerificationEmail,
     sendEmailVerifiedEmail,
     sendPasswordResetEmail,
     sendPasswordResetSuccessEmail,
     sendWelcomeEmail,
 } from "../../services/email/email.services.js";
 import { EMAIL_EXPIRY_MINUTES } from "../../services/email/email.constans.js";
-import { createPasswordResetUrl } from "../../services/email/email.utility.js";
+import {
+    createPasswordResetUrl,
+    getEmailVerificationUrl,
+} from "../../services/email/email.utility.js";
+import { use } from "react";
 
 ///////////////////////////////////////////////////////////////
 // registration service
 
 const registerUser = async ({ username, email, password }) => {
-    const existingUser = await authRepository.findByEmail(email);
+    const existingUser = await userRepository.findUserByEmail(email);
 
     if (existingUser) {
         throw new ApiError({
@@ -31,7 +36,7 @@ const registerUser = async ({ username, email, password }) => {
         });
     }
 
-    const createdUser = await authRepository.createUser({
+    const createdUser = await userRepository.createUser({
         username,
         email,
         password,
@@ -50,13 +55,49 @@ const registerUser = async ({ username, email, password }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// email verification service
+// request email verification service
 
-const verifyEmail = async ({ token }) => {
+const requestEmailVerification = async ({ user }) => {
+    if (user.isEmailVerified) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.FORBIDDEN,
+            message: "Your email address is already verified.",
+        });
+    }
+
+    const { token, hashedToken } = generateSecureTokens();
+
+    user.emailVerificationToken = hashedToken;
+    user.emailVerificationExpiry = getTokenExpiry(
+        EMAIL_EXPIRY_MINUTES.VERIFICATION_TOKEN_EXPIRY
+    );
+
+    await userRepository.saveUser(user);
+
+    try {
+        await sendEmailVerificationEmail({
+            email: user.email,
+            username: user.username,
+            actionUrl: getEmailVerificationUrl(token),
+        });
+    } catch (error) {
+        user.emailVerificationToken = null;
+        user.emailVerificationExpiry = null;
+
+        await userRepository.saveUser(user);
+
+        throw error;
+    }
+};
+
+///////////////////////////////////////////////////////////////
+// confirm email verification service
+
+const confirmEmailVerification = async ({ token }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    const user = await authRepository
-        .findByEmailToken(hashedToken)
+    const user = await userRepository
+        .findUserByEmailVerificationToken(hashedToken)
         .select("+emailVerificationToken +emailVerificationExpiry");
 
     if (!user) {
@@ -71,7 +112,7 @@ const verifyEmail = async ({ token }) => {
     user.emailVerificationToken = null;
     user.emailVerificationExpiry = null;
 
-    await authRepository.saveUser(user);
+    await userRepository.saveUser(user);
 
     try {
         await sendEmailVerifiedEmail({
@@ -96,8 +137,8 @@ const verifyEmail = async ({ token }) => {
 // login service
 
 const login = async ({ email, password }) => {
-    const existingUser = await authRepository
-        .findByEmail(email)
+    const existingUser = await userRepository
+        .findUserByEmail(email)
         .select("+password");
 
     if (!existingUser) {
@@ -129,7 +170,7 @@ const login = async ({ email, password }) => {
 ///////////////////////////////////////////////////////////////
 // logout service
 
-const logout = async (user) => {
+const logout = async ({ user }) => {
     return authSession.destroyUserSession(user);
 };
 
@@ -142,7 +183,9 @@ const rotateTokens = async ({ refreshToken }) => {
         jwtConfig.JWT_REFRESH_SECRET
     );
 
-    const user = await authRepository.findById(userId).select("+refreshToken");
+    const user = await userRepository
+        .findUserById(userId)
+        .select("+refreshToken");
 
     if (!user) {
         throw new ApiError({
@@ -167,11 +210,11 @@ const rotateTokens = async ({ refreshToken }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// forgot passwrod service
+// request password reset service
 
-const forgotPassword = async ({ email }) => {
-    const user = await authRepository
-        .findByEmail(email)
+const requestPasswordReset = async ({ email }) => {
+    const user = await userRepository
+        .findUserByEmail(email)
         .select("+resetPasswordToken +resetPasswordExpiry");
 
     if (!user || !user.isActive) {
@@ -185,7 +228,7 @@ const forgotPassword = async ({ email }) => {
         EMAIL_EXPIRY_MINUTES.PASSWORD_RESET_TOKEN_EXPIRY
     );
 
-    await authRepository.saveUser(user);
+    await userRepository.saveUser(user);
 
     try {
         await sendPasswordResetEmail({
@@ -198,7 +241,7 @@ const forgotPassword = async ({ email }) => {
         user.resetPasswordToken = null;
         user.resetPasswordExpiry = null;
 
-        await authRepository.saveUser(user);
+        await userRepository.saveUser(user);
 
         throw error;
     }
@@ -210,7 +253,7 @@ const forgotPassword = async ({ email }) => {
 const resetPassword = async ({ token, newPassword }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    const user = await authRepository.findByResetPasswordToken(hashedToken);
+    const user = await userRepository.findUserByPasswordResetToken(hashedToken);
 
     if (!user) {
         throw new ApiError({
@@ -231,7 +274,7 @@ const resetPassword = async ({ token, newPassword }) => {
     user.resetPasswordExpiry = null;
     user.refreshToken = null;
 
-    await authRepository.saveUser(user, true);
+    await userRepository.saveUser(user, true);
 
     try {
         await sendPasswordResetSuccessEmail({
@@ -254,7 +297,7 @@ const resetPassword = async ({ token, newPassword }) => {
 // change passwrod service
 
 const changePassword = async ({ userId, currentPassword, newPassword }) => {
-    const user = await authRepository.findById(userId).select("+password");
+    const user = await userRepository.findUserById(userId).select("+password");
 
     if (!user) {
         throw new ApiError({
@@ -285,7 +328,7 @@ const changePassword = async ({ userId, currentPassword, newPassword }) => {
     user.password = newPassword;
     user.refreshToken = null;
 
-    await authRepository.saveUser(user, true);
+    await userRepository.saveUser(user, true);
 
     try {
         await sendPasswordResetSuccessEmail({
@@ -309,11 +352,12 @@ const changePassword = async ({ userId, currentPassword, newPassword }) => {
 
 export {
     registerUser,
-    verifyEmail,
+    requestEmailVerification,
+    confirmEmailVerification,
     login,
     logout,
     rotateTokens,
-    forgotPassword,
+    requestPasswordReset,
     resetPassword,
     changePassword,
 };

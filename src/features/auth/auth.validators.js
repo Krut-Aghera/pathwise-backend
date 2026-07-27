@@ -84,7 +84,7 @@ const login = [
 ///////////////////////////////////////////////////////////////
 // Forgot Password Validation
 
-const forgotPassword = [emailValidator];
+const requestPasswordReset = [emailValidator];
 
 ///////////////////////////////////////////////////////////////
 // Reset Password Validation
@@ -101,7 +101,7 @@ export {
     emailValidator,
     registerUser,
     login,
-    forgotPassword,
+    requestPasswordReset,
     resetPassword,
     changePassword,
 };

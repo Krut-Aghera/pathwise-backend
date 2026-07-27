@@ -9,11 +9,45 @@ import {
     requestInstructorAccessRateLimiter,
     updateProfileRateLimiter,
 } from "../../middlewares/ratelimiter/limiters/user.ratelimit.js";
+import {
+    validateCryptoTokenParam,
+    validateMongoIdParam,
+} from "../../validations/common.validators.js";
+
+///////////////////////////////////////////////////////////////
+// create router
 
 const userRouter = express.Router();
 
+//
+//  ------------------------------------------------
+//   PUBLIC ROUTES
+//  ------------------------------------------------
+//
+
 ///////////////////////////////////////////////////////////////
-// get current user route
+// GET /api/v1/users/instructor/:userId
+// Retrieves the public profile of a specific instructor.
+
+userRouter.get(
+    "/instructor/:userId",
+    validateMongoIdParam({
+        paramName: "userId",
+        fieldName: "Instructor ID",
+    }),
+    validationEngine,
+    userControllers.fetchInstructorProfile
+);
+
+//
+//  ------------------------------------------------
+//   PRIVATE ROUTES [AUTHENTICATED USER]
+//  ------------------------------------------------
+//
+
+///////////////////////////////////////////////////////////////
+// GET /api/v1/users/me
+// Retrieves the authenticated user's profile.
 
 userRouter.get(
     "/me",
@@ -23,7 +57,8 @@ userRouter.get(
 );
 
 ///////////////////////////////////////////////////////////////
-// update user name route
+// PATCH /api/v1/users/me/username
+// Updates the authenticated user's username.
 
 userRouter.patch(
     "/me/username",
@@ -36,7 +71,8 @@ userRouter.patch(
 );
 
 ///////////////////////////////////////////////////////////////
-// change email request route
+// POST /api/v1/users/me/email/request
+// Initiates an email address change request.
 
 userRouter.post(
     "/me/email/request",
@@ -50,18 +86,25 @@ userRouter.post(
 );
 
 ///////////////////////////////////////////////////////////////
-// change email confirmation route
+// POST /api/v1/users/me/email/confirm/:token
+// Confirms and completes the email address change.
 
 userRouter.post(
     "/me/email/confirm/:token",
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
     authMiddlewares.requireVerifiedEmail,
+    validateCryptoTokenParam({
+        paramName: "token",
+        fieldName: "Email updation token",
+    }),
+    validationEngine,
     userControllers.confirmEmailUpdation
 );
 
 ///////////////////////////////////////////////////////////////
-// Request instructor access
+// POST /api/v1/users/me/instructor/request
+// Initiates an instructor access request.
 
 userRouter.post(
     "/me/instructor/request",
@@ -73,23 +116,25 @@ userRouter.post(
 );
 
 ///////////////////////////////////////////////////////////////
-// Confirm instructor access
+// POST /api/v1/users/me/instructor/confirm/:token
+// Confirms and grants instructor access.
 
 userRouter.post(
     "/me/instructor/confirm/:token",
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
     authMiddlewares.requireVerifiedEmail,
+    validateCryptoTokenParam({
+        paramName: "token",
+        fieldName: "Instructor access token",
+    }),
+    validationEngine,
     userControllers.confirmInstructorAccess
 );
 
 ///////////////////////////////////////////////////////////////
-// get instructor profile route
-
-userRouter.get("/instructor/:id", userControllers.fetchInstructorProfile);
-
-///////////////////////////////////////////////////////////////
-// deactivate account request route
+// POST /api/v1/users/me/deactivation/request
+// Initiates an account deactivation request.
 
 userRouter.post(
     "/me/deactivation/request",
@@ -102,7 +147,8 @@ userRouter.post(
 );
 
 ///////////////////////////////////////////////////////////////
-// deactivate account confirmation route
+// POST /api/v1/users/me/deactivation/confirm
+// Confirms and permanently deactivates the authenticated user's account.
 
 userRouter.post(
     "/me/deactivation/confirm",

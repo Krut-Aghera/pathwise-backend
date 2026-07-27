@@ -17,12 +17,96 @@ import {
     saveCourseAsDraftRateLimiter,
     updateCourseRateLimiter,
     updateCourseThumbnailRateLimiter,
+    fetchInstructorCoursesRateLimiter,
 } from "../../middlewares/ratelimiter/limiters/course.ratelimit.js";
+
+///////////////////////////////////////////////////////////////
+// create router
 
 const courseRouter = express.Router();
 
+//
+//
+//  ------------------------------------------------
+//   PUBLIC ROUTES
+//  ------------------------------------------------
+//
+//
+
 ///////////////////////////////////////////////////////////////
-// new course creation route
+// GET /api/v1/courses
+// Retrieves publicly available courses with pagination,
+// searching, filtering, and sorting support.
+
+courseRouter.get(
+    "/",
+    fetchCourseRateLimiter,
+    courseValidations.fetchCoursesValidator,
+    validationEngine,
+    courseControllers.fetchCourses
+);
+
+///////////////////////////////////////////////////////////////
+// GET /api/v1/courses/:courseId
+// Retrieves the public details of a specific course.
+
+courseRouter.get(
+    "/:courseId",
+    fetchCurrentCourseRateLimiter,
+    validateMongoIdParam({
+        paramName: "courseId",
+        fieldName: "Course ID",
+    }),
+    validationEngine,
+    courseControllers.fetchCurrentCourse
+);
+
+//
+//
+//  ------------------------------------------------
+//   PRIVATE ROUTES [ INSTRUCTOR ] only
+//  ------------------------------------------------
+//
+//
+
+///////////////////////////////////////////////////////////////
+// GET /api/v1/courses/me/:courseId
+// Retrieves a specific course owned by the authenticated instructor.
+
+courseRouter.get(
+    "/me/:courseId",
+    fetchInstructorCourseRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    validateMongoIdParam({
+        paramName: "courseId",
+        fieldName: "Course ID",
+    }),
+    validationEngine,
+    courseControllers.fetchInstructorCourse
+);
+
+///////////////////////////////////////////////////////////////
+// GET /api/v1/courses/me
+// Retrieves all courses owned by the authenticated instructor.
+
+courseRouter.get(
+    "/me",
+    fetchInstructorCoursesRateLimiter,
+    authMiddlewares.tokenVerificationEngine,
+    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
+    authMiddlewares.requireActiveAccount,
+    authMiddlewares.requireVerifiedEmail,
+    courseValidations.fetchInstructorCoursesValidator,
+    validationEngine,
+    courseControllers.fetchInstructorCourses
+);
+
+///////////////////////////////////////////////////////////////
+// POST /api/v1/courses
+// Creates a new course for the authenticated instructor.
 
 courseRouter.post(
     "/",
@@ -38,31 +122,38 @@ courseRouter.post(
 );
 
 ///////////////////////////////////////////////////////////////
-// thumbnail updation route
+// PATCH /api/v1/courses/:courseId/thumbnail
+// Updates the thumbnail image of an instructor-owned course.
 
 courseRouter.patch(
-    "/:id/thumbnail",
+    "/:courseId/thumbnail",
     updateCourseThumbnailRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
     authMiddlewares.requireActiveAccount,
     authMiddlewares.requireVerifiedEmail,
+    validateMongoIdParam({
+        paramName: "courseId",
+        fieldName: "Course ID",
+    }),
+    validationEngine,
     imageUpload.single(FILE_FIELDS.THUMBNAIL),
     courseControllers.updateThumbnail
 );
 
 ///////////////////////////////////////////////////////////////
-// Update course details
+// PATCH /api/v1/courses/:courseId
+// Updates the details of an instructor-owned course.
 
 courseRouter.patch(
-    "/:id",
+    "/:courseId",
     updateCourseRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
     authMiddlewares.requireActiveAccount,
     authMiddlewares.requireVerifiedEmail,
     validateMongoIdParam({
-        paramName: "id",
+        paramName: "courseId",
         fieldName: "Course ID",
     }),
     courseValidations.updateCourse,
@@ -71,17 +162,18 @@ courseRouter.patch(
 );
 
 ///////////////////////////////////////////////////////////////
-// Delete course
+// DELETE /api/v1/courses/:courseId
+// Soft deletes an instructor-owned course.
 
 courseRouter.delete(
-    "/:id",
+    "/:courseId",
     removeCourseRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
     authMiddlewares.requireActiveAccount,
     authMiddlewares.requireVerifiedEmail,
     validateMongoIdParam({
-        paramName: "id",
+        paramName: "courseId",
         fieldName: "Course ID",
     }),
     validationEngine,
@@ -89,17 +181,18 @@ courseRouter.delete(
 );
 
 ///////////////////////////////////////////////////////////////
-// publish course route
+// PATCH /api/v1/courses/:courseId/publish
+// Publishes an instructor-owned course.
 
 courseRouter.patch(
-    "/:id/publish",
+    "/:courseId/publish",
     publishCourseRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
     authMiddlewares.requireActiveAccount,
     authMiddlewares.requireVerifiedEmail,
     validateMongoIdParam({
-        paramName: "id",
+        paramName: "courseId",
         fieldName: "Course ID",
     }),
     validationEngine,
@@ -107,64 +200,22 @@ courseRouter.patch(
 );
 
 ///////////////////////////////////////////////////////////////
-// Save course as draft
+// PATCH /api/v1/courses/:courseId/draft
+// Saves an instructor-owned course as a draft.
 
 courseRouter.patch(
-    "/:id/draft",
+    "/:courseId/draft",
     saveCourseAsDraftRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
     authMiddlewares.requireActiveAccount,
     authMiddlewares.requireVerifiedEmail,
     validateMongoIdParam({
-        paramName: "id",
+        paramName: "courseId",
         fieldName: "Course ID",
     }),
     validationEngine,
     courseControllers.saveCourseAsDraft
-);
-
-///////////////////////////////////////////////////////////////
-// fetch instructor course
-
-courseRouter.get(
-    "/:id/me",
-    fetchInstructorCourseRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
-    authMiddlewares.requireActiveAccount,
-    authMiddlewares.requireVerifiedEmail,
-    validateMongoIdParam({
-        paramName: "id",
-        fieldName: "Course ID",
-    }),
-    validationEngine,
-    courseControllers.fetchInstructorCourse
-);
-
-///////////////////////////////////////////////////////////////
-// fetch course // public
-
-courseRouter.get(
-    "/",
-    fetchCourseRateLimiter,
-    courseValidations.fetchCoursesValidator,
-    validationEngine,
-    courseControllers.fetchCourses
-);
-
-///////////////////////////////////////////////////////////////
-// fetch current course // public
-
-courseRouter.get(
-    "/:id",
-    fetchCurrentCourseRateLimiter,
-    validateMongoIdParam({
-        paramName: "id",
-        fieldName: "Course ID",
-    }),
-    validationEngine,
-    courseControllers.fetchCurrentCourse
 );
 
 ///////////////////////////////////////////////////////////////

@@ -42,7 +42,19 @@ const updateUsername = async (req, res) => {
 ///////////////////////////////////////////////////////////////
 // fetch instructor profile controller
 
-const fetchInstructorProfile = async (req, res) => {};
+const fetchInstructorProfile = async (req, res) => {
+    const instructor = await userServices.fetchInstructorProfile({
+        instructorId: req.params.id,
+    });
+
+    res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: "Instructor profile fetched successfully.",
+            data: instructor,
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // request email updation controller

@@ -1,7 +1,7 @@
 import { serverAppConfig } from "../../config/env.config.js";
 
 // Create email verification URL
-export const createEmailVerificationUrl = (token) => {
+export const getEmailVerificationUrl = (token) => {
     return `${serverAppConfig.CLIENT_URL}/verify-email/${token}`;
 };
 
