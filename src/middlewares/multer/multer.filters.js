@@ -1,4 +1,4 @@
-import HTTP_STATUS from "../../constants/http-status.js";
+import HTTP_STATUS from "../../constants/http.constants.js";
 import ApiError from "../../utils/error-handler.utility.js";
 
 import {

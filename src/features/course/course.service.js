@@ -1,4 +1,4 @@
-import HTTP_STATUS from "../../constants/http-status.js";
+import HTTP_STATUS from "../../constants/http.constants.js";
 import {
     CLOUDINARY_FOLDERS,
     MEDIA_RESOURCE_TYPES,
@@ -12,7 +12,8 @@ import generateSlug from "../../utils/slug-generator.utility.js";
 import logger from "../../utils/pino-logger.utility.js";
 import * as courseRepository from "./course.repository.js";
 import { validateCoursePublishEligibility } from "./course.utility.js";
-import { COURSE_QUERY_DEFAULTS } from "./course.constans.js";
+import { COURSE_QUERY_DEFAULTS } from "./course.constants.js";
+import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // fetch courses service
@@ -56,7 +57,7 @@ const fetchCourses = (queryData) => {
 // fetch current course service
 
 const fetchCurrentCourse = async ({ courseId }) => {
-    const course = await courseRepository.findCourseById(courseId);
+    const course = await courseRepository.fetchCurrentCourseData(courseId);
 
     if (!course) {
         throw new ApiError({
@@ -299,7 +300,7 @@ const removeCourse = async ({ courseId, instructorId }) => {
 // publish course service
 
 const publishCourse = async ({ courseId, instructorId }) => {
-    const [course] = await courseRepository.getCoursePublishValidationData({
+    const [course] = await courseRepository.fetchCoursePublishValidationData({
         courseId,
         instructorId,
     });
@@ -340,7 +341,7 @@ const saveCourseAsDraft = async ({ courseId, instructorId }) => {
         });
     }
 
-    if (course.status === COURSE_STATUS.DRAFT) {
+    if (course.status === RESOURCE_STATUS.DRAFT) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
             message: "Course is already saved as draft.",

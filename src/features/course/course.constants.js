@@ -48,24 +48,16 @@ const COURSE_LEVELS = Object.freeze({
     ADVANCED: "advanced",
 });
 
-const COURSE_STATUS = Object.freeze({
-    DRAFT: "draft",
-    PUBLISHED: "published",
-});
-
 const COURSE_LANGUAGES_ARRAY = Object.values(COURSE_LANGUAGES);
 const COURSE_LEVELS_ARRAY = Object.values(COURSE_LEVELS);
-const COURSE_STATUS_ARRAY = Object.values(COURSE_STATUS);
 const SORT_ORDERS_ARRAY = Object.values(SORT_ORDERS);
 
 export {
     COURSE_ALLOWED_FIELDS,
     COURSE_LANGUAGES,
     COURSE_LEVELS,
-    COURSE_STATUS,
     COURSE_LANGUAGES_ARRAY,
     COURSE_LEVELS_ARRAY,
-    COURSE_STATUS_ARRAY,
     SORT_ORDERS_ARRAY,
     COURSE_SORT_FIELDS,
     SORT_ORDERS,

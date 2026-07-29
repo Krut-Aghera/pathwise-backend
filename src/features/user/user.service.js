@@ -2,7 +2,7 @@ import { USER_PROFILE } from "./user.constants.js";
 import * as userRepository from "./user.repository.js";
 import generateSecureOtp from "../../utils/otp-generator.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
-import HTTP_STATUS from "../../constants/http-status.js";
+import HTTP_STATUS from "../../constants/http.constants.js";
 import {
     generateSecureTokens,
     getTokenExpiry,

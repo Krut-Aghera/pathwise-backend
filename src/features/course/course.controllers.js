@@ -1,8 +1,8 @@
 import {
     COURSE_ALLOWED_FIELDS,
     COURSE_FETCH_QUERY_FIELDS,
-} from "./course.constans.js";
-import HTTP_STATUS from "../../constants/http-status.js";
+} from "./course.constants.js";
+import HTTP_STATUS from "../../constants/http.constants.js";
 import ApiResponse from "../../utils/response-handler.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
 import * as courseService from "./course.service.js";

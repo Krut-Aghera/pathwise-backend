@@ -4,9 +4,11 @@ import {
     COURSE_LANGUAGES_ARRAY,
     COURSE_LEVELS,
     COURSE_LEVELS_ARRAY,
-    COURSE_STATUS,
-    COURSE_STATUS_ARRAY,
-} from "./course.constans.js";
+} from "./course.constants.js";
+import {
+    RESOURCE_STATUS,
+    RESOURCE_STATUS_ARRAY,
+} from "../../constants/resource.constants.js";
 
 const courseSchema = new mongoose.Schema(
     {
@@ -128,10 +130,10 @@ const courseSchema = new mongoose.Schema(
         status: {
             type: String,
             enum: {
-                values: COURSE_STATUS_ARRAY,
-                message: `Status must be one of: ${COURSE_STATUS_ARRAY.join(", ")}`,
+                values: RESOURCE_STATUS_ARRAY,
+                message: `Status must be one of: ${RESOURCE_STATUS_ARRAY.join(", ")}`,
             },
-            default: COURSE_STATUS.DRAFT,
+            default: RESOURCE_STATUS.DRAFT,
             index: true,
         },
 

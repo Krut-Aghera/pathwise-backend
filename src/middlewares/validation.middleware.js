@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import ApiError from "../utils/error-handler.utility.js";
-import HTTP_STATUS from "../constants/http-status.js";
+import HTTP_STATUS from "../constants/http.constants.js";
 
 const validationEngine = (req, res, next) => {
     const errors = validationResult(req);

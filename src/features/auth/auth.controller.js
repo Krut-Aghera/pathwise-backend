@@ -1,8 +1,8 @@
 import {
     ACCESS_COOKIE_OPTIONS,
     REFRESH_COOKIE_OPTIONS,
-} from "../../constants/cookie-options.js";
-import HTTP_STATUS from "../../constants/http-status.js";
+} from "../../constants/cookie.constants.js";
+import HTTP_STATUS from "../../constants/http.constants.js";
 import ApiError from "../../utils/error-handler.utility.js";
 import logger from "../../utils/pino-logger.utility.js";
 import ApiResponse from "../../utils/response-handler.utility.js";

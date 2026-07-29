@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 import * as authValidations from "../auth/auth.validators.js";
-import REGEX_VALIDATIONS from "../../constants/regex-validation.js";
+import REGEX_VALIDATIONS from "../../constants/regex.constants.js";
 
 const passwordValidations = body("password")
     .notEmpty()

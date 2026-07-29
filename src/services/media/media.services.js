@@ -2,7 +2,7 @@ import cloudinary from "./media.config.js";
 import ApiError from "../../utils/error-handler.utility.js";
 import logger from "../../utils/pino-logger.utility.js";
 
-import HTTP_STATUS from "../../constants/http-status.js";
+import HTTP_STATUS from "../../constants/http.constants.js";
 import { validateUploadInput } from "./media.utility.js";
 import { MEDIA_RESOURCE_TYPES } from "./media.constants.js";
 import { localFileCleanup } from "../../utils/file-handler.utility.js";

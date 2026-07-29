@@ -1,11 +1,11 @@
 import * as userServices from "./user.service.js";
 import ApiResponse from "../../utils/response-handler.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
-import HTTP_STATUS from "../../constants/http-status.js";
+import HTTP_STATUS from "../../constants/http.constants.js";
 import {
     ACCESS_COOKIE_OPTIONS,
     REFRESH_COOKIE_OPTIONS,
-} from "../../constants/cookie-options.js";
+} from "../../constants/cookie.constants.js";
 import { USER_PROFILE_LIST } from "./user.constants.js";
 
 ///////////////////////////////////////////////////////////////

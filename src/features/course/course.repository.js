@@ -1,10 +1,7 @@
 import mongoose from "mongoose";
 import Course from "./course.model.js";
-import {
-    COURSE_LIST_SELECT_FIELDS,
-    COURSE_STATUS,
-    SORT_ORDERS,
-} from "./course.constans.js";
+import { COURSE_LIST_SELECT_FIELDS, SORT_ORDERS } from "./course.constants.js";
+import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create course
@@ -31,7 +28,7 @@ const softDeleteCourse = (courseId) => {
         {
             $set: {
                 isDeleted: true,
-                status: COURSE_STATUS.DRAFT,
+                status: RESOURCE_STATUS.DRAFT,
             },
         },
         {
@@ -48,7 +45,7 @@ const publishCourse = async (courseId) => {
         courseId,
         {
             $set: {
-                status: COURSE_STATUS.PUBLISHED,
+                status: RESOURCE_STATUS.PUBLISHED,
             },
         },
         {
@@ -65,7 +62,7 @@ const saveCourseAsDraft = async (courseId) => {
         courseId,
         {
             $set: {
-                status: COURSE_STATUS.DRAFT,
+                status: RESOURCE_STATUS.DRAFT,
             },
         },
         {
@@ -84,7 +81,7 @@ const findCourses = async (options) => {
     const { page, limit } = pagination;
 
     const filterQuery = {
-        status: COURSE_STATUS.PUBLISHED,
+        status: RESOURCE_STATUS.PUBLISHED,
         isDeleted: false,
     };
 
@@ -165,7 +162,7 @@ const findCourses = async (options) => {
 const findCourseById = (courseId) => {
     return Course.findOne({
         _id: courseId,
-        status: COURSE_STATUS.PUBLISHED,
+        status: RESOURCE_STATUS.PUBLISHED,
         isDeleted: false,
     });
 };
@@ -176,7 +173,7 @@ const findCourseById = (courseId) => {
 const findCourseBySlug = (slug) => {
     return Course.findOne({
         slug,
-        status: COURSE_STATUS.PUBLISHED,
+        status: RESOURCE_STATUS.PUBLISHED,
         isDeleted: false,
     });
 };
@@ -241,9 +238,175 @@ const findInstructorCourseById = ({ courseId, instructorId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// get course publish validation data
+// fetch durrent dourse data,
 
-const getCoursePublishValidationData = async ({ courseId, instructorId }) => {
+const fetchCurrentCourseData = (courseId) => {
+    return Course.aggregate([
+        // match published non-deleted course
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(courseId),
+                status: RESOURCE_STATUS.PUBLISHED,
+                isDeleted: false,
+            },
+        },
+
+        // populate instructor
+        {
+            $lookup: {
+                from: "users",
+                localField: "instructor",
+                foreignField: "_id",
+                as: "instructor",
+                pipeline: [
+                    {
+                        $project: {
+                            username: 1,
+                            profilePicture: 1,
+                        },
+                    },
+                ],
+            },
+        },
+
+        // convert instructor array to object
+        {
+            $unwind: "$instructor",
+        },
+
+        // fetch published sections
+        {
+            $lookup: {
+                from: "sections",
+                let: {
+                    courseId: "$_id",
+                },
+
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $eq: ["$course", "$$courseId"],
+                            },
+
+                            status: SECTION_STATUS.PUBLISHED,
+                            isDeleted: false,
+                        },
+                    },
+
+                    // fetch lectures inside section
+                    {
+                        $lookup: {
+                            from: "lectures",
+
+                            let: {
+                                sectionId: "$_id",
+                            },
+
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ["$section", "$$sectionId"],
+                                        },
+
+                                        status: LECTURE_STATUS.PUBLISHED,
+                                        isDeleted: false,
+                                    },
+                                },
+
+                                // lecture fields
+                                {
+                                    $project: {
+                                        title: 1,
+                                        subtitle: 1,
+                                        description: 1,
+                                        duration: 1,
+                                        thumbnail: 1,
+                                        level: 1,
+                                        isPreview: 1,
+                                        order: 1,
+                                    },
+                                },
+
+                                // lecture ordering
+                                {
+                                    $sort: {
+                                        order: 1,
+                                    },
+                                },
+                            ],
+
+                            as: "lectures",
+                        },
+                    },
+
+                    // section fields
+                    {
+                        $project: {
+                            title: 1,
+                            order: 1,
+
+                            lectures: 1,
+
+                            lectureCount: {
+                                $size: "$lectures",
+                            },
+                        },
+                    },
+
+                    // section ordering
+                    {
+                        $sort: {
+                            order: 1,
+                        },
+                    },
+                ],
+
+                as: "sections",
+            },
+        },
+
+        // final response shape
+        {
+            $project: {
+                title: 1,
+                subtitle: 1,
+                slug: 1,
+                description: 1,
+
+                price: 1,
+
+                thumbnail: 1,
+
+                language: 1,
+                level: 1,
+
+                learningOutcomes: 1,
+                targetAudience: 1,
+                requirements: 1,
+
+                instructor: 1,
+
+                statistics: {
+                    totalSections: "$totalSections",
+                    totalLectures: "$totalLectures",
+                    totalDuration: "$totalDuration",
+                    totalEnrollments: "$totalEnrollments",
+                    averageRating: "$averageRating",
+                    totalRatings: "$totalRatings",
+                },
+
+                sections: 1,
+            },
+        },
+    ]);
+};
+
+///////////////////////////////////////////////////////////////
+// fetch course publish validation data
+
+const fetchCoursePublishValidationData = async ({ courseId, instructorId }) => {
     return Course.aggregate([
         // Find the course and verify it belongs to the instructor
         {
@@ -362,5 +525,6 @@ export {
     findCourseBySlug,
     findInstructorCourses,
     findInstructorCourseById,
-    getCoursePublishValidationData,
+    fetchCurrentCourseData,
+    fetchCoursePublishValidationData,
 };

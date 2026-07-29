@@ -1,6 +1,6 @@
 import rateLimit from "express-rate-limit";
 import formatDuration from "../../utils/time-formatter.utility.js";
-import HTTP_STATUS from "../../constants/http-status.js";
+import HTTP_STATUS from "../../constants/http.constants.js";
 import { RATE_LIMITER_OPTIONS } from "./ratelimit.constants.js";
 
 ///////////////////////////////////////////////////////////////

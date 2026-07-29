@@ -5,7 +5,8 @@ import cookieParser from "cookie-parser";
 import authRouter from "./features/auth/auth.routes.js";
 import userRouter from "./features/user/user.routes.js";
 import courseRouter from "./features/course/course.routes.js";
-import HTTP_STATUS from "./constants/http-status.js";
+import sectionRouter from "./features/section/section.routes.js";
+import HTTP_STATUS from "./constants/http.constants.js";
 import { serverAppConfig } from "./config/env.config.js";
 import morganLogger from "./config/morgan.config.js";
 import helmetMiddleware from "./middlewares/helmet.middleware.js";
@@ -56,6 +57,7 @@ app.use(cookieParser());
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/courses", courseRouter);
+app.use("/api/v1/sections", sectionRouter);
 
 ///////////////////////////////////////////////////////////////
 // error middlewares

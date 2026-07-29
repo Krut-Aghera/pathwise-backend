@@ -94,6 +94,17 @@ const lectureSchema = new mongoose.Schema(
             type: Number,
             required: true,
         },
+        status: {
+            type: String,
+            // enum: Object.values(LECTURE_STATUS),
+            // default: LECTURE_STATUS.DRAFT,
+        },
+
+        isDeleted: {
+            type: Boolean,
+            default: false,
+            select: false,
+        },
     },
     {
         timestamps: true,

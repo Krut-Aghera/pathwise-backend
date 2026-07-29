@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import ApiError from "../../utils/error-handler.utility.js";
-import REGEX_VALIDATIONS from "../../constants/regex-validation.js";
+import REGEX_VALIDATIONS from "../../constants/regex.constants.js";
 import { ROLES, ROLES_LIST } from "./user.constants.js";
 
 const userSchema = new mongoose.Schema(

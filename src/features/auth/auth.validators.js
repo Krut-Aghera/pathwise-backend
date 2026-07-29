@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import REGEX_VALIDATIONS from "../../constants/regex-validation.js";
+import REGEX_VALIDATIONS from "../../constants/regex.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // Reusable Field Validators

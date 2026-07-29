@@ -109,6 +109,11 @@ export const RATE_LIMIT = Object.freeze({
             WINDOW_MS: WINDOWS.ONE_MINUTE,
             LIMIT: 20,
         },
+
+        CHANGE_STATUS: {
+            WINDOW_MS: WINDOWS.ONE_MINUTE,
+            LIMIT: 10,
+        },
     }),
 
     LECTURE: Object.freeze({

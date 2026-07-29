@@ -6,9 +6,8 @@ import {
     COURSE_LANGUAGES_ARRAY,
     COURSE_LEVELS_ARRAY,
     COURSE_SORT_FIELDS,
-    COURSE_STATUS_ARRAY,
     SORT_ORDERS_ARRAY,
-} from "./course.constans.js";
+} from "./course.constants.js";
 
 // course.validators.js
 

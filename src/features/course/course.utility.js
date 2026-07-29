@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
 
 import Course from "./course.model.js";
-
-import { COURSE_STATUS } from "./course.constans.js";
 import { VIDEO_UPLOAD_STATUS } from "../lecture/lecture.constants.js";
+import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // validate eligibilty for course publish
@@ -11,7 +10,7 @@ import { VIDEO_UPLOAD_STATUS } from "../lecture/lecture.constants.js";
 const validateCoursePublishEligibility = (course) => {
     const errors = [];
 
-    if (course.status !== COURSE_STATUS.DRAFT) {
+    if (course.status !== RESOURCE_STATUS.DRAFT) {
         errors.push("Only draft courses can be published.");
     }
 
