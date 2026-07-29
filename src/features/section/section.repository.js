@@ -1,7 +1,54 @@
+import Section from "./section.model.js";
+
 ///////////////////////////////////////////////////////////////
 // create section repository
 
-const createSection = async (sectionData) => {};
+const createSection = (sectionData) => {
+    return Section.create(sectionData);
+};
+
+///////////////////////////////////////////////////////////////
+// update section
+
+const updateSection = (sectionId, data) => {
+    return Section.findByIdAndUpdate(
+        {
+            _id: sectionId,
+            isDeleted: false,
+        },
+        {
+            $set: data,
+        },
+        {
+            returnDocument: "after",
+            runValidators: true,
+        }
+    );
+};
+
+///////////////////////////////////////////////////////////////
+// remove section
+
+const removeSection = (sectionId) => {
+    return Section.findByIdAndUpdate(
+        {
+            _id: sectionId,
+        },
+        {
+            $set: {
+                isDeleted: true,
+            },
+        },
+        {
+            returnDocument: "after",
+        }
+    );
+};
+
+///////////////////////////////////////////////////////////////
+// reorder sections repository
+
+const reorderSections = async ({ courseId, sections }) => {};
 
 ///////////////////////////////////////////////////////////////
 // publish section repository
@@ -14,14 +61,44 @@ const publishSection = async ({ sectionId }) => {};
 const saveSectionAsDraft = async ({ sectionId }) => {};
 
 ///////////////////////////////////////////////////////////////
-// reorder sections repository
+// find section by title inside course
 
-const reorderSections = async ({ courseId, sections }) => {};
+const findSectionByTitle = ({ courseId, title }) => {
+    return Section.findOne({
+        course: courseId,
+        title,
+        isDeleted: false,
+    });
+};
 
 ///////////////////////////////////////////////////////////////
-// fetch instructor current section repository
+// find last section order
 
-const findInstructorSection = async ({ sectionId, instructorId }) => {};
+const findLastSectionOrder = (courseId) => {
+    return Section.findOne({
+        course: courseId,
+        isDeleted: false,
+    }).sort({
+        order: -1,
+    });
+};
+
+///////////////////////////////////////////////////////////////
+// find instructor section
+
+const findInstructorSection = ({ sectionId, instructorId }) => {
+    return Section.findOne({
+        _id: sectionId,
+        isDeleted: false,
+    }).populate({
+        path: "course",
+        match: {
+            instructor: instructorId,
+            isDeleted: false,
+        },
+        select: "_id instructor",
+    });
+};
 
 ///////////////////////////////////////////////////////////////
 // fetch instructor course sections repository
@@ -33,9 +110,13 @@ const findInstructorSections = async ({ courseId, instructorId }) => {};
 
 export {
     createSection,
+    updateSection,
+    removeSection,
+    reorderSections,
     publishSection,
     saveSectionAsDraft,
-    reorderSections,
+    findSectionByTitle,
+    findLastSectionOrder,
     findInstructorSection,
     findInstructorSections,
 };

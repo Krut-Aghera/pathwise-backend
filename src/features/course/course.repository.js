@@ -238,11 +238,11 @@ const findInstructorCourseById = ({ courseId, instructorId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// fetch durrent dourse data,
+// fetch current course data
 
 const fetchCurrentCourseData = (courseId) => {
     return Course.aggregate([
-        // match published non-deleted course
+        // find published course
         {
             $match: {
                 _id: new mongoose.Types.ObjectId(courseId),
@@ -251,13 +251,14 @@ const fetchCurrentCourseData = (courseId) => {
             },
         },
 
-        // populate instructor
+        // instructor details
         {
             $lookup: {
                 from: "users",
                 localField: "instructor",
                 foreignField: "_id",
                 as: "instructor",
+
                 pipeline: [
                     {
                         $project: {
@@ -269,15 +270,15 @@ const fetchCurrentCourseData = (courseId) => {
             },
         },
 
-        // convert instructor array to object
         {
             $unwind: "$instructor",
         },
 
-        // fetch published sections
+        // sections + lectures
         {
             $lookup: {
                 from: "sections",
+
                 let: {
                     courseId: "$_id",
                 },
@@ -294,7 +295,6 @@ const fetchCurrentCourseData = (courseId) => {
                         },
                     },
 
-                    // fetch lectures inside section
                     {
                         $lookup: {
                             from: "lectures",
@@ -315,7 +315,6 @@ const fetchCurrentCourseData = (courseId) => {
                                     },
                                 },
 
-                                // lecture fields
                                 {
                                     $project: {
                                         title: 1,
@@ -329,7 +328,6 @@ const fetchCurrentCourseData = (courseId) => {
                                     },
                                 },
 
-                                // lecture ordering
                                 {
                                     $sort: {
                                         order: 1,
@@ -341,7 +339,6 @@ const fetchCurrentCourseData = (courseId) => {
                         },
                     },
 
-                    // section fields
                     {
                         $project: {
                             title: 1,
@@ -355,7 +352,6 @@ const fetchCurrentCourseData = (courseId) => {
                         },
                     },
 
-                    // section ordering
                     {
                         $sort: {
                             order: 1,
@@ -367,7 +363,150 @@ const fetchCurrentCourseData = (courseId) => {
             },
         },
 
-        // final response shape
+        // enrollment statistics
+        {
+            $lookup: {
+                from: "enrollments",
+
+                let: {
+                    courseId: "$_id",
+                },
+
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $eq: ["$course", "$$courseId"],
+                            },
+
+                            status: "ACTIVE",
+                        },
+                    },
+
+                    {
+                        $count: "totalEnrollments",
+                    },
+                ],
+
+                as: "enrollmentStats",
+            },
+        },
+
+        // rating statistics
+        {
+            $lookup: {
+                from: "ratings",
+
+                let: {
+                    courseId: "$_id",
+                },
+
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $eq: ["$course", "$$courseId"],
+                            },
+
+                            isDeleted: false,
+                        },
+                    },
+
+                    {
+                        $group: {
+                            _id: null,
+
+                            averageRating: {
+                                $avg: "$rating",
+                            },
+
+                            totalRatings: {
+                                $sum: 1,
+                            },
+                        },
+                    },
+                ],
+
+                as: "ratingStats",
+            },
+        },
+
+        // calculate course statistics
+        {
+            $addFields: {
+                statistics: {
+                    totalSections: {
+                        $size: "$sections",
+                    },
+
+                    totalLectures: {
+                        $sum: {
+                            $map: {
+                                input: "$sections",
+                                as: "section",
+
+                                in: "$$section.lectureCount",
+                            },
+                        },
+                    },
+
+                    totalDuration: {
+                        $sum: {
+                            $map: {
+                                input: "$sections",
+                                as: "section",
+
+                                in: {
+                                    $sum: {
+                                        $map: {
+                                            input: "$$section.lectures",
+                                            as: "lecture",
+
+                                            in: "$$lecture.duration",
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+
+                    totalEnrollments: {
+                        $ifNull: [
+                            {
+                                $arrayElemAt: [
+                                    "$enrollmentStats.totalEnrollments",
+                                    0,
+                                ],
+                            },
+
+                            0,
+                        ],
+                    },
+
+                    averageRating: {
+                        $ifNull: [
+                            {
+                                $arrayElemAt: ["$ratingStats.averageRating", 0],
+                            },
+
+                            0,
+                        ],
+                    },
+
+                    totalRatings: {
+                        $ifNull: [
+                            {
+                                $arrayElemAt: ["$ratingStats.totalRatings", 0],
+                            },
+
+                            0,
+                        ],
+                    },
+                },
+            },
+        },
+
+        // final response
         {
             $project: {
                 title: 1,
@@ -388,14 +527,7 @@ const fetchCurrentCourseData = (courseId) => {
 
                 instructor: 1,
 
-                statistics: {
-                    totalSections: "$totalSections",
-                    totalLectures: "$totalLectures",
-                    totalDuration: "$totalDuration",
-                    totalEnrollments: "$totalEnrollments",
-                    averageRating: "$averageRating",
-                    totalRatings: "$totalRatings",
-                },
+                statistics: 1,
 
                 sections: 1,
             },
