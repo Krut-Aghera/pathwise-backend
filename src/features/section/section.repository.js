@@ -1,3 +1,4 @@
+import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 import Section from "./section.model.js";
 
 ///////////////////////////////////////////////////////////////
@@ -53,12 +54,42 @@ const reorderSections = async ({ courseId, sections }) => {};
 ///////////////////////////////////////////////////////////////
 // publish section repository
 
-const publishSection = async ({ sectionId }) => {};
+const publishSection = ({ sectionId }) => {
+    return Section.findByIdAndUpdate(
+        {
+            _id: sectionId,
+            isDeleted: false,
+        },
+        {
+            $set: {
+                status: RESOURCE_STATUS.PUBLISHED,
+            },
+        },
+        {
+            returnDocument: "after",
+        }
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // save section as draft repository
 
-const saveSectionAsDraft = async ({ sectionId }) => {};
+const saveSectionAsDraft = async ({ sectionId }) => {
+    return Section.findByIdAndUpdate(
+        {
+            _id: sectionId,
+            isDeleted: false,
+        },
+        {
+            $set: {
+                status: RESOURCE_STATUS.DRAFT,
+            },
+        },
+        {
+            returnDocument: "after",
+        }
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // find section by title inside course
