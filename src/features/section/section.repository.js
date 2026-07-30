@@ -1,4 +1,8 @@
-import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
+import mongoose from "mongoose";
+import {
+    REORDER_TEMP_OFFSET,
+    RESOURCE_STATUS,
+} from "../../constants/resource.constants.js";
 import Section from "./section.model.js";
 
 ///////////////////////////////////////////////////////////////
@@ -11,7 +15,7 @@ const createSection = (sectionData) => {
 ///////////////////////////////////////////////////////////////
 // update section
 
-const updateSection = (sectionId, data) => {
+const updateSection = ({ sectionId, data }) => {
     return Section.findByIdAndUpdate(
         {
             _id: sectionId,
@@ -30,10 +34,11 @@ const updateSection = (sectionId, data) => {
 ///////////////////////////////////////////////////////////////
 // remove section
 
-const removeSection = (sectionId) => {
+const removeSection = ({ sectionId }) => {
     return Section.findByIdAndUpdate(
         {
             _id: sectionId,
+            isDeleted: false,
         },
         {
             $set: {
@@ -49,7 +54,53 @@ const removeSection = (sectionId) => {
 ///////////////////////////////////////////////////////////////
 // reorder sections repository
 
-const reorderSections = async ({ courseId, sections }) => {};
+///////////////////////////////////////////////////////////////
+// reorder sections repository
+
+const reorderSections = async ({ sections }) => {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        // Phase 1: Move all sections to temporary orders
+        await Section.bulkWrite(
+            sections.map(({ sectionId, order }) => ({
+                updateOne: {
+                    filter: { _id: sectionId },
+                    update: {
+                        $set: {
+                            order: order + REORDER_TEMP_OFFSET,
+                        },
+                    },
+                },
+            })),
+            { session }
+        );
+
+        // Phase 2: Assign final orders
+        await Section.bulkWrite(
+            sections.map(({ sectionId, order }) => ({
+                updateOne: {
+                    filter: { _id: sectionId },
+                    update: {
+                        $set: {
+                            order,
+                        },
+                    },
+                },
+            })),
+            { session }
+        );
+
+        await session.commitTransaction();
+    } catch (error) {
+        await session.abortTransaction();
+        throw error;
+    } finally {
+        await session.endSession();
+    }
+};
 
 ///////////////////////////////////////////////////////////////
 // publish section repository
@@ -132,9 +183,29 @@ const findInstructorSection = ({ sectionId, instructorId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// fetch instructor course sections repository
+// find course sections repository
 
-const findInstructorSections = async ({ courseId, instructorId }) => {};
+const findCourseSections = ({ courseId }) => {
+    return Section.find({
+        course: courseId,
+        isDeleted: false,
+    })
+        .select("_id title order status")
+        .sort({ order: 1 })
+        .lean();
+};
+
+///////////////////////////////////////////////////////////////
+// find course section ids
+
+const findCourseSectionIds = ({ courseId }) => {
+    return Section.find({
+        course: courseId,
+        isDeleted: false,
+    })
+        .select("_id")
+        .lean();
+};
 
 ///////////////////////////////////////////////////////////////
 // exports
@@ -149,5 +220,6 @@ export {
     findSectionByTitle,
     findLastSectionOrder,
     findInstructorSection,
-    findInstructorSections,
+    findCourseSections,
+    findCourseSectionIds,
 };

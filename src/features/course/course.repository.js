@@ -290,7 +290,7 @@ const fetchCurrentCourseData = (courseId) => {
                                 $eq: ["$course", "$$courseId"],
                             },
 
-                            status: SECTION_STATUS.PUBLISHED,
+                            status: RESOURCE_STATUS.PUBLISHED,
                             isDeleted: false,
                         },
                     },
@@ -310,7 +310,7 @@ const fetchCurrentCourseData = (courseId) => {
                                             $eq: ["$section", "$$sectionId"],
                                         },
 
-                                        status: LECTURE_STATUS.PUBLISHED,
+                                        status: RESOURCE_STATUS.PUBLISHED,
                                         isDeleted: false,
                                     },
                                 },

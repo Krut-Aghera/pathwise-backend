@@ -1,8 +1,8 @@
 import express from "express";
-import validationEngine from "../../middlewares/validation.middleware.js";
 import * as authMiddlewares from "../../middlewares/auth.middleware.js";
 import * as sectionControllers from "./section.controllers.js";
 import * as sectionValidations from "./section.validators.js";
+import validationEngine from "../../middlewares/validation.middleware.js";
 import { ROLES } from "../user/user.constants.js";
 import { validateMongoIdParam } from "../../validations/common.validators.js";
 import {
@@ -75,7 +75,7 @@ sectionRouter.post(
 // Reorders sections of an instructor-owned course.
 
 sectionRouter.patch(
-    "/course/:courseId/reorder",
+    "/courses/:courseId/reorder",
     reorderSectionsRateLimiter,
     validateMongoIdParam({
         paramName: "courseId",

@@ -1,8 +1,27 @@
 import mongoose from "mongoose";
-
+import * as courseRepository from "./course.repository.js";
 import Course from "./course.model.js";
 import { VIDEO_UPLOAD_STATUS } from "../lecture/lecture.constants.js";
 import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
+
+//////////////////////////////////////////////////////////////
+// get authorized instructor course
+
+const getAuthorizedInstructorCourse = async ({ courseId, instructorId }) => {
+    const course = await courseRepository.findInstructorCourseById({
+        courseId,
+        instructorId,
+    });
+
+    if (!course) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: "Course not found.",
+        });
+    }
+
+    return course;
+};
 
 ///////////////////////////////////////////////////////////////
 // validate eligibilty for course publish
@@ -59,4 +78,4 @@ const validateCoursePublishEligibility = (course) => {
 ///////////////////////////////////////////////////////////////
 // exports
 
-export { validateCoursePublishEligibility };
+export { getAuthorizedInstructorCourse, validateCoursePublishEligibility };

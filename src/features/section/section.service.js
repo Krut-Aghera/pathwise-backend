@@ -3,8 +3,13 @@ import * as sectionRepository from "./section.repository.js";
 import * as lectureRepository from "../lecture/lecture.repository.js";
 import ApiError from "../../utils/error-handler.utility.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
-import { validateInstructorSectionOwnership } from "./section.utility.js";
+import {
+    getAuthorizedInstructorSection,
+    validateCourseSectionReorder,
+    validateSectionReorderPayload,
+} from "./section.utility.js";
 import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
+import { getAuthorizedInstructorCourse } from "../course/course.utility.js";
 
 ///////////////////////////////////////////////////////////////
 // create section service
@@ -37,7 +42,7 @@ const createSection = async ({ courseId, instructorId, title }) => {
 // update section service
 
 const updateSection = async ({ sectionId, instructorId, data }) => {
-    await validateInstructorSectionOwnership({
+    await getAuthorizedInstructorSection({
         sectionId,
         instructorId,
     });
@@ -54,7 +59,10 @@ const updateSection = async ({ sectionId, instructorId, data }) => {
 // remove section service
 
 const removeSection = async ({ sectionId, instructorId }) => {
-    await validateInstructorSectionOwnership({ sectionId, instructorId });
+    await getAuthorizedInstructorSection({
+        sectionId,
+        instructorId,
+    });
 
     return sectionRepository.removeSection({ sectionId });
 };
@@ -62,13 +70,31 @@ const removeSection = async ({ sectionId, instructorId }) => {
 ///////////////////////////////////////////////////////////////
 // reorder sections service
 
-const reorderSections = async ({ courseId, instructorId, sections }) => {};
+const reorderSections = async ({ courseId, instructorId, sections }) => {
+    await getAuthorizedInstructorCourse({
+        courseId,
+        instructorId,
+    });
+
+    validateSectionReorderPayload({ sections });
+
+    const courseSections = await sectionRepository.findCourseSectionIds({
+        courseId,
+    });
+
+    validateCourseSectionReorder({
+        sections,
+        courseSections,
+    });
+
+    await sectionRepository.reorderSections({ sections });
+};
 
 ///////////////////////////////////////////////////////////////
 // publish section service
 
 const publishSection = async ({ sectionId, instructorId }) => {
-    const section = await validateInstructorSectionOwnership({
+    const section = await getAuthorizedInstructorSection({
         sectionId,
         instructorId,
     });
@@ -99,7 +125,7 @@ const publishSection = async ({ sectionId, instructorId }) => {
 // save section as draft service
 
 const saveSectionAsDraft = async ({ sectionId, instructorId }) => {
-    const section = await validateInstructorSectionOwnership({
+    const section = await getAuthorizedInstructorSection({
         sectionId,
         instructorId,
     });
@@ -117,12 +143,23 @@ const saveSectionAsDraft = async ({ sectionId, instructorId }) => {
 ///////////////////////////////////////////////////////////////
 // fetch instructor section service
 
-const fetchInstructorSection = async ({ sectionId, instructorId }) => {};
+const fetchInstructorSection = async ({ sectionId, instructorId }) => {
+    return await getAuthorizedInstructorSection({ sectionId, instructorId });
+};
 
 ///////////////////////////////////////////////////////////////
 // fetch instructor sections service
 
-const fetchInstructorSections = async ({ courseId, instructorId }) => {};
+const fetchInstructorSections = async ({ courseId, instructorId }) => {
+    const course = await getAuthorizedInstructorCourse({
+        courseId,
+        instructorId,
+    });
+
+    return await sectionRepository.findCourseSections({
+        courseId: course._id,
+    });
+};
 
 ///////////////////////////////////////////////////////////////
 // exports

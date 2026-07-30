@@ -22,7 +22,7 @@ export const createSection = [titleValidator];
 export const updateSection = [titleValidator];
 
 ///////////////////////////////////////////////////////////////
-// reorder sections
+// reorder course sections validator
 
 export const reorderSections = [
     body("sections")
@@ -37,7 +37,9 @@ export const reorderSections = [
         .withMessage("Invalid Section ID."),
 
     body("sections.*.order")
+        .notEmpty()
+        .withMessage("Order is required.")
+        .bail()
         .isInt({ min: 1 })
-        .withMessage("Order must be a positive integer.")
-        .toInt(),
+        .withMessage("Order must be a positive integer."),
 ];

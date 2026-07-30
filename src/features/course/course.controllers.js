@@ -6,6 +6,7 @@ import HTTP_STATUS from "../../constants/http.constants.js";
 import ApiResponse from "../../utils/response-handler.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
 import * as courseService from "./course.service.js";
+import logger from "../../utils/pino-logger.utility.js";
 
 ///////////////////////////////////////////////////////////////
 // fetch courses controller
@@ -35,14 +36,14 @@ const fetchCourses = async (req, res) => {
 // fetch current course controller
 
 const fetchCurrentCourse = async (req, res) => {
-    const course = await courseService.fetchCurrentCourse({
+    const [course] = await courseService.fetchCurrentCourse({
         courseId: req.params.courseId,
     });
 
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: `${course.title} fetched successfully.`,
+            message: `${course.title} - course fetched successfully.`,
             data: course,
         })
     );

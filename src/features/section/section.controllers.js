@@ -1,6 +1,7 @@
 import * as sectionService from "./section.service.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
 import ApiResponse from "../../utils/response-handler.utility.js";
+import { SECTION_UPDATE_FIELDS } from "./section.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create section controller
@@ -59,7 +60,7 @@ const removeSection = async (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: `${section.title} removed successfully.`,
+            message: "Section removed successfully.",
         })
     );
 };
@@ -68,7 +69,7 @@ const removeSection = async (req, res) => {
 // reorder sections controller
 
 const reorderSections = async (req, res) => {
-    const sections = await sectionService.reorderSections({
+    await sectionService.reorderSections({
         courseId: req.params.courseId,
         instructorId: req.user._id,
         sections: req.body.sections,
@@ -78,7 +79,6 @@ const reorderSections = async (req, res) => {
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
             message: "Sections reordered successfully.",
-            data: sections,
         })
     );
 };
