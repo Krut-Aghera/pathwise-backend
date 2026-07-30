@@ -4,7 +4,7 @@ import hpp from "hpp";
 import cookieParser from "cookie-parser";
 import authRouter from "./features/auth/auth.routes.js";
 import userRouter from "./features/user/user.routes.js";
-import courseRouter from "./features/course/course.routes.js";
+import courseRouter from "./features/course/routes/course.routes.js";
 import sectionRouter from "./features/section/section.routes.js";
 import HTTP_STATUS from "./constants/http.constants.js";
 import { serverAppConfig } from "./config/env.config.js";
