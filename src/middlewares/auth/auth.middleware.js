@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
-import ApiError from "../utils/error-handler.utility.js";
-import User from "../features/user/user.model.js";
-import { jwtConfig } from "../config/env.config.js";
-import HTTP_STATUS from "../constants/http.constants.js";
+import ApiError from "../../utils/error-handler.utility.js";
+import User from "../../features/user/user.model.js";
+import { jwtConfig } from "../../config/env.config.js";
+import HTTP_STATUS from "../../constants/http.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // token verification middleware

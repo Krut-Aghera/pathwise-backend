@@ -1,6 +1,6 @@
 import express from "express";
 import validationEngine from "../../middlewares/validation.middleware.js";
-import * as authMiddlewares from "../../middlewares/auth.middleware.js";
+import * as authMiddlewares from "../../middlewares/auth/auth.middleware.js";
 import * as authControllers from "./auth.controller.js";
 import * as authValidations from "./auth.validators.js";
 import {

@@ -16,7 +16,6 @@ const courseSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: [true, "Instructor is required"],
-            index: true,
         },
 
         title: {
@@ -134,52 +133,11 @@ const courseSchema = new mongoose.Schema(
                 message: `Status must be one of: ${RESOURCE_STATUS_ARRAY.join(", ")}`,
             },
             default: RESOURCE_STATUS.DRAFT,
-            index: true,
         },
 
         isDeleted: {
             type: Boolean,
             default: false,
-            index: true,
-        },
-
-        totalSections: {
-            type: Number,
-            default: 0,
-            min: 0,
-        },
-
-        totalLectures: {
-            type: Number,
-            default: 0,
-            min: 0,
-        },
-
-        // Duration in seconds
-        totalDuration: {
-            type: Number,
-            default: 0,
-            min: 0,
-        },
-
-        // Cached statistics
-        totalEnrollments: {
-            type: Number,
-            default: 0,
-            min: 0,
-        },
-
-        averageRating: {
-            type: Number,
-            default: 0,
-            min: 0,
-            max: 5,
-        },
-
-        totalRatings: {
-            type: Number,
-            default: 0,
-            min: 0,
         },
     },
     {
@@ -189,7 +147,23 @@ const courseSchema = new mongoose.Schema(
 );
 
 ///////////////////////////////////////////////////////////////
-// text search
+// compound indexes
+
+// Instructor course listing
+courseSchema.index({
+    instructor: 1,
+    isDeleted: 1,
+    createdAt: -1,
+});
+
+// Public course listing
+courseSchema.index({
+    status: 1,
+    isDeleted: 1,
+    createdAt: -1,
+});
+
+// Text search
 courseSchema.index(
     {
         title: "text",

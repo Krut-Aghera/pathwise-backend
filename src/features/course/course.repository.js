@@ -6,14 +6,14 @@ import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 ///////////////////////////////////////////////////////////////
 // create course
 
-const createCourse = (courseData) => {
-    return Course.create(courseData);
+const createCourse = ({ coursePayload }) => {
+    return Course.create(coursePayload);
 };
 
 ///////////////////////////////////////////////////////////////
 // save course
 
-const saveCourse = (course, validateBeforeSave = false) => {
+const saveCourse = ({ course, validateBeforeSave = false }) => {
     return course.save({
         validateBeforeSave,
     });
@@ -22,9 +22,12 @@ const saveCourse = (course, validateBeforeSave = false) => {
 ///////////////////////////////////////////////////////////////
 // soft delete course
 
-const softDeleteCourse = (courseId) => {
+const softDeleteCourse = ({ courseId }) => {
     return Course.findByIdAndUpdate(
-        courseId,
+        {
+            _id: courseId,
+            isDeleted: false,
+        },
         {
             $set: {
                 isDeleted: true,
@@ -38,31 +41,17 @@ const softDeleteCourse = (courseId) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// publish course
+// toggle course status
 
-const publishCourse = async (courseId) => {
+const toggleCourseStatus = ({ courseId, status }) => {
     return Course.findByIdAndUpdate(
-        courseId,
         {
-            $set: {
-                status: RESOURCE_STATUS.PUBLISHED,
-            },
+            _id: courseId,
+            isDeleted: false,
         },
         {
-            returnDocument: "after",
-        }
-    );
-};
-
-///////////////////////////////////////////////////////////////
-// Save course as draft
-
-const saveCourseAsDraft = async (courseId) => {
-    return Course.findByIdAndUpdate(
-        courseId,
-        {
             $set: {
-                status: RESOURCE_STATUS.DRAFT,
+                status,
             },
         },
         {
@@ -74,7 +63,7 @@ const saveCourseAsDraft = async (courseId) => {
 ///////////////////////////////////////////////////////////////
 // find courses
 
-const findCourses = async (options) => {
+const findCourses = async ({ options }) => {
     const { pagination, filters, sort, search } = options;
 
     const { by, order } = sort;
@@ -159,7 +148,7 @@ const findCourses = async (options) => {
 ///////////////////////////////////////////////////////////////
 // find course by id
 
-const findCourseById = (courseId) => {
+const findCourseById = ({ courseId }) => {
     return Course.findOne({
         _id: courseId,
         status: RESOURCE_STATUS.PUBLISHED,
@@ -170,7 +159,7 @@ const findCourseById = (courseId) => {
 ///////////////////////////////////////////////////////////////
 // find course by slug
 
-const findCourseBySlug = (slug) => {
+const findCourseBySlug = ({ slug }) => {
     return Course.findOne({
         slug,
         status: RESOURCE_STATUS.PUBLISHED,
@@ -181,9 +170,8 @@ const findCourseBySlug = (slug) => {
 ///////////////////////////////////////////////////////////////
 // find instructor courses
 
-const findInstructorCourses = async (options) => {
+const findInstructorCourses = async ({ options }) => {
     const { instructor, page, limit } = options;
-
     const filterQuery = {
         instructor,
         isDeleted: false,
@@ -238,9 +226,9 @@ const findInstructorCourseById = ({ courseId, instructorId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// fetch current course data
+// aggregate current course data
 
-const fetchCurrentCourseData = (courseId) => {
+const aggregateCurrentCourseData = ({ courseId }) => {
     return Course.aggregate([
         // find published course
         {
@@ -536,9 +524,12 @@ const fetchCurrentCourseData = (courseId) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// fetch course publish validation data
+// aggregate course publish validation data
 
-const fetchCoursePublishValidationData = async ({ courseId, instructorId }) => {
+const aggregateCoursePublishValidationData = async ({
+    courseId,
+    instructorId,
+}) => {
     return Course.aggregate([
         // Find the course and verify it belongs to the instructor
         {
@@ -650,13 +641,12 @@ export {
     createCourse,
     saveCourse,
     softDeleteCourse,
-    publishCourse,
-    saveCourseAsDraft,
+    toggleCourseStatus,
     findCourses,
     findCourseById,
     findCourseBySlug,
     findInstructorCourses,
     findInstructorCourseById,
-    fetchCurrentCourseData,
-    fetchCoursePublishValidationData,
+    aggregateCurrentCourseData,
+    aggregateCoursePublishValidationData,
 };

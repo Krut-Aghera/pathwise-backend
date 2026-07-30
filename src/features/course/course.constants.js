@@ -1,3 +1,6 @@
+///////////////////////////////////////////////////////////////
+// allowed course field constants
+
 const COURSE_ALLOWED_FIELDS = [
     "title",
     "subtitle",
@@ -9,6 +12,9 @@ const COURSE_ALLOWED_FIELDS = [
     "requirements",
     "targetAudience",
 ];
+
+///////////////////////////////////////////////////////////////
+// fetch course constants
 
 const COURSE_FETCH_QUERY_FIELDS = [
     "page",
@@ -27,15 +33,23 @@ const COURSE_QUERY_DEFAULTS = Object.freeze({
     SORT_ORDER: "desc",
 });
 
-const COURSE_SORT_FIELDS = ["createdAt", "title", "price"];
-
 const COURSE_LIST_SELECT_FIELDS =
     "title subtitle thumbnail price level language instructor slug createdAt";
+
+///////////////////////////////////////////////////////////////
+// course sorting constants
+
+const COURSE_SORT_FIELDS = ["createdAt", "title", "price"];
 
 const SORT_ORDERS = {
     ASC: "asc",
     DESC: "desc",
 };
+
+const SORT_ORDERS_ARRAY = Object.values(SORT_ORDERS);
+
+///////////////////////////////////////////////////////////////
+// course details constants
 
 const COURSE_LANGUAGES = Object.freeze({
     ENGLISH: "english",
@@ -50,18 +64,20 @@ const COURSE_LEVELS = Object.freeze({
 
 const COURSE_LANGUAGES_ARRAY = Object.values(COURSE_LANGUAGES);
 const COURSE_LEVELS_ARRAY = Object.values(COURSE_LEVELS);
-const SORT_ORDERS_ARRAY = Object.values(SORT_ORDERS);
+
+///////////////////////////////////////////////////////////////
+// exports
 
 export {
     COURSE_ALLOWED_FIELDS,
-    COURSE_LANGUAGES,
-    COURSE_LEVELS,
-    COURSE_LANGUAGES_ARRAY,
-    COURSE_LEVELS_ARRAY,
-    SORT_ORDERS_ARRAY,
-    COURSE_SORT_FIELDS,
-    SORT_ORDERS,
     COURSE_FETCH_QUERY_FIELDS,
     COURSE_QUERY_DEFAULTS,
     COURSE_LIST_SELECT_FIELDS,
+    COURSE_SORT_FIELDS,
+    SORT_ORDERS,
+    SORT_ORDERS_ARRAY,
+    COURSE_LANGUAGES,
+    COURSE_LANGUAGES_ARRAY,
+    COURSE_LEVELS,
+    COURSE_LEVELS_ARRAY,
 };

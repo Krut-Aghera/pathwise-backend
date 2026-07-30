@@ -20,7 +20,9 @@ const fetchCourses = async (req, res) => {
         return acc;
     }, {});
 
-    const { courses, metadata } = await courseService.fetchCourses(queryData);
+    const { courses, metadata } = await courseService.fetchCourses({
+        queryData,
+    });
 
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
@@ -43,7 +45,7 @@ const fetchCurrentCourse = async (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: `${course.title} - course fetched successfully.`,
+            message: `course fetched successfully.`,
             data: course,
         })
     );

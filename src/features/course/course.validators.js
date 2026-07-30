@@ -1,6 +1,5 @@
 import { body, query } from "express-validator";
 import { param } from "express-validator";
-
 import {
     COURSE_LANGUAGES,
     COURSE_LANGUAGES_ARRAY,
@@ -9,9 +8,13 @@ import {
     SORT_ORDERS_ARRAY,
 } from "./course.constants.js";
 
-// course.validators.js
+//
+//
+///////////////////////////////////////////////////////////////
+// reusable validators
+//
 
-const titleValidator = body("title")
+const titleValidations = body("title")
     .trim()
     .notEmpty()
     .withMessage("Title is required")
@@ -19,14 +22,14 @@ const titleValidator = body("title")
     .isLength({ min: 5, max: 120 })
     .withMessage("Title must be between 5 and 120 characters");
 
-const subtitleValidator = body("subtitle")
+const subtitleValidations = body("subtitle")
     .trim()
     .notEmpty()
     .withMessage("Subtitle is required")
     .isLength({ max: 180 })
     .withMessage("Subtitle cannot exceed 180 characters");
 
-const descriptionValidator = body("description")
+const descriptionValidations = body("description")
     .trim()
     .notEmpty()
     .withMessage("Description is required")
@@ -34,14 +37,14 @@ const descriptionValidator = body("description")
     .isLength({ max: 10000 })
     .withMessage("Description must be between 20 and 10000 characters");
 
-const priceValidator = body("price")
+const priceValidations = body("price")
     .notEmpty()
     .withMessage("Price is required")
     .bail()
     .isFloat({ min: 0 })
     .withMessage("Price must be greater than or equal to 0");
 
-const languageValidator = body("language")
+const languageValidations = body("language")
     .notEmpty()
     .withMessage("Language is required")
     .bail()
@@ -50,18 +53,18 @@ const languageValidator = body("language")
         `Language must be one of: ${COURSE_LANGUAGES_ARRAY.join(", ")}`
     );
 
-const levelValidator = body("level")
+const levelValidations = body("level")
     .notEmpty()
     .withMessage("Level is required")
     .bail()
     .isIn(COURSE_LEVELS_ARRAY)
     .withMessage(`Level must be one of: ${COURSE_LEVELS_ARRAY.join(", ")}`);
 
-const learningOutcomesValidator = body("learningOutcomes")
+const learningOutcomesValidations = body("learningOutcomes")
     .isArray({ max: 20 })
     .withMessage("Learning outcomes must be an array with at most 20 items");
 
-const learningOutcomeItemsValidator = body("learningOutcomes.*")
+const learningOutcomeItemsValidations = body("learningOutcomes.*")
     .trim()
     .notEmpty()
     .withMessage("Learning outcome cannot be empty")
@@ -69,11 +72,11 @@ const learningOutcomeItemsValidator = body("learningOutcomes.*")
     .isLength({ max: 200 })
     .withMessage("Learning outcome cannot exceed 200 characters");
 
-const targetAudienceValidator = body("targetAudience")
+const targetAudienceValidations = body("targetAudience")
     .isArray({ max: 20 })
     .withMessage("Target audience must be an array with at most 20 items");
 
-const targetAudienceItemsValidator = body("targetAudience.*")
+const targetAudienceItemsValidations = body("targetAudience.*")
     .trim()
     .notEmpty()
     .withMessage("Target audience item cannot be empty")
@@ -81,11 +84,11 @@ const targetAudienceItemsValidator = body("targetAudience.*")
     .isLength({ max: 200 })
     .withMessage("Target audience item cannot exceed 200 characters");
 
-const requirementsValidator = body("requirements")
+const requirementsValidations = body("requirements")
     .isArray({ max: 20 })
     .withMessage("Target audience must be an array with at most 20 items");
 
-const requirementItemsValidator = body("requirements.*")
+const requirementItemsValidations = body("requirements.*")
     .trim()
     .notEmpty()
     .withMessage("Target audience item cannot be empty")
@@ -93,7 +96,14 @@ const requirementItemsValidator = body("requirements.*")
     .isLength({ max: 200 })
     .withMessage("Target audience item cannot exceed 200 characters");
 
-export const fetchCoursesValidator = [
+//
+//
+///////////////////////////////////////////////////////////////
+// fetch courses validator
+//
+//
+
+const fetchCoursesValidator = [
     query("page")
         .optional()
         .isInt({ min: 1 })
@@ -129,7 +139,14 @@ export const fetchCoursesValidator = [
         .withMessage("Invalid course language."),
 ];
 
-export const fetchInstructorCoursesValidator = [
+//
+//
+///////////////////////////////////////////////////////////////
+// fetch instructor courses validator
+//
+//
+
+const fetchInstructorCoursesValidator = [
     query("page")
         .optional()
         .isInt({ min: 1 })
@@ -143,32 +160,56 @@ export const fetchInstructorCoursesValidator = [
         .toInt(),
 ];
 
-export const createCourse = [
-    titleValidator,
-    subtitleValidator,
-    descriptionValidator,
-    priceValidator,
-    languageValidator,
-    levelValidator,
-    learningOutcomesValidator,
-    learningOutcomeItemsValidator,
-    requirementsValidator,
-    requirementItemsValidator,
-    targetAudienceValidator,
-    targetAudienceItemsValidator,
+//
+//
+///////////////////////////////////////////////////////////////
+// create course validators
+//
+//
+
+const createCourseValidators = [
+    titleValidations,
+    subtitleValidations,
+    descriptionValidations,
+    priceValidations,
+    languageValidations,
+    levelValidations,
+    learningOutcomesValidations,
+    learningOutcomeItemsValidations,
+    requirementsValidations,
+    requirementItemsValidations,
+    targetAudienceValidations,
+    targetAudienceItemsValidations,
 ];
 
-export const updateCourse = [
-    titleValidator,
-    subtitleValidator,
-    descriptionValidator,
-    priceValidator,
-    languageValidator,
-    levelValidator,
-    learningOutcomesValidator,
-    learningOutcomeItemsValidator,
-    requirementsValidator,
-    requirementItemsValidator,
-    targetAudienceValidator,
-    targetAudienceItemsValidator,
+//
+//
+///////////////////////////////////////////////////////////////
+// update course validators
+//
+//
+
+const updateCourseValidators = [
+    titleValidations,
+    subtitleValidations,
+    descriptionValidations,
+    priceValidations,
+    languageValidations,
+    levelValidations,
+    learningOutcomesValidations,
+    learningOutcomeItemsValidations,
+    requirementsValidations,
+    requirementItemsValidations,
+    targetAudienceValidations,
+    targetAudienceItemsValidations,
 ];
+
+///////////////////////////////////////////////////////////////
+// exports
+
+export {
+    createCourseValidators,
+    updateCourseValidators,
+    fetchCoursesValidator,
+    fetchInstructorCoursesValidator,
+};
