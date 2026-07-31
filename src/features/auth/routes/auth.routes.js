@@ -1,24 +1,24 @@
 import express from "express";
 
-import coursePublicRouter from "./course.public.routes.js";
-import coursePrivateRouter from "./course.private.routes.js";
+import authPrivateRouter from "./auth.private.routes.js";
+import authPublicRouter from "./auth.public.routes.js";
 
 ///////////////////////////////////////////////////////////////
 // create router
 
-const courseRouter = express.Router();
+const authRouter = express.Router();
 
 ///////////////////////////////////////////////////////////////
 // mount private routes
 
-courseRouter.use("/instructor", coursePrivateRouter);
+authRouter.use(authPrivateRouter);
 
 ///////////////////////////////////////////////////////////////
 // mount public routes
 
-courseRouter.use(coursePublicRouter);
+authRouter.use(authPublicRouter);
 
 ///////////////////////////////////////////////////////////////
 // export
 
-export default courseRouter;
+export default authRouter;

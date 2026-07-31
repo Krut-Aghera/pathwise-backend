@@ -31,48 +31,12 @@ const findUserByEmail = (email) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// find user by email change token
+// find user by token
 
-const findUserByEmailChangeToken = (hashedToken) => {
+const findUserByToken = ({ tokenField, expiryField, hashedToken }) => {
     return User.findOne({
-        emailChangeToken: hashedToken,
-        emailChangeTokenExpiry: {
-            $gt: new Date(),
-        },
-    });
-};
-
-///////////////////////////////////////////////////////////////
-// find user by instructor access  token
-
-const findUserByInstructorAccessToken = (hashedToken) => {
-    return User.findOne({
-        instructorAccessToken: hashedToken,
-        instructorAccessTokenExpiry: {
-            $gt: Date.now(),
-        },
-    });
-};
-
-///////////////////////////////////////////////////////////////
-// find user by email verification token
-
-const findUserByEmailVerificationToken = (hashedToken) => {
-    return User.findOne({
-        emailVerificationToken: hashedToken,
-        emailVerificationExpiry: {
-            $gt: Date.now(),
-        },
-    });
-};
-
-///////////////////////////////////////////////////////////////
-// find user by reset password token
-
-const findUserByPasswordResetToken = (hashedToken) => {
-    return User.findOne({
-        resetPasswordToken: hashedToken,
-        resetPasswordExpiry: {
+        [tokenField]: hashedToken,
+        [expiryField]: {
             $gt: new Date(),
         },
     });
@@ -81,13 +45,4 @@ const findUserByPasswordResetToken = (hashedToken) => {
 ///////////////////////////////////////////////////////////////
 // export
 
-export {
-    createUser,
-    saveUser,
-    findUserById,
-    findUserByEmail,
-    findUserByEmailChangeToken,
-    findUserByPasswordResetToken,
-    findUserByInstructorAccessToken,
-    findUserByEmailVerificationToken,
-};
+export { createUser, saveUser, findUserById, findUserByEmail, findUserByToken };

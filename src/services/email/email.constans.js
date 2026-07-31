@@ -1,3 +1,5 @@
+import requireEnv from "../../utils/env-validator.utility";
+
 export const EMAIL_SUBJECTS = {
     VERIFY_EMAIL: "Verify your Pathwise account",
     WELCOME: "Welcome to Pathwise LMS",
@@ -20,3 +22,12 @@ export const EMAIL_EXPIRY_MINUTES = {
     INSTRUCTOR_ACCESS_TOKEN_EXPIRY: 5,
     ACCOUNT_DEACTIVATION_OTP_EXPIRY: 5,
 };
+
+export const EMAIL_ENV = Object.freeze({
+    EMAIL_LOGO_URL: requireEnv("EMAIL_LOGO_URL"),
+
+    MAILTRAP_API_TOKEN: requireEnv("MAILTRAP_API_TOKEN"),
+    MAILTRAP_SANDBOX_ID: requireEnv("MAILTRAP_SANDBOX_ID"),
+    MAILTRAP_SENDER_EMAIL: requireEnv("MAILTRAP_SENDER_EMAIL"),
+    MAILTRAP_SENDER_NAME: requireEnv("MAILTRAP_SENDER_NAME"),
+});

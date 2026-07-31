@@ -1,6 +1,6 @@
 import emailProvider, { isProduction } from "./email.config.js";
-import { mailConfig } from "../../config/env.config.js";
 import logger from "../../utils/pino-logger.utility.js";
+import { EMAIL_ENV } from "./email.constans.js";
 
 const sendEmail = async ({ to, subject, html }) => {
     if (!to || !subject || !html) {
@@ -12,7 +12,7 @@ const sendEmail = async ({ to, subject, html }) => {
     try {
         if (isProduction) {
             await emailProvider.emails.send({
-                from: mailConfig.RESEND_FROM_EMAIL,
+                from: EMAIL_ENV.RESEND_FROM_EMAIL,
                 to,
                 subject,
                 html,
@@ -20,8 +20,8 @@ const sendEmail = async ({ to, subject, html }) => {
         } else {
             await emailProvider.send({
                 from: {
-                    email: mailConfig.MAILTRAP_SENDER_EMAIL,
-                    name: mailConfig.MAILTRAP_SENDER_NAME,
+                    email: EMAIL_ENV.MAILTRAP_SENDER_EMAIL,
+                    name: EMAIL_ENV.MAILTRAP_SENDER_NAME,
                 },
                 to: [{ email: to }],
                 subject,

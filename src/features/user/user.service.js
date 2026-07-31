@@ -1,4 +1,3 @@
-import { USER_PROFILE } from "./user.constants.js";
 import * as userRepository from "./user.repository.js";
 import generateSecureOtp from "../../utils/otp-generator.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
@@ -22,7 +21,7 @@ import {
 } from "../../services/email/email.utility.js";
 import logger from "../../utils/pino-logger.utility.js";
 import crypto from "crypto";
-import { ROLES } from "./user.constants.js";
+import { ROLES, USER_TOKEN_FIELDS } from "./user.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // update username service
@@ -114,9 +113,10 @@ const requestEmailUpdation = async ({ user, password, newEmail }) => {
 const confirmEmailUpdation = async ({ user, token }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    const dbUser = await userRepository
-        .findUserByEmailChangeToken(hashedToken)
-        .select("+pendingEmail");
+    const dbUser = await userRepository.findUserByToken({
+        ...USER_TOKEN_FIELDS.EMAIL_CHANGE,
+        hashedToken,
+    });
 
     if (!dbUser) {
         throw new ApiError({
@@ -224,8 +224,10 @@ const requestInstructorAccess = async ({ user }) => {
 const confirmInstructorAccess = async ({ user, token }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    const dbUser =
-        await userRepository.findUserByInstructorAccessToken(hashedToken);
+    const dbUser = await userRepository.findUserByToken({
+        ...USER_TOKEN_FIELDS.INSTRUCTOR_ACCESS,
+        hashedToken,
+    });
 
     if (!dbUser) {
         throw new ApiError({

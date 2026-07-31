@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
             required: [true, "Password is required"],
-            select: false, // never returned by default in queries
+            select: false,
             match: [
                 REGEX_VALIDATIONS.password.PATTERN,
                 REGEX_VALIDATIONS.password.MESSAGE,
@@ -49,18 +49,6 @@ const userSchema = new mongoose.Schema(
                 message: "{VALUE} is not a valid role",
             },
             default: ROLES.STUDENT,
-        },
-
-        emailVerificationToken: {
-            type: String,
-            default: null,
-            select: false,
-        },
-
-        emailVerificationExpiry: {
-            type: Date,
-            default: null,
-            select: false,
         },
 
         isEmailVerified: {
@@ -81,6 +69,18 @@ const userSchema = new mongoose.Schema(
 
         pendingEmail: {
             type: String,
+            default: null,
+            select: false,
+        },
+
+        emailVerificationToken: {
+            type: String,
+            default: null,
+            select: false,
+        },
+
+        emailVerificationExpiry: {
+            type: Date,
             default: null,
             select: false,
         },
@@ -123,6 +123,7 @@ const userSchema = new mongoose.Schema(
 
         accountDeactivationOtp: {
             type: String,
+            default: null,
             select: false,
         },
 
@@ -135,9 +136,46 @@ const userSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-///////////////////////////////////////////////////////////////
-// indexes
-userSchema.index({ role: 1 }); // fast role-based filtering (admin dashboards)
+////////////////////////////////////////////////////////////////
+// coumpound indexes
+
+// fast role-based filtering (Admin / Instructor dashboards)
+userSchema.index({ role: 1 });
+
+// password reset
+userSchema.index({
+    resetPasswordToken: 1,
+    resetPasswordExpiry: 1,
+});
+
+// email verification
+userSchema.index({
+    emailVerificationToken: 1,
+    emailVerificationExpiry: 1,
+});
+
+// email change
+userSchema.index({
+    emailChangeToken: 1,
+    emailChangeTokenExpiry: 1,
+});
+
+// instructor access requests
+userSchema.index({
+    instructorAccessToken: 1,
+    instructorAccessTokenExpiry: 1,
+});
+
+// account deactivation
+userSchema.index({
+    accountDeactivationOtp: 1,
+    accountDeactivationOtpExpiry: 1,
+});
+
+// refresh token lookup
+userSchema.index({
+    refreshToken: 1,
+});
 
 ///////////////////////////////////////////////////////////////
 // hashing password before save

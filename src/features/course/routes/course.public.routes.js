@@ -18,7 +18,7 @@ const coursePublicRouter = express.Router();
 coursePublicRouter.get(
     "/",
     courseRatelimiter.fetchCourseRateLimiter,
-    courseValidations.fetchCoursesValidator,
+    courseValidations.fetchCoursesValidators,
     validationEngine,
     courseControllers.fetchCourses
 );

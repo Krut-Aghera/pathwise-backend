@@ -1,55 +1,21 @@
 import express from "express";
-import * as authMiddlewares from "../../middlewares/auth/auth.middleware.js";
-import * as userControllers from "./user.controllers.js";
-import * as userValidations from "./user.validators.js";
-import validationEngine from "../../middlewares/validation.middleware.js";
-import {
-    requestAccountDeletionRateLimiter,
-    requestEmailChangeRateLimiter,
-    requestInstructorAccessRateLimiter,
-    updateProfileRateLimiter,
-} from "../../middlewares/ratelimiter/limiters/user.ratelimit.js";
-import {
-    validateCryptoTokenParam,
-    validateMongoIdParam,
-} from "../../validations/common.validators.js";
+import * as authMiddlewares from "../../../middlewares/auth/auth.middleware.js";
+import * as userControllers from "../user.controllers.js";
+import * as userValidations from "../user.validators.js";
+import * as userRatelimiter from "../../../middlewares/ratelimiter/limiters/user.ratelimit.js";
+import validationEngine from "../../../middlewares/validation.middleware.js";
+import { validateCryptoTokenParam } from "../../../validations/common.validators.js";
 
 ///////////////////////////////////////////////////////////////
 // create router
 
-const userRouter = express.Router();
-
-//
-//  ------------------------------------------------
-//   PUBLIC ROUTES
-//  ------------------------------------------------
-//
-
-///////////////////////////////////////////////////////////////
-// GET /api/v1/users/instructor/:userId
-// Retrieves the public profile of a specific instructor.
-
-userRouter.get(
-    "/instructor/:userId",
-    validateMongoIdParam({
-        paramName: "userId",
-        fieldName: "Instructor ID",
-    }),
-    validationEngine,
-    userControllers.fetchInstructorProfile
-);
-
-//
-//  ------------------------------------------------
-//   PRIVATE ROUTES [AUTHENTICATED USER]
-//  ------------------------------------------------
-//
+const userPrivateRouter = express.Router();
 
 ///////////////////////////////////////////////////////////////
 // GET /api/v1/users/me
 // Retrieves the authenticated user's profile.
 
-userRouter.get(
+userPrivateRouter.get(
     "/me",
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
@@ -60,12 +26,12 @@ userRouter.get(
 // PATCH /api/v1/users/me/username
 // Updates the authenticated user's username.
 
-userRouter.patch(
+userPrivateRouter.patch(
     "/me/username",
-    updateProfileRateLimiter,
+    userRatelimiter.updateProfileRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
-    userValidations.usernameUpdation,
+    userValidations.usernameUpdationValidators,
     validationEngine,
     userControllers.updateUsername
 );
@@ -74,13 +40,13 @@ userRouter.patch(
 // POST /api/v1/users/me/email/request
 // Initiates an email address change request.
 
-userRouter.post(
+userPrivateRouter.post(
     "/me/email/request",
-    requestEmailChangeRateLimiter,
+    userRatelimiter.requestEmailChangeRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
     authMiddlewares.requireVerifiedEmail,
-    userValidations.emailUpdation,
+    userValidations.emailUpdationValidators,
     validationEngine,
     userControllers.requestEmailUpdation
 );
@@ -89,7 +55,7 @@ userRouter.post(
 // POST /api/v1/users/me/email/confirm/:token
 // Confirms and completes the email address change.
 
-userRouter.post(
+userPrivateRouter.post(
     "/me/email/confirm/:token",
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
@@ -106,9 +72,9 @@ userRouter.post(
 // POST /api/v1/users/me/instructor/request
 // Initiates an instructor access request.
 
-userRouter.post(
+userPrivateRouter.post(
     "/me/instructor/request",
-    requestInstructorAccessRateLimiter,
+    userRatelimiter.requestInstructorAccessRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
     authMiddlewares.requireVerifiedEmail,
@@ -119,7 +85,7 @@ userRouter.post(
 // POST /api/v1/users/me/instructor/confirm/:token
 // Confirms and grants instructor access.
 
-userRouter.post(
+userPrivateRouter.post(
     "/me/instructor/confirm/:token",
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
@@ -136,12 +102,12 @@ userRouter.post(
 // POST /api/v1/users/me/deactivation/request
 // Initiates an account deactivation request.
 
-userRouter.post(
+userPrivateRouter.post(
     "/me/deactivation/request",
-    requestAccountDeletionRateLimiter,
+    userRatelimiter.requestAccountDeletionRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
-    userValidations.deactivateAccountRequest,
+    userValidations.accountDeactivationRequestValidators,
     validationEngine,
     userControllers.requestAccountDeactivation
 );
@@ -150,11 +116,11 @@ userRouter.post(
 // POST /api/v1/users/me/deactivation/confirm
 // Confirms and permanently deactivates the authenticated user's account.
 
-userRouter.post(
+userPrivateRouter.post(
     "/me/deactivation/confirm",
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
-    userValidations.confirmAccountDeactivation,
+    userValidations.accountDeactivationConfirmationValidators,
     validationEngine,
     userControllers.confirmAccountDeactivation
 );
@@ -162,4 +128,4 @@ userRouter.post(
 ///////////////////////////////////////////////////////////////
 // export
 
-export default userRouter;
+export default userPrivateRouter;

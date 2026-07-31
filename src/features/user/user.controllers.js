@@ -6,7 +6,6 @@ import {
     ACCESS_COOKIE_OPTIONS,
     REFRESH_COOKIE_OPTIONS,
 } from "../../constants/cookie.constants.js";
-import { USER_PROFILE_LIST } from "./user.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // current user controller

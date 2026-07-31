@@ -21,7 +21,7 @@ coursePrivateRouter.get(
     "/",
     courseRatelimiter.fetchInstructorCoursesRateLimiter,
     ...instructorAuthMiddleware,
-    courseValidations.fetchInstructorCoursesValidator,
+    courseValidations.fetchInstructorCoursesValidators,
     validationEngine,
     courseControllers.fetchInstructorCourses
 );

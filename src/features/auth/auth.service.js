@@ -21,7 +21,8 @@ import {
     createPasswordResetUrl,
     getEmailVerificationUrl,
 } from "../../services/email/email.utility.js";
-import { use } from "react";
+import logger from "../../utils/pino-logger.utility.js";
+import { USER_TOKEN_FIELDS } from "../user/user.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // registration service
@@ -97,7 +98,10 @@ const confirmEmailVerification = async ({ token }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const user = await userRepository
-        .findUserByEmailVerificationToken(hashedToken)
+        .findUserByToken({
+            ...USER_TOKEN_FIELDS.EMAIL_VERIFICATION,
+            hashedToken,
+        })
         .select("+emailVerificationToken +emailVerificationExpiry");
 
     if (!user) {
@@ -253,7 +257,10 @@ const requestPasswordReset = async ({ email }) => {
 const resetPassword = async ({ token, newPassword }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    const user = await userRepository.findUserByPasswordResetToken(hashedToken);
+    const user = await userRepository.findUserByToken({
+        ...USER_TOKEN_FIELDS.PASSWORD_RESET,
+        hashedToken,
+    });
 
     if (!user) {
         throw new ApiError({

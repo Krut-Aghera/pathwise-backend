@@ -1,5 +1,4 @@
 import { body, query } from "express-validator";
-import { param } from "express-validator";
 import {
     COURSE_LANGUAGES,
     COURSE_LANGUAGES_ARRAY,
@@ -12,6 +11,7 @@ import {
 //
 ///////////////////////////////////////////////////////////////
 // reusable validators
+//
 //
 
 const titleValidations = body("title")
@@ -103,7 +103,7 @@ const requirementItemsValidations = body("requirements.*")
 //
 //
 
-const fetchCoursesValidator = [
+const fetchCoursesValidators = [
     query("page")
         .optional()
         .isInt({ min: 1 })
@@ -146,7 +146,7 @@ const fetchCoursesValidator = [
 //
 //
 
-const fetchInstructorCoursesValidator = [
+const fetchInstructorCoursesValidators = [
     query("page")
         .optional()
         .isInt({ min: 1 })
@@ -210,6 +210,6 @@ const updateCourseValidators = [
 export {
     createCourseValidators,
     updateCourseValidators,
-    fetchCoursesValidator,
-    fetchInstructorCoursesValidator,
+    fetchCoursesValidators,
+    fetchInstructorCoursesValidators,
 };

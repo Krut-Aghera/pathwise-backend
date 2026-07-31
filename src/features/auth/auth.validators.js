@@ -1,10 +1,14 @@
 import { body } from "express-validator";
 import REGEX_VALIDATIONS from "../../constants/regex.constants.js";
 
+//
+//
 ///////////////////////////////////////////////////////////////
-// Reusable Field Validators
+// reusable validators
+//
+//
 
-const usernameValidator = body("username")
+const usernameValidations = body("username")
     .trim()
     .notEmpty()
     .withMessage("Username is required")
@@ -15,7 +19,7 @@ const usernameValidator = body("username")
     .matches(REGEX_VALIDATIONS.username.PATTERN)
     .withMessage(REGEX_VALIDATIONS.username.MESSAGE);
 
-const emailValidator = body("email")
+const emailValidations = body("email")
     .trim()
     .notEmpty()
     .withMessage("Email is required")
@@ -23,28 +27,28 @@ const emailValidator = body("email")
     .matches(REGEX_VALIDATIONS.email.PATTERN)
     .withMessage(REGEX_VALIDATIONS.email.MESSAGE);
 
-const passwordValidator = body("password")
+const passwordValidations = body("password")
     .notEmpty()
     .withMessage("Password is required")
     .bail()
     .matches(REGEX_VALIDATIONS.password.PATTERN)
     .withMessage(REGEX_VALIDATIONS.password.MESSAGE);
 
-const currentPasswordValidator = body("currentPassword")
+const currentPasswordValidations = body("currentPassword")
     .notEmpty()
     .withMessage("Current password is required")
     .bail()
     .matches(REGEX_VALIDATIONS.password.PATTERN)
     .withMessage(REGEX_VALIDATIONS.password.MESSAGE);
 
-const newPasswordValidator = body("newPassword")
+const newPasswordValidations = body("newPassword")
     .notEmpty()
     .withMessage("New password is required")
     .bail()
     .matches(REGEX_VALIDATIONS.password.PATTERN)
     .withMessage(REGEX_VALIDATIONS.password.MESSAGE);
 
-const confirmPasswordValidator = body("confirmPassword")
+const confirmPasswordValidations = body("confirmPassword")
     .notEmpty()
     .withMessage("Confirm password is required")
     .bail()
@@ -57,14 +61,18 @@ const confirmPasswordValidator = body("confirmPassword")
     });
 
 ///////////////////////////////////////////////////////////////
-// Registration Validation
+// signup validators
 
-const registerUser = [usernameValidator, emailValidator, passwordValidator];
+const registerUserValidators = [
+    usernameValidations,
+    emailValidations,
+    passwordValidations,
+];
 
 ///////////////////////////////////////////////////////////////
-// Login Validation
+// login validators
 
-const login = [
+const loginValidators = [
     body("email")
         .trim()
         .notEmpty()
@@ -82,26 +90,33 @@ const login = [
 ];
 
 ///////////////////////////////////////////////////////////////
-// Forgot Password Validation
+//  request reset password validators
 
-const requestPasswordReset = [emailValidator];
-
-///////////////////////////////////////////////////////////////
-// Reset Password Validation
-
-const resetPassword = [newPasswordValidator, confirmPasswordValidator];
+const requestPasswordResetValidators = [emailValidations];
 
 ///////////////////////////////////////////////////////////////
-// change Password Validation
+// reset password validators
 
-const changePassword = [currentPasswordValidator, newPasswordValidator];
+const resetPasswordValidators = [
+    newPasswordValidations,
+    confirmPasswordValidations,
+];
+
+///////////////////////////////////////////////////////////////
+// change password validators
+
+const changePasswordValidators = [
+    currentPasswordValidations,
+    newPasswordValidations,
+];
+
+///////////////////////////////////////////////////////////////
+// exports
 
 export {
-    usernameValidator,
-    emailValidator,
-    registerUser,
-    login,
-    requestPasswordReset,
-    resetPassword,
-    changePassword,
+    registerUserValidators,
+    loginValidators,
+    requestPasswordResetValidators,
+    resetPasswordValidators,
+    changePasswordValidators,
 };
