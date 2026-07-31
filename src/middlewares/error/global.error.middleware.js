@@ -1,21 +1,8 @@
-import ApiError from "../utils/error-handler.utility.js";
-import logger from "../utils/pino-logger.utility.js";
-import HTTP_STATUS from "../constants/http.constants.js";
 import multer from "multer";
-
-///////////////////////////////////////////////////////////////
-// not found error middleware
-
-const notFoundErrorMiddleware = (req, res, next) => {
-    logger.error("404 middleware triggered 💥");
-
-    next(
-        new ApiError({
-            statusCode: HTTP_STATUS.NOT_FOUND,
-            message: `Route ${req.originalUrl} not found`,
-        })
-    );
-};
+import ApiError from "../../utils/error-handler.utility.js";
+import logger from "../../utils/pino-logger.utility.js";
+import HTTP_STATUS from "../../constants/http.constants.js";
+import { DUPLICATE_KEY_MESSAGES } from "./error.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // global error middleware
@@ -44,9 +31,13 @@ const globalErrorMiddleware = (err, req, res, next) => {
     }
 
     if (err.code === 11000) {
+        const duplicateKey = Object.keys(err.keyPattern).join(",");
+
         err = new ApiError({
             statusCode: HTTP_STATUS.CONFLICT,
-            message: `${Object.keys(err.keyValue)[0]} already exists`,
+            message:
+                DUPLICATE_KEY_MESSAGES[duplicateKey] ??
+                "A resource with the same unique value already exists.",
         });
     }
 
@@ -143,6 +134,6 @@ const globalErrorMiddleware = (err, req, res, next) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// exports
+// export
 
-export { notFoundErrorMiddleware, globalErrorMiddleware };
+export default globalErrorMiddleware;

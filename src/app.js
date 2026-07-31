@@ -6,15 +6,13 @@ import authRouter from "./features/auth/routes/auth.routes.js";
 import userRouter from "./features/user/routes/user.routes.js";
 import courseRouter from "./features/course/routes/course.routes.js";
 import sectionRouter from "./features/section/section.routes.js";
-import HTTP_STATUS from "./constants/http.constants.js";
+import lectureRouter from "./features/lecture/routes/lecture.routes.js";
 import { serverAppConfig } from "./config/env.config.js";
 import morganLogger from "./config/morgan.config.js";
 import helmetMiddleware from "./middlewares/helmet.middleware.js";
 import { globalRateLimiter } from "./middlewares/ratelimiter/limiters/global.ratelimit.js";
-import {
-    globalErrorMiddleware,
-    notFoundErrorMiddleware,
-} from "./middlewares/error.middleware.js";
+import globalErrorMiddleware from "./middlewares/error/global.error.middleware.js";
+import notFoundErrorMiddleware from "./middlewares/error/not-found.error.middleware.js";
 
 const app = express();
 
@@ -58,6 +56,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/courses", courseRouter);
 app.use("/api/v1/sections", sectionRouter);
+app.use("/api/v1/lectures", lectureRouter);
 
 ///////////////////////////////////////////////////////////////
 // error middlewares

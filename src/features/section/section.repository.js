@@ -160,9 +160,12 @@ const findLastSectionOrder = (courseId) => {
     return Section.findOne({
         course: courseId,
         isDeleted: false,
-    }).sort({
-        order: -1,
-    });
+    })
+        .sort({
+            order: -1,
+        })
+        .select("order")
+        .lean();
 };
 
 ///////////////////////////////////////////////////////////////

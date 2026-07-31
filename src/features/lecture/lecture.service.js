@@ -1,50 +1,97 @@
-///////////////////////////////////////////////////////////////
-// create lecture
-
-const createLecture = async ({}) => {};
-
-///////////////////////////////////////////////////////////////
-// update lecture
-
-const updateLecture = async ({}) => {};
+import * as lectureRepository from "./lecture.repository.js";
+import { getAuthorizedInstructorSection } from "../section/section.utility";
+import { getAuthorizedInstructorLecture } from "./lecture.utility.js";
 
 ///////////////////////////////////////////////////////////////
-// remove lecture
+// create lecture service
 
-const removeLecture = async ({}) => {};
+const createLecture = async ({ instructorId, sectionId, lectureData }) => {
+    await getAuthorizedInstructorSection({
+        instructorId,
+        sectionId,
+    });
+
+    const lastOrder = await lectureRepository.findLastLectureOrder({
+        sectionId,
+    });
+
+    const order = lastOrder ? lastOrder.order + 1 : 1;
+
+    const lecturePayload = {
+        section: sectionId,
+        ...lectureData,
+        order,
+    };
+
+    return lectureRepository.createLecture({ lecturePayload });
+};
 
 ///////////////////////////////////////////////////////////////
-// reorder lectures
+// update lecture service
+
+const updateLecture = async ({ instructorId, lectureId, lectureData }) => {
+    const lecture = await getAuthorizedInstructorLecture({
+        lectureId,
+        instructorId,
+        includeSection: true,
+    });
+
+    Object.assign(lecture, lectureData);
+
+    return lectureRepository.saveLecture({
+        lecture,
+        validateBeforeSave: true,
+    });
+};
+
+///////////////////////////////////////////////////////////////
+// remove lecture service
+
+const removeLecture = async ({ instructorId, lectureId }) => {
+    const lecture = await getAuthorizedInstructorLecture({
+        lectureId,
+        instructorId,
+    });
+
+    lecture.isDeleted = true;
+
+    return lectureRepository.saveLecture({
+        lecture,
+    });
+};
+
+///////////////////////////////////////////////////////////////
+// reorder lectures service
 
 const reorderLectures = async ({}) => {};
 
 ///////////////////////////////////////////////////////////////
-// update lecture video
+// update lecture video service
 
 const updateLectureVideo = async ({}) => {};
 
 ///////////////////////////////////////////////////////////////
-// remove lecture video
+// remove lecture video service
 
 const removeLectureVideo = async ({}) => {};
 
 ///////////////////////////////////////////////////////////////
-// publish lecture
+// publish lecture service
 
 const publishLecture = async ({}) => {};
 
 ///////////////////////////////////////////////////////////////
-// save lecture as draft
+// save lecture as draft service
 
 const saveLectureAsDraft = async ({}) => {};
 
 ///////////////////////////////////////////////////////////////
-// fetch instructor lecture
+// fetch instructor lecture service
 
 const fetchInstructorLecture = async ({}) => {};
 
 ///////////////////////////////////////////////////////////////
-// fetch instructor lectures
+// fetch instructor lectures service
 
 const fetchSectionLectures = async ({}) => {};
 

@@ -119,27 +119,17 @@ export const RATE_LIMIT = Object.freeze({
     LECTURE: Object.freeze({
         CREATE: {
             WINDOW_MS: WINDOWS.ONE_MINUTE,
-            LIMIT: 20,
+            LIMIT: 30,
         },
 
         UPDATE: {
             WINDOW_MS: WINDOWS.ONE_MINUTE,
-            LIMIT: 20,
+            LIMIT: 30,
         },
 
         DELETE: {
             WINDOW_MS: WINDOWS.ONE_MINUTE,
-            LIMIT: 10,
-        },
-
-        UPDATE_VIDEO: {
-            WINDOW_MS: WINDOWS.THIRTY_MINUTES,
-            LIMIT: 10,
-        },
-
-        UPDATE_THUMBNAIL: {
-            WINDOW_MS: WINDOWS.THIRTY_MINUTES,
-            LIMIT: 10,
+            LIMIT: 20,
         },
 
         REORDER: {
@@ -147,9 +137,29 @@ export const RATE_LIMIT = Object.freeze({
             LIMIT: 20,
         },
 
+        CHANGE_STATUS: {
+            WINDOW_MS: WINDOWS.ONE_MINUTE,
+            LIMIT: 10,
+        },
+
+        UPLOAD_VIDEO: {
+            WINDOW_MS: WINDOWS.ONE_MINUTE,
+            LIMIT: 10,
+        },
+
+        REMOVE_VIDEO: {
+            WINDOW_MS: WINDOWS.ONE_MINUTE,
+            LIMIT: 10,
+        },
+
         FETCH_ONE: {
             WINDOW_MS: WINDOWS.ONE_MINUTE,
-            LIMIT: 180,
+            LIMIT: 120,
+        },
+
+        FETCH_LIST: {
+            WINDOW_MS: WINDOWS.ONE_MINUTE,
+            LIMIT: 120,
         },
     }),
 
