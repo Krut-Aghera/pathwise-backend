@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import Lecture from "../lecture/lecture.model.js";
+import { REORDER_TEMP_OFFSET } from "../../constants/resource.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create lecture
@@ -27,6 +29,61 @@ const countSectionLectures = ({ sectionId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// reorder lecture repository
+
+const reorderLectures = async ({ lectures }) => {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        // Phase 1: Move all lectures to temporary orders
+        await Lecture.bulkWrite(
+            lectures.map(({ lectureId, order }) => ({
+                updateOne: {
+                    filter: {
+                        _id: lectureId,
+                        isDeleted: false,
+                    },
+                    update: {
+                        $set: {
+                            order: order + REORDER_TEMP_OFFSET,
+                        },
+                    },
+                },
+            })),
+            { session }
+        );
+
+        // Phase 2: Assign final orders
+
+        await Lecture.bulkWrite(
+            lectures.map(({ lectureId, order }) => ({
+                updateOne: {
+                    filter: {
+                        _id: lectureId,
+                        isDeleted: false,
+                    },
+                    update: {
+                        $set: {
+                            order,
+                        },
+                    },
+                },
+            })),
+            { session }
+        );
+
+        await session.commitTransaction();
+    } catch (error) {
+        await session.abortTransaction();
+        throw error;
+    } finally {
+        await session.endSession();
+    }
+};
+
+///////////////////////////////////////////////////////////////
 // find last section order
 
 const findLastLectureOrder = ({ sectionId }) => {
@@ -38,6 +95,18 @@ const findLastLectureOrder = ({ sectionId }) => {
             order: -1,
         })
         .select("order")
+        .lean();
+};
+
+///////////////////////////////////////////////////////////////
+// find section lecture ids
+
+const findSectionLectureIds = ({ sectionId }) => {
+    return Lecture.find({
+        section: sectionId,
+        isDeleted: false,
+    })
+        .select("_id")
         .lean();
 };
 
@@ -72,6 +141,8 @@ export {
     createLecture,
     saveLecture,
     countSectionLectures,
+    reorderLectures,
+    findSectionLectureIds,
     findLastLectureOrder,
     findInstructorLecture,
 };

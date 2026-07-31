@@ -62,6 +62,22 @@ lecturePrivateRouter.delete(
 );
 
 ///////////////////////////////////////////////////////////////
+// PATCH /api/v1/lectures/sections/:sectionId/reorder
+// Reorders all lectures within the specified section.
+
+lecturePrivateRouter.patch(
+    "/sections/:sectionId/reorder",
+    lectureRatelimiter.reorderLecturesRateLimiter,
+    ...instructorAuthMiddleware,
+    validateMongoIdParam({
+        paramName: "sectionId",
+        fieldName: "Section ID",
+    }),
+    validationEngine,
+    lectureControllers.reorderLectures
+);
+
+///////////////////////////////////////////////////////////////
 // PATCH /api/v1/lectures/:lectureId/publish
 // Publishes the specified lecture.
 

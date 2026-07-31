@@ -35,7 +35,76 @@ const getAuthorizedInstructorLecture = async ({
     return lecture;
 };
 
+///////////////////////////////////////////////////////////////
+// validate lecture reorder payload
+
+const validateLectureReorderPayload = ({ lectures }) => {
+    const lectureIds = new Set();
+    const orders = new Set();
+
+    for (const { lectureId, order } of lectures) {
+        if (lectureIds.has(lectureId)) {
+            throw new ApiError({
+                statusCode: HTTP_STATUS.BAD_REQUEST,
+                message: "Duplicate lecture IDs are not allowed.",
+            });
+        }
+
+        if (orders.has(order)) {
+            throw new ApiError({
+                statusCode: HTTP_STATUS.BAD_REQUEST,
+                message: "Duplicate lecture orders are not allowed.",
+            });
+        }
+
+        lectureIds.add(lectureId);
+        orders.add(order);
+    }
+
+    const sortedOrders = [...orders].sort((a, b) => a - b);
+
+    for (let index = 0; index < sortedOrders.length; index++) {
+        const expectedOrder = index + 1;
+
+        if (sortedOrders[index] !== expectedOrder) {
+            throw new ApiError({
+                statusCode: HTTP_STATUS.BAD_REQUEST,
+                message: "Lecture orders must start from 1 and be sequential.",
+            });
+        }
+    }
+};
+
+///////////////////////////////////////////////////////////////
+// validate section lecture reorder
+
+const validateSectionLectureReorder = ({ lectures, sectionLectures }) => {
+    if (lectures.length !== sectionLectures.length) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: "Invalid lecture reorder payload.",
+        });
+    }
+
+    const sectionLectureIds = new Set(
+        sectionLectures.map((lecture) => lecture._id.toString())
+    );
+
+    for (const { lectureId } of lectures) {
+        if (!sectionLectureIds.has(lectureId)) {
+            throw new ApiError({
+                statusCode: HTTP_STATUS.BAD_REQUEST,
+                message: "Invalid lecture reorder payload.",
+            });
+        }
+    }
+};
+
 //////////////////////////////////////////////////////////////
 // exports
 
-export { getAuthorizedInstructorLecture };
+export {
+    getAuthorizedInstructorLecture,
+    validateLectureReorderPayload,
+    validateSectionLectureReorder,
+};

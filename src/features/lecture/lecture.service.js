@@ -1,6 +1,10 @@
 import * as lectureRepository from "./lecture.repository.js";
 import { getAuthorizedInstructorSection } from "../section/section.utility";
-import { getAuthorizedInstructorLecture } from "./lecture.utility.js";
+import {
+    getAuthorizedInstructorLecture,
+    validateLectureReorderPayload,
+    validateSectionLectureReorder,
+} from "./lecture.utility.js";
 import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 import ApiError from "../../utils/error-handler.utility.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
@@ -67,7 +71,22 @@ const removeLecture = async ({ instructorId, lectureId }) => {
 ///////////////////////////////////////////////////////////////
 // reorder lectures service
 
-const reorderLectures = async ({}) => {};
+const reorderLectures = async ({ sectionId, instructorId, lectures }) => {
+    await getAuthorizedInstructorSection({ sectionId, instructorId });
+
+    validateLectureReorderPayload({ lectures });
+
+    const sectionLectures = await lectureRepository.findSectionLectureIds({
+        sectionId,
+    });
+
+    validateSectionLectureReorder({
+        lectures,
+        sectionLectures,
+    });
+
+    await lectureRepository.reorderLectures({ lectures });
+};
 
 ///////////////////////////////////////////////////////////////
 // update lecture video service

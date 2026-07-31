@@ -80,7 +80,20 @@ const removeLecture = async (req, res) => {
 ///////////////////////////////////////////////////////////////
 // reorder lectures controller
 
-const reorderLectures = async (req, res) => {};
+const reorderLectures = async (req, res) => {
+    await lectureService.reorderLectures({
+        sectionId: req.params.sectionId,
+        instructorId: req.user._id,
+        lectures: req.body.lectures,
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: LECTURE_SUCCESS_MESSAGES.REORDERED,
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // update lecture video controller
