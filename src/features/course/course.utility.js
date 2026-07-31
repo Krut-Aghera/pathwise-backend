@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import * as courseRepository from "./course.repository.js";
 import Course from "./course.model.js";
-import { VIDEO_UPLOAD_STATUS } from "../lecture/lecture.constants.js";
 import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 
 //////////////////////////////////////////////////////////////
@@ -55,15 +54,9 @@ const validateCoursePublishEligibility = (course) => {
                 );
             }
 
-            if (!currentLecture.duration) {
+            if (currentLecture.status !== RESOURCE_STATUS.PUBLISHED) {
                 errors.push(
-                    `Lecture "${currentLecture.title}" has no duration.`
-                );
-            }
-
-            if (currentLecture.uploadStatus !== VIDEO_UPLOAD_STATUS.READY) {
-                errors.push(
-                    `Lecture "${currentLecture.title}" is not ready to publish yet.`
+                    `Lecture "${currentLecture.title}" is not published yet.`
                 );
             }
         }

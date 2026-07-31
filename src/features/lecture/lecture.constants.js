@@ -1,11 +1,9 @@
-export const VIDEO_UPLOAD_STATUS = Object.freeze({
-    PENDING: "PENDING",
-    UPLOADING: "UPLOADING",
-    PROCESSING: "PROCESSING",
-    READY: "READY",
-    FAILED: "FAILED",
-});
+///////////////////////////////////////////////////////////////
+// lecture allowed fields
 
-export const VIDEO_UPLOAD_STATUS_LIST = Object.freeze(
-    Object.values(VIDEO_UPLOAD_STATUS)
-);
+const LECTURE_ALLOWED_FIELDS = ["title", "description", "isPreviewFree"];
+
+///////////////////////////////////////////////////////////////
+// exports
+
+export { LECTURE_ALLOWED_FIELDS };

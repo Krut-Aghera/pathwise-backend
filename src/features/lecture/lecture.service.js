@@ -1,0 +1,62 @@
+///////////////////////////////////////////////////////////////
+// create lecture
+
+const createLecture = async ({}) => {};
+
+///////////////////////////////////////////////////////////////
+// update lecture
+
+const updateLecture = async ({}) => {};
+
+///////////////////////////////////////////////////////////////
+// remove lecture
+
+const removeLecture = async ({}) => {};
+
+///////////////////////////////////////////////////////////////
+// reorder lectures
+
+const reorderLectures = async ({}) => {};
+
+///////////////////////////////////////////////////////////////
+// update lecture video
+
+const updateLectureVideo = async ({}) => {};
+
+///////////////////////////////////////////////////////////////
+// remove lecture video
+
+const removeLectureVideo = async ({}) => {};
+
+///////////////////////////////////////////////////////////////
+// publish lecture
+
+const publishLecture = async ({}) => {};
+
+///////////////////////////////////////////////////////////////
+// save lecture as draft
+
+const saveLectureAsDraft = async ({}) => {};
+
+///////////////////////////////////////////////////////////////
+// fetch instructor lecture
+
+const fetchInstructorLecture = async ({}) => {};
+
+///////////////////////////////////////////////////////////////
+// fetch instructor lectures
+
+const fetchSectionLectures = async ({}) => {};
+
+export {
+    createLecture,
+    updateLecture,
+    removeLecture,
+    reorderLectures,
+    updateLectureVideo,
+    removeLectureVideo,
+    publishLecture,
+    saveLectureAsDraft,
+    fetchInstructorLecture,
+    fetchSectionLectures,
+};
