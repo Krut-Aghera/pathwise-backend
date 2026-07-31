@@ -62,6 +62,38 @@ lecturePrivateRouter.delete(
 );
 
 ///////////////////////////////////////////////////////////////
+// PATCH /api/v1/lectures/:lectureId/publish
+// Publishes the specified lecture.
+
+lecturePrivateRouter.patch(
+    "/:lectureId/publish",
+    lectureRatelimiter.publishLectureRateLimiter,
+    ...instructorAuthMiddleware,
+    validateMongoIdParam({
+        paramName: "lectureId",
+        fieldName: "Lecture ID",
+    }),
+    validationEngine,
+    lectureControllers.publishLecture
+);
+
+///////////////////////////////////////////////////////////////
+// PATCH /api/v1/lectures/:lectureId/draft
+// Saves the specified lecture as a draft.
+
+lecturePrivateRouter.patch(
+    "/:lectureId/draft",
+    lectureRatelimiter.saveLectureAsDraftRateLimiter,
+    ...instructorAuthMiddleware,
+    validateMongoIdParam({
+        paramName: "lectureId",
+        fieldName: "Lecture ID",
+    }),
+    validationEngine,
+    lectureControllers.saveLectureAsDraft
+);
+
+///////////////////////////////////////////////////////////////
 // export
 
 export default lecturePrivateRouter;

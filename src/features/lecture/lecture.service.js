@@ -1,6 +1,10 @@
 import * as lectureRepository from "./lecture.repository.js";
 import { getAuthorizedInstructorSection } from "../section/section.utility";
 import { getAuthorizedInstructorLecture } from "./lecture.utility.js";
+import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
+import ApiError from "../../utils/error-handler.utility.js";
+import HTTP_STATUS from "../../constants/http.constants.js";
+import { LECTURE_ERROR_MESSAGES } from "./lecture.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create lecture service
@@ -78,12 +82,55 @@ const removeLectureVideo = async ({}) => {};
 ///////////////////////////////////////////////////////////////
 // publish lecture service
 
-const publishLecture = async ({}) => {};
+const publishLecture = async ({ instructorId, lectureId }) => {
+    const lecture = await getAuthorizedInstructorLecture({
+        instructorId,
+        lectureId,
+    });
+
+    if (
+        !lecture.video?.url ||
+        !lecture.video?.publicId ||
+        !lecture.video?.duration
+    ) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: LECTURE_ERROR_MESSAGES.VIDEO_REQUIRED_TO_PUBLISH,
+        });
+    }
+
+    if (lecture.status !== RESOURCE_STATUS.DRAFT) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: LECTURE_ERROR_MESSAGES.CAN_NOT_PUBLISH,
+        });
+    }
+
+    lecture.status = RESOURCE_STATUS.PUBLISHED;
+
+    return lectureRepository.saveLecture({ lecture });
+};
 
 ///////////////////////////////////////////////////////////////
 // save lecture as draft service
 
-const saveLectureAsDraft = async ({}) => {};
+const saveLectureAsDraft = async ({ instructorId, lectureId }) => {
+    const lecture = await getAuthorizedInstructorLecture({
+        instructorId,
+        lectureId,
+    });
+
+    if (lecture.status === RESOURCE_STATUS.DRAFT) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: LECTURE_ERROR_MESSAGES.CAN_NOT_SAVE_AS_DRAFT,
+        });
+    }
+
+    lecture.status = RESOURCE_STATUS.DRAFT;
+
+    return lectureRepository.saveLecture({ lecture });
+};
 
 ///////////////////////////////////////////////////////////////
 // fetch instructor lecture service

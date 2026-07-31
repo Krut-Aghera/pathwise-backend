@@ -30,8 +30,10 @@ const LECTURE_ERROR_MESSAGES = {
     NOT_FOUND: "Lecture not found.",
     VIDEO_REQUIRED: "Lecture video is required.",
     VIDEO_NOT_FOUND: "Lecture video not found.",
-    ALREADY_PUBLISHED: "Lecture is already published.",
-    ALREADY_DRAFT: "Lecture is already in draft.",
+    VIDEO_REQUIRED_TO_PUBLISH:
+        "A lecture must have a video before it can be published.",
+    CAN_NOT_PUBLISH: "Only draft lectures can be published.",
+    CAN_NOT_SAVE_AS_DRAFT: "Lecture is already in draft.",
 };
 ///////////////////////////////////////////////////////////////
 // exports

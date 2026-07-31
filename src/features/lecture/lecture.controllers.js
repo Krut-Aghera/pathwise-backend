@@ -95,12 +95,38 @@ const removeLectureVideo = async (req, res) => {};
 ///////////////////////////////////////////////////////////////
 // publish lecture controller
 
-const publishLecture = async (req, res) => {};
+const publishLecture = async (req, res) => {
+    const lecture = await lectureService.publishLecture({
+        instructorId: req.user._id,
+        lectureId: req.params.lectureId,
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: LECTURE_SUCCESS_MESSAGES.PUBLISHED,
+            data: lecture,
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // save lecture as draft controller
 
-const saveLectureAsDraft = async (req, res) => {};
+const saveLectureAsDraft = async (req, res) => {
+    const lecture = await lectureService.saveLectureAsDraft({
+        instructorId: req.user._id,
+        lectureId: req.params.lectureId,
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: LECTURE_SUCCESS_MESSAGES.SAVED_AS_DRAFT,
+            data: lecture,
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // fetch instructor lecture controller
