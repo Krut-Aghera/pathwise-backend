@@ -71,7 +71,8 @@ const globalErrorMiddleware = (err, req, res, next) => {
             case "LIMIT_FILE_SIZE":
                 err = new ApiError({
                     statusCode: HTTP_STATUS.PAYLOAD_TOO_LARGE,
-                    message: "Uploaded file exceeds the maximum allowed size.",
+                    message:
+                        "The uploaded file exceeds the maximum allowed size.",
                 });
                 break;
 
@@ -86,6 +87,20 @@ const globalErrorMiddleware = (err, req, res, next) => {
                 err = new ApiError({
                     statusCode: HTTP_STATUS.BAD_REQUEST,
                     message: `Unexpected upload field: ${err.field}.`,
+                });
+                break;
+
+            case "LIMIT_PART_COUNT":
+                err = new ApiError({
+                    statusCode: HTTP_STATUS.BAD_REQUEST,
+                    message: "Too many parts in the multipart request.",
+                });
+                break;
+
+            case "LIMIT_FIELD_COUNT":
+                err = new ApiError({
+                    statusCode: HTTP_STATUS.BAD_REQUEST,
+                    message: "Too many form fields were submitted.",
                 });
                 break;
 

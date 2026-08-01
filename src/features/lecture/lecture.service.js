@@ -7,8 +7,18 @@ import {
 } from "./lecture.utility.js";
 import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 import ApiError from "../../utils/error-handler.utility.js";
+import logger from "../../utils/pino-logger.utility.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
 import { LECTURE_ERROR_MESSAGES } from "./lecture.constants.js";
+import {
+    destroyMedia,
+    generateVideoThumbnailUrl,
+    uploadVideoMedia,
+} from "../../services/media/media.services.js";
+import {
+    CLOUDINARY_FOLDERS,
+    MEDIA_RESOURCE_TYPES,
+} from "../../services/media/media.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create lecture service
@@ -89,14 +99,114 @@ const reorderLectures = async ({ sectionId, instructorId, lectures }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// update lecture video service
+// upload lecture video service
 
-const updateLectureVideo = async ({}) => {};
+const uploadLectureVideo = async ({ instructorId, lectureId, video }) => {
+    if (!video) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: LECTURE_ERROR_MESSAGES.VIDEO_REQUIRED,
+        });
+    }
+
+    const lecture = await getAuthorizedInstructorLecture({
+        lectureId,
+        instructorId,
+    });
+
+    if (lecture.video?.publicId) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.CONFLICT,
+            message: LECTURE_ERROR_MESSAGES.VIDEO_ALREADY_EXISTS,
+        });
+    }
+
+    let uploadedVideo;
+
+    try {
+        uploadedVideo = await uploadVideoMedia({
+            localFilePath: video.path,
+            folder: CLOUDINARY_FOLDERS.LECTURE_VIDEOS,
+        });
+
+        const thumbnailUrl = generateVideoThumbnailUrl({
+            publicId: uploadedVideo.publicId,
+        });
+
+        lecture.video = {
+            url: uploadedVideo.url,
+            publicId: uploadedVideo.publicId,
+            duration: uploadedVideo.duration,
+            thumbnailUrl,
+        };
+
+        await lectureRepository.saveLecture({ lecture });
+
+        logger.info("Lecture video uploaded successfully.", {
+            lectureId: lecture._id,
+            instructorId,
+            publicId: uploadedVideo.publicId,
+        });
+
+        return lecture;
+    } catch (error) {
+        if (uploadedVideo?.publicId) {
+            try {
+                await destroyMedia({
+                    publicId: uploadedVideo.publicId,
+                    resourceType: MEDIA_RESOURCE_TYPES.VIDEO,
+                });
+            } catch (destroyError) {
+                logger.error(
+                    "Failed to rollback uploaded lecture video from Cloudinary.",
+                    {
+                        lectureId,
+                        publicId: uploadedVideo.publicId,
+                        rollbackError: destroyError.message,
+                        originalError: error.message,
+                    }
+                );
+            }
+        }
+
+        throw error;
+    }
+};
 
 ///////////////////////////////////////////////////////////////
 // remove lecture video service
 
-const removeLectureVideo = async ({}) => {};
+const removeLectureVideo = async ({ instructorId, lectureId }) => {
+    const lecture = await getAuthorizedInstructorLecture({
+        lectureId,
+        instructorId,
+    });
+
+    if (!lecture.video?.publicId) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: LECTURE_ERROR_MESSAGES.VIDEO_NOT_FOUND,
+        });
+    }
+
+    await destroyMedia({
+        publicId: lecture.video.publicId,
+        resourceType: MEDIA_RESOURCE_TYPES.VIDEO,
+    });
+
+    lecture.video = null;
+
+    lecture.status = RESOURCE_STATUS.DRAFT;
+
+    await lectureRepository.saveLecture({ lecture });
+
+    logger.info("Lecture video removed successfully.", {
+        lectureId: lecture._id,
+        instructorId,
+    });
+
+    return lecture;
+};
 
 ///////////////////////////////////////////////////////////////
 // publish lecture service
@@ -166,7 +276,7 @@ export {
     updateLecture,
     removeLecture,
     reorderLectures,
-    updateLectureVideo,
+    uploadLectureVideo,
     removeLectureVideo,
     publishLecture,
     saveLectureAsDraft,

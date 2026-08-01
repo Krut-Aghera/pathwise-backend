@@ -4,6 +4,7 @@ import * as lectureValidations from "../lecture.validators.js";
 import * as lectureRatelimiter from "../../../middlewares/ratelimiter/limiters/lecture.rate-limiter.js";
 import instructorAuthMiddleware from "../../../middlewares/auth/instructor-auth.middleware.js";
 import { validateMongoIdParam } from "../../../validations/common.validators.js";
+import { videoUpload } from "../../../middlewares/multer/multer.uploaders.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 
 ///////////////////////////////////////////////////////////////
@@ -75,6 +76,39 @@ lecturePrivateRouter.patch(
     }),
     validationEngine,
     lectureControllers.reorderLectures
+);
+
+///////////////////////////////////////////////////////////////
+// PATCH /api/v1/lectures/:lectureId/video
+// Uploads or replaces the lecture video.
+
+lecturePrivateRouter.patch(
+    "/:lectureId/video",
+    lectureRatelimiter.uploadLectureVideoRateLimiter,
+    ...instructorAuthMiddleware,
+    validateMongoIdParam({
+        paramName: "lectureId",
+        fieldName: "Lecture ID",
+    }),
+    videoUpload.single("video"),
+    validationEngine,
+    lectureControllers.uploadLectureVideo
+);
+
+///////////////////////////////////////////////////////////////
+// DELETE /api/v1/lectures/:lectureId/video
+// Removes the video from the specified lecture.
+
+lecturePrivateRouter.delete(
+    "/:lectureId/video",
+    lectureRatelimiter.removeLectureVideoRateLimiter,
+    ...instructorAuthMiddleware,
+    validateMongoIdParam({
+        paramName: "lectureId",
+        fieldName: "Lecture ID",
+    }),
+    validationEngine,
+    lectureControllers.removeLectureVideo
 );
 
 ///////////////////////////////////////////////////////////////

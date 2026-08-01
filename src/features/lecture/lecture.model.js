@@ -15,7 +15,7 @@ const videoSchema = new mongoose.Schema(
             trim: true,
         },
 
-        secureUrl: {
+        url: {
             type: String,
             required: true,
             trim: true,
@@ -35,26 +35,22 @@ const videoSchema = new mongoose.Schema(
 
         fileSize: {
             type: Number,
-            required: true,
             min: 0,
         },
 
         format: {
             type: String,
-            required: true,
             trim: true,
             lowercase: true,
         },
 
         width: {
             type: Number,
-            required: true,
             min: 1,
         },
 
         height: {
             type: Number,
-            required: true,
             min: 1,
         },
     },

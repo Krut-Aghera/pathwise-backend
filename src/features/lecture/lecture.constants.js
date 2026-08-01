@@ -17,7 +17,7 @@ const LECTURE_SUCCESS_MESSAGES = {
     PUBLISHED: "Lecture has been published.",
     SAVED_AS_DRAFT: "Lecture has been saved as draft.",
 
-    VIDEO_UPLOADED: "Lecture video has been uploaded.",
+    VIDEO_UPLOADED: "Lecture video uploaded successfully.",
     VIDEO_REMOVED: "Lecture video has been removed.",
 
     REORDERED: "Lectures have been reordered.",
@@ -30,6 +30,9 @@ const LECTURE_ERROR_MESSAGES = {
     NOT_FOUND: "Lecture not found.",
     VIDEO_REQUIRED: "Lecture video is required.",
     VIDEO_NOT_FOUND: "Lecture video not found.",
+    VIDEO_UPLOAD_FAILED: "Failed to upload lecture video.",
+    VIDEO_ALREADY_EXISTS:
+        "This lecture already has a video. Remove the existing video before uploading a new one.",
     VIDEO_REQUIRED_TO_PUBLISH:
         "A lecture must have a video before it can be published.",
     CAN_NOT_PUBLISH: "Only draft lectures can be published.",

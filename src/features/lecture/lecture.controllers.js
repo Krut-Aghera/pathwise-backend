@@ -2,7 +2,7 @@ import * as lectureService from "./lecture.service.js";
 import {
     LECTURE_ALLOWED_FIELDS,
     LECTURE_SUCCESS_MESSAGES,
-} from "./lecture.constants";
+} from "./lecture.constants.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
 import ApiResponse from "../../utils/response-handler.utility.js";
 
@@ -96,14 +96,41 @@ const reorderLectures = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// update lecture video controller
+// upload lecture video controller
 
-const updateLectureVideo = async (req, res) => {};
+const uploadLectureVideo = async (req, res) => {
+    const lecture = await lectureService.uploadLectureVideo({
+        instructorId: req.user._id,
+        lectureId: req.params.lectureId,
+        video: req.file,
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: LECTURE_SUCCESS_MESSAGES.VIDEO_UPLOADED,
+            data: lecture,
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // remove lecture video controller
 
-const removeLectureVideo = async (req, res) => {};
+const removeLectureVideo = async (req, res) => {
+    const lecture = await lectureService.removeLectureVideo({
+        instructorId: req.user._id,
+        lectureId: req.params.lectureId,
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: LECTURE_SUCCESS_MESSAGES.VIDEO_REMOVED,
+            data: lecture,
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
 // publish lecture controller
@@ -156,7 +183,7 @@ export {
     updateLecture,
     removeLecture,
     reorderLectures,
-    updateLectureVideo,
+    uploadLectureVideo,
     removeLectureVideo,
     publishLecture,
     saveLectureAsDraft,
