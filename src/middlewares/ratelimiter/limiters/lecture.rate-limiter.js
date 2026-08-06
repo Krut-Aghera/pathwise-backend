@@ -90,3 +90,12 @@ export const fetchInstructorLecturesRateLimiter = createRateLimiter({
     limit: RATE_LIMIT.LECTURE.FETCH_LIST.LIMIT,
     resource: "lecture list retrieval",
 });
+
+///////////////////////////////////////////////////////////////
+// fetch student lecture limiter
+
+export const fetchStudentLectureRateLimiter = createRateLimiter({
+    window: RATE_LIMIT.LECTURE.FETCH_STUDENT_LECTURE.WINDOW_MS,
+    limit: RATE_LIMIT.LECTURE.FETCH_STUDENT_LECTURE.LIMIT,
+    resource: "student lecture fetch",
+});

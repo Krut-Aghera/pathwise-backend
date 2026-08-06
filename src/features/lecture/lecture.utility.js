@@ -24,6 +24,24 @@ const getAuthorizedInstructorLecture = async ({ lectureId, instructorId }) => {
     return lecture;
 };
 
+//////////////////////////////////////////////////////////////
+// get published student lecture
+
+const getPublishedStudentLecture = async ({ lectureId }) => {
+    const lecture = await lectureRepository.findPublishedLecture({
+        lectureId
+    });
+
+    if (!lecture || !lecture.section || !lecture.section.course) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: LECTURE_ERROR_MESSAGES.NOT_FOUND,
+        });
+    }
+
+    return lecture;
+}
+
 ///////////////////////////////////////////////////////////////
 // validate lecture reorder payload
 
@@ -94,6 +112,7 @@ const validateSectionLectureReorder = ({ lectures, sectionLectures }) => {
 
 export {
     getAuthorizedInstructorLecture,
+    getPublishedStudentLecture,
     validateLectureReorderPayload,
     validateSectionLectureReorder,
 };

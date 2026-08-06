@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Lecture from "../lecture/lecture.model.js";
-import { REORDER_TEMP_OFFSET } from "../../constants/resource.constants.js";
+import { REORDER_TEMP_OFFSET, RESOURCE_STATUS } from "../../constants/resource.constants.js";
+import { STUDENT_LECTURE_SELECT_FIELDS } from "./lecture.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create lecture
@@ -135,6 +136,45 @@ const findInstructorLecture = ({ lectureId, instructorId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// find published lecture
+
+const findPublishedLecture = ({ lectureId }) => {
+    return Lecture.findOne({
+        _id: lectureId,
+        isDeleted: false,
+        status: RESOURCE_STATUS.PUBLISHED,
+    })
+        .populate({
+            path: "section",
+            match: {
+                isDeleted: false,
+                status: RESOURCE_STATUS.PUBLISHED,
+            },
+            select: "_id course",
+            populate: {
+                path: "course",
+                match: {
+                    isDeleted: false,
+                    status: RESOURCE_STATUS.PUBLISHED,
+                },
+                select: "_id",
+            },
+        })
+        .select(STUDENT_LECTURE_SELECT_FIELDS);
+};
+
+///////////////////////////////////////////////////////////////
+// find section lectures
+
+const findSectionLectures = ({ sectionId }) => {
+    return Lecture.find({
+        section: sectionId,
+        isDeleted: false
+    })
+        .sort({ order: 1 })
+}
+
+///////////////////////////////////////////////////////////////
 // exports
 
 export {
@@ -145,4 +185,6 @@ export {
     findSectionLectureIds,
     findLastLectureOrder,
     findInstructorLecture,
+    findSectionLectures,
+    findPublishedLecture
 };

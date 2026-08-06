@@ -1,7 +1,9 @@
 import * as lectureRepository from "./lecture.repository.js";
-import { getAuthorizedInstructorSection } from "../section/section.utility";
+import * as enrollmentRepository from "../enrollment/enrollment.repository.js"
+import { getAuthorizedInstructorSection } from "../section/section.utility.js";
 import {
     getAuthorizedInstructorLecture,
+    getPublishedStudentLecture,
     validateLectureReorderPayload,
     validateSectionLectureReorder,
 } from "./lecture.utility.js";
@@ -19,6 +21,7 @@ import {
     CLOUDINARY_FOLDERS,
     MEDIA_RESOURCE_TYPES,
 } from "../../services/media/media.constants.js";
+import { ENROLLMENT_ERROR_MESSAGES } from "../enrollment/enrollment.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create lecture service
@@ -264,12 +267,39 @@ const saveLectureAsDraft = async ({ instructorId, lectureId }) => {
 ///////////////////////////////////////////////////////////////
 // fetch instructor lecture service
 
-const fetchInstructorLecture = async ({}) => {};
+const fetchInstructorLecture = async ({ instructorId, lectureId }) => {
+    return await getAuthorizedInstructorLecture({ instructorId, lectureId })
+};
 
 ///////////////////////////////////////////////////////////////
 // fetch instructor lectures service
 
-const fetchSectionLectures = async ({}) => {};
+const fetchSectionLectures = async ({ instructorId, sectionId }) => {
+    await getAuthorizedInstructorSection({ instructorId, sectionId })
+
+    return lectureRepository.findSectionLectures({ sectionId })
+};
+
+///////////////////////////////////////////////////////////////
+// fetch student lectures service
+
+const fetchStudentLecture = async ({ lectureId, studentId }) => {
+    const lecture = await getPublishedStudentLecture({ lectureId })
+
+    const enrollment = await enrollmentRepository.findEnrollment({
+        studentId,
+        courseId: lecture.section.course._id
+    })
+
+    if (!enrollment) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.FORBIDDEN,
+            message: ENROLLMENT_ERROR_MESSAGES.NOT_ENROLLED
+        })
+    }
+
+    return lecture
+};
 
 export {
     createLecture,
@@ -282,4 +312,5 @@ export {
     saveLectureAsDraft,
     fetchInstructorLecture,
     fetchSectionLectures,
+    fetchStudentLecture
 };

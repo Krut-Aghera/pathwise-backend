@@ -171,12 +171,56 @@ const saveLectureAsDraft = async (req, res) => {
 ///////////////////////////////////////////////////////////////
 // fetch instructor lecture controller
 
-const fetchInstructorLecture = async (req, res) => {};
+const fetchInstructorLecture = async (req, res) => {
+    const lecture = await lectureService.fetchInstructorLecture({
+        instructorId: req.user._id,
+        lectureId: req.params.lectureId
+    })
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: LECTURE_SUCCESS_MESSAGES.FETCHED,
+            data: lecture,
+        })
+    );
+};
 
 ///////////////////////////////////////////////////////////////
-// fetch instructor section lectures controller
+// fetch section lectures controller
 
-const fetchSectionLectures = async (req, res) => {};
+const fetchSectionLectures = async (req, res) => {
+    const lectures = await lectureService.fetchSectionLectures({
+        instructorId: req.user._id,
+        sectionId: req.params.sectionId,
+    })
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: LECTURE_SUCCESS_MESSAGES.FETCHED_ALL,
+            data: lectures,
+        })
+    );
+};
+
+///////////////////////////////////////////////////////////////
+// fetch student lectures controller
+
+const fetchStudentLecture = async (req, res) => {
+    const lecture = await lectureService.fetchStudentLecture({
+        lectureId: req.params.lectureId,
+        studentId: req.user._id
+    })
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: LECTURE_SUCCESS_MESSAGES.FETCHED,
+            data: lecture
+        })
+    )
+};
 
 export {
     createLecture,
@@ -189,4 +233,5 @@ export {
     saveLectureAsDraft,
     fetchInstructorLecture,
     fetchSectionLectures,
+    fetchStudentLecture
 };

@@ -161,6 +161,11 @@ export const RATE_LIMIT = Object.freeze({
             WINDOW_MS: WINDOWS.ONE_MINUTE,
             LIMIT: 120,
         },
+
+        FETCH_STUDENT_LECTURE: {
+            WINDOW_MS: 60 * 1000, // 1 minute
+            LIMIT: 100,
+        },
     }),
 
     ENROLLMENT: Object.freeze({

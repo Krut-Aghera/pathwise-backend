@@ -38,6 +38,12 @@ const LECTURE_ERROR_MESSAGES = {
     CAN_NOT_PUBLISH: "Only draft lectures can be published.",
     CAN_NOT_SAVE_AS_DRAFT: "Lecture is already in draft.",
 };
+
+///////////////////////////////////////////////////////////////
+// fetch lecture 
+
+const STUDENT_LECTURE_SELECT_FIELDS = "title description video isPreviewFree section order"
+
 ///////////////////////////////////////////////////////////////
 // exports
 
@@ -45,4 +51,5 @@ export {
     LECTURE_ALLOWED_FIELDS,
     LECTURE_SUCCESS_MESSAGES,
     LECTURE_ERROR_MESSAGES,
+    STUDENT_LECTURE_SELECT_FIELDS
 };

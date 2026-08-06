@@ -144,6 +144,38 @@ lecturePrivateRouter.patch(
 );
 
 ///////////////////////////////////////////////////////////////
+// GET /api/v1/lectures/sections/:sectionId
+// Fetches all lectures in the specified section for the authenticated instructor.
+
+lecturePrivateRouter.get(
+    "/sections/:sectionId",
+    lectureRatelimiter.fetchInstructorLecturesRateLimiter,
+    ...instructorAuthMiddleware,
+    validateMongoIdParam({
+        paramName: "sectionId",
+        fieldName: "Section ID",
+    }),
+    validationEngine,
+    lectureControllers.fetchSectionLectures
+);
+
+///////////////////////////////////////////////////////////////
+// GET /api/v1/lectures/:lectureId
+// Fetches the specified lecture for the authenticated instructor.
+
+lecturePrivateRouter.get(
+    "/:lectureId",
+    lectureRatelimiter.fetchInstructorLectureRateLimiter,
+    ...instructorAuthMiddleware,
+    validateMongoIdParam({
+        paramName: "lectureId",
+        fieldName: "Lecture ID",
+    }),
+    validationEngine,
+    lectureControllers.fetchInstructorLecture
+);
+
+///////////////////////////////////////////////////////////////
 // export
 
 export default lecturePrivateRouter;
