@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import Lecture from "../lecture/lecture.model.js";
-import { REORDER_TEMP_OFFSET, RESOURCE_STATUS } from "../../constants/resource.constants.js";
+import {
+    REORDER_TEMP_OFFSET,
+    RESOURCE_STATUS,
+} from "../../constants/resource.constants.js";
 import { STUDENT_LECTURE_SELECT_FIELDS } from "./lecture.constants.js";
 
 ///////////////////////////////////////////////////////////////
@@ -169,10 +172,9 @@ const findPublishedLecture = ({ lectureId }) => {
 const findSectionLectures = ({ sectionId }) => {
     return Lecture.find({
         section: sectionId,
-        isDeleted: false
-    })
-        .sort({ order: 1 })
-}
+        isDeleted: false,
+    }).sort({ order: 1 });
+};
 
 ///////////////////////////////////////////////////////////////
 // exports
@@ -186,5 +188,5 @@ export {
     findLastLectureOrder,
     findInstructorLecture,
     findSectionLectures,
-    findPublishedLecture
+    findPublishedLecture,
 };

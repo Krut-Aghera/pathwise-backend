@@ -3,115 +3,13 @@ import sendEmail from "./email.provider.js";
 
 import { EMAIL_SUBJECTS } from "./email.constans.js";
 
-import WelcomeEmail from "../../Templates/mails/WelcomeEmail.jsx";
-import VerifyEmail from "../../Templates/mails/VerifyEmail.jsx";
-import EmailChangeVerificationEmail from "../../Templates/mails/EmailChangeVerificationEmail.jsx";
-import EmailChangedSuccessfullyEmail from "../../Templates/mails/EmailChangedSuccessfullyEmail.jsx";
-import AccountDeactivationOtpEmail from "../../Templates/mails/AccountDeactivationOtpEmail.jsx";
-import AccountDeactivatedEmail from "../../Templates/mails/AccountDeactivatedEmail.jsx";
-import EmailVerifiedEmail from "../../Templates/mails/EmailVerifiedEmail.jsx";
-import ResetPasswordEmail from "../../Templates/mails/ResetPasswordEmail.jsx";
-import PasswordResetSuccessEmail from "../../Templates/mails/PasswordResetSuccessEmail.jsx";
-import CourseEnrollmentEmail from "../../Templates/mails/CourseEnrollmentEmail.jsx";
-import InstructorAccessVerificationEmail from "../../Templates/mails/InstructorAccessVerificationEmail.jsx";
-import InstructorAccessGrantedEmail from "../../Templates/mails/InstructorAccessGrantedEmail.jsx";
-
-///////////////////////////////////////////////////////////////
-// welcome email
-/**
- * @param {Object} params
- * @param {string} params.email - Recipient email address.
- * @param {string} params.username - User's display name.
- * @param {string} params.actionUrl - CTA button URL.
- */
-const sendWelcomeEmail = async ({ email, username, actionUrl }) => {
-    const html = await renderEmail(WelcomeEmail({ username, actionUrl }));
-
-    return sendEmail({
-        to: email,
-        subject: EMAIL_SUBJECTS.WELCOME,
-        html,
-    });
-};
-
-///////////////////////////////////////////////////////////////
-// email verification email
-/**
- * @param {Object} params
- * @param {string} params.email - Recipient email address.
- * @param {string} params.username - User's display name.
- * @param {string} params.actionUrl - Email verification URL.
- */
-const sendEmailVerificationEmail = async ({ email, username, actionUrl }) => {
-    const html = await renderEmail(VerifyEmail({ username, actionUrl }));
-
-    return sendEmail({
-        to: email,
-        subject: EMAIL_SUBJECTS.VERIFY_EMAIL,
-        html,
-    });
-};
-
-///////////////////////////////////////////////////////////////
-// email verified confirmation
-/**
- * @param {Object} params
- * @param {string} params.email - Recipient email address.
- * @param {string} params.username - User's display name.
- * @param {string} params.actionUrl - CTA button URL.
- */
-
-const sendEmailVerifiedEmail = async ({ email, username, actionUrl }) => {
-    const html = await renderEmail(EmailVerifiedEmail({ username, actionUrl }));
-
-    return sendEmail({
-        to: email,
-        subject: EMAIL_SUBJECTS.EMAIL_VERIFIED,
-        html,
-    });
-};
-
-///////////////////////////////////////////////////////////////
-// password reset email
-/**
- * @param {Object} params
- * @param {string} params.email - Recipient email address.
- * @param {string} params.username - User's display name.
- * @param {string} params.actionUrl - Password reset URL.
- */
-const sendPasswordResetEmail = async ({ email, username, actionUrl }) => {
-    const html = await renderEmail(ResetPasswordEmail({ username, actionUrl }));
-
-    return sendEmail({
-        to: email,
-        subject: EMAIL_SUBJECTS.RESET_PASSWORD,
-        html,
-    });
-};
-
-///////////////////////////////////////////////////////////////
-// password reset success email
-/**
- * @param {Object} params
- * @param {string} params.email - Recipient email address.
- * @param {string} params.username - User's display name.
- * @param {string} params.actionUrl - CTA button URL.
- */
-const sendPasswordResetSuccessEmail = async ({
-    email,
-    username,
-    actionUrl,
-}) => {
-    const html = await renderEmail(
-        PasswordResetSuccessEmail({ username, actionUrl })
-    );
-
-    return sendEmail({
-        to: email,
-        subject: EMAIL_SUBJECTS.PASSWORD_RESET_SUCCESS,
-        html,
-    });
-};
+import EmailChangeVerificationEmail from "../../templates/mails/EmailChangeVerificationEmail.jsx";
+import EmailChangedSuccessfullyEmail from "../../templates/mails/EmailChangedSuccessfullyEmail.jsx";
+import AccountDeactivationOtpEmail from "../../templates/mails/AccountDeactivationOtpEmail.jsx";
+import AccountDeactivatedEmail from "../../templates/mails/AccountDeactivatedEmail.jsx";
+import CourseEnrollmentEmail from "../../templates/mails/CourseEnrollmentEmail.jsx";
+import InstructorAccessVerificationEmail from "../../templates/mails/InstructorAccessVerificationEmail.jsx";
+import InstructorAccessGrantedEmail from "../../templates/mails/InstructorAccessGrantedEmail.jsx";
 
 ///////////////////////////////////////////////////////////////
 // course enrollment confirmation email
@@ -296,11 +194,6 @@ const sendAccountDeactivatedEmail = async ({ email, username }) => {
 // exports
 
 export {
-    sendWelcomeEmail,
-    sendEmailVerificationEmail,
-    sendEmailVerifiedEmail,
-    sendPasswordResetEmail,
-    sendPasswordResetSuccessEmail,
     sendEmailChangeVerificationEmail,
     sendEmailChangedSuccessfullyEmail,
     sendInstructorAccessVerificationEmail,

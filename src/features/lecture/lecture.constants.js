@@ -40,9 +40,10 @@ const LECTURE_ERROR_MESSAGES = {
 };
 
 ///////////////////////////////////////////////////////////////
-// fetch lecture 
+// fetch lecture
 
-const STUDENT_LECTURE_SELECT_FIELDS = "title description video isPreviewFree section order"
+const STUDENT_LECTURE_SELECT_FIELDS =
+    "title description video isPreviewFree section order";
 
 ///////////////////////////////////////////////////////////////
 // exports
@@ -51,5 +52,5 @@ export {
     LECTURE_ALLOWED_FIELDS,
     LECTURE_SUCCESS_MESSAGES,
     LECTURE_ERROR_MESSAGES,
-    STUDENT_LECTURE_SELECT_FIELDS
+    STUDENT_LECTURE_SELECT_FIELDS,
 };

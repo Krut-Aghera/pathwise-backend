@@ -1,9 +1,12 @@
 import express from "express";
+
 import * as authControllers from "../auth.controller.js";
 import * as authValidations from "../auth.validators.js";
 import * as authMiddlewares from "../../../middlewares/auth/auth.middleware.js";
 import * as authRatelimiter from "../../../middlewares/ratelimiter/limiters/auth.ratelimit.js";
+
 import validationEngine from "../../../middlewares/validation.middleware.js";
+
 import { validateCryptoTokenParam } from "../../../validations/common.validators.js";
 
 ///////////////////////////////////////////////////////////////
@@ -22,11 +25,11 @@ authPrivateRouter.post(
 );
 
 ///////////////////////////////////////////////////////////////
-// POST /api/v1/auth/request-email-verification
+// POST /api/v1/auth/email/request
 // Sends a new email verification link to the authenticated user's email address.
 
 authPrivateRouter.post(
-    "/request/email-verification",
+    "/email/request",
     authRatelimiter.requestEmailVerificationRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,
@@ -34,25 +37,11 @@ authPrivateRouter.post(
 );
 
 ///////////////////////////////////////////////////////////////
-// GET /api/v1/auth/confirm-email-verification/:token
-// Verifies the user's email address using the verification token.
-
-authPrivateRouter.get(
-    "/confirm/email-verification/:token",
-    validateCryptoTokenParam({
-        paramName: "token",
-        fieldName: "Email verification token",
-    }),
-    validationEngine,
-    authControllers.confirmEmailVerification
-);
-
-///////////////////////////////////////////////////////////////
-// POST /api/v1/auth/change-password
+// POST /api/v1/auth/password/change
 // Changes the authenticated user's password.
 
 authPrivateRouter.post(
-    "/change-password",
+    "/password/change",
     authRatelimiter.changePasswordRateLimiter,
     authMiddlewares.tokenVerificationEngine,
     authMiddlewares.requireActiveAccount,

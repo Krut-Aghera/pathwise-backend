@@ -1,12 +1,16 @@
+import * as authService from "./auth.service.js";
+
+import logger from "../../utils/pino-logger.utility.js";
+import ApiError from "../../utils/error-handler.utility.js";
+import ApiResponse from "../../utils/response-handler.utility.js";
+
+import HTTP_STATUS from "../../constants/http.constants.js";
+import { AUTH_SUCCESS_MESSAGES } from "./auth.constants.js";
 import {
     ACCESS_COOKIE_OPTIONS,
     REFRESH_COOKIE_OPTIONS,
+    JWT_TOKEN_TYPE,
 } from "../../constants/cookie.constants.js";
-import HTTP_STATUS from "../../constants/http.constants.js";
-import ApiError from "../../utils/error-handler.utility.js";
-import logger from "../../utils/pino-logger.utility.js";
-import ApiResponse from "../../utils/response-handler.utility.js";
-import * as authService from "./auth.service.js";
 
 ///////////////////////////////////////////////////////////////
 // registration controller
@@ -20,12 +24,12 @@ const registerUser = async (req, res) => {
 
     return res
         .status(HTTP_STATUS.CREATED)
-        .cookie("accessToken", accessToken, ACCESS_COOKIE_OPTIONS)
-        .cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS)
+        .cookie(JWT_TOKEN_TYPE.ACCESS, accessToken, ACCESS_COOKIE_OPTIONS)
+        .cookie(JWT_TOKEN_TYPE.REFRESH, refreshToken, REFRESH_COOKIE_OPTIONS)
         .json(
             new ApiResponse({
                 statusCode: HTTP_STATUS.CREATED,
-                message: "User registration successful",
+                message: AUTH_SUCCESS_MESSAGES.REGISTER,
                 data: user,
             })
         );
@@ -40,7 +44,7 @@ const requestEmailVerification = async (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: "We've sent a verification link to your email address.",
+            message: AUTH_SUCCESS_MESSAGES.EMAIL_VERIFICATION_REQUESTED,
         })
     );
 };
@@ -56,7 +60,7 @@ const confirmEmailVerification = async (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: "Email has been verified successfully",
+            message: AUTH_SUCCESS_MESSAGES.EMAIL_VERIFIED,
             data: user,
         })
     );
@@ -73,12 +77,12 @@ const login = async (req, res) => {
 
     return res
         .status(HTTP_STATUS.OK)
-        .cookie("accessToken", accessToken, ACCESS_COOKIE_OPTIONS)
-        .cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS)
+        .cookie(JWT_TOKEN_TYPE.ACCESS, accessToken, ACCESS_COOKIE_OPTIONS)
+        .cookie(JWT_TOKEN_TYPE.REFRESH, refreshToken, REFRESH_COOKIE_OPTIONS)
         .json(
             new ApiResponse({
                 statusCode: HTTP_STATUS.OK,
-                message: "User login successful",
+                message: AUTH_SUCCESS_MESSAGES.LOGIN,
                 data: user,
             })
         );
@@ -92,12 +96,12 @@ const logout = async (req, res) => {
 
     return res
         .status(HTTP_STATUS.OK)
-        .clearCookie("accessToken", ACCESS_COOKIE_OPTIONS)
-        .clearCookie("refreshToken", REFRESH_COOKIE_OPTIONS)
+        .clearCookie(JWT_TOKEN_TYPE.ACCESS, ACCESS_COOKIE_OPTIONS)
+        .clearCookie(JWT_TOKEN_TYPE.REFRESH, REFRESH_COOKIE_OPTIONS)
         .json(
             new ApiResponse({
                 statusCode: HTTP_STATUS.OK,
-                message: "User logout successful",
+                message: AUTH_SUCCESS_MESSAGES.LOGOUT,
             })
         );
 };
@@ -125,12 +129,12 @@ const rotateTokens = async (req, res) => {
 
     return res
         .status(HTTP_STATUS.OK)
-        .cookie("accessToken", accessToken, ACCESS_COOKIE_OPTIONS)
-        .cookie("refreshToken", newRefreshToken, REFRESH_COOKIE_OPTIONS)
+        .cookie(JWT_TOKEN_TYPE.ACCESS, accessToken, ACCESS_COOKIE_OPTIONS)
+        .cookie(JWT_TOKEN_TYPE.REFRESH, newRefreshToken, REFRESH_COOKIE_OPTIONS)
         .json(
             new ApiResponse({
                 statusCode: HTTP_STATUS.OK,
-                message: "Tokens rotated successfully.",
+                message: AUTH_SUCCESS_MESSAGES.TOKENS_REFRESHED,
                 data: user,
             })
         );
@@ -145,8 +149,7 @@ const requestPasswordReset = async (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message:
-                "If an account with that email exists, we've sent a password reset link.",
+            message: AUTH_SUCCESS_MESSAGES.PASSWORD_RESET_REQUESTED,
         })
     );
 };
@@ -162,12 +165,12 @@ const resetPassword = async (req, res) => {
 
     return res
         .status(HTTP_STATUS.OK)
-        .clearCookie("accessToken", ACCESS_COOKIE_OPTIONS)
-        .clearCookie("refreshToken", REFRESH_COOKIE_OPTIONS)
+        .clearCookie(JWT_TOKEN_TYPE.ACCESS, ACCESS_COOKIE_OPTIONS)
+        .clearCookie(JWT_TOKEN_TYPE.REFRESH, REFRESH_COOKIE_OPTIONS)
         .json(
             new ApiResponse({
                 statusCode: HTTP_STATUS.OK,
-                message: "Password has been reset successfully.",
+                message: AUTH_SUCCESS_MESSAGES.PASSWORD_RESET,
             })
         );
 };
@@ -184,12 +187,12 @@ const changePassword = async (req, res) => {
 
     return res
         .status(HTTP_STATUS.OK)
-        .clearCookie("accessToken", ACCESS_COOKIE_OPTIONS)
-        .clearCookie("refreshToken", REFRESH_COOKIE_OPTIONS)
+        .clearCookie(JWT_TOKEN_TYPE.ACCESS, ACCESS_COOKIE_OPTIONS)
+        .clearCookie(JWT_TOKEN_TYPE.REFRESH, REFRESH_COOKIE_OPTIONS)
         .json(
             new ApiResponse({
                 statusCode: HTTP_STATUS.OK,
-                message: "Password has been changed successfully.",
+                message: AUTH_SUCCESS_MESSAGES.PASSWORD_CHANGED,
             })
         );
 };

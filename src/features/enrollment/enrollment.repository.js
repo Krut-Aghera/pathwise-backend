@@ -14,6 +14,4 @@ const findEnrollment = ({ studentId, courseId }) => {
 ///////////////////////////////////////////////////////////////
 // exports
 
-export {
-    findEnrollment
-}
+export { findEnrollment };

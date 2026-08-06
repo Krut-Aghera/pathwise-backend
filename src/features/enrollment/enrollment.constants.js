@@ -21,7 +21,4 @@ const ENROLLMENT_ERROR_MESSAGES = {
 ///////////////////////////////////////////////////////////////
 // exports
 
-export {
-    ENROLLMENT_SUCCESS_MESSAGES,
-    ENROLLMENT_ERROR_MESSAGES
-}
+export { ENROLLMENT_SUCCESS_MESSAGES, ENROLLMENT_ERROR_MESSAGES };

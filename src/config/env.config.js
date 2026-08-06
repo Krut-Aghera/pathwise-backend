@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import requireEnv from "../utils/env-validator.utility.js";
 
 ////////////////////////////////////////////////////////////////////////////////
 // Load .env only in development
@@ -8,19 +9,6 @@ if (process.env.NODE_ENV == "development") {
         path: ".env.development",
     });
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// check if any reuired env is missing
-
-const requireEnv = (key) => {
-    const value = process.env[key];
-
-    if (!value) {
-        throw new Error(`Missing required environment variable: ${key}`);
-    }
-
-    return value;
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Server Configuration
@@ -37,7 +25,7 @@ export const dbConfig = Object.freeze({
     DB_NAME: requireEnv("DB_NAME"),
 });
 
-export const jwtConfig = Object.freeze({
+export const jwtEnvConfig = Object.freeze({
     JWT_ACCESS_SECRET: requireEnv("JWT_ACCESS_SECRET"),
     ACCESS_TOKEN_EXPIRY: requireEnv("ACCESS_TOKEN_EXPIRY"),
     ACCESS_TOKEN_COOKIE_EXPIRY: requireEnv("ACCESS_TOKEN_COOKIE_EXPIRY"),

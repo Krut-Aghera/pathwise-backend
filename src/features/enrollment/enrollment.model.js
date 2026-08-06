@@ -60,4 +60,4 @@ enrollmentSchema.index({
 
 const Enrollment = mongoose.model("Enrollment", enrollmentSchema);
 
-export default Enrollment
+export default Enrollment;

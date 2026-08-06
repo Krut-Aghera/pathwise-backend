@@ -1,11 +1,11 @@
 import { Text } from "react-email";
 
-import BaseEmail from "../layouts/BaseEmail.jsx";
-import EmailHeader from "../components/EmailHeader.jsx";
-import EmailContent from "../components/EmailContent.jsx";
-import PrimaryButton from "../components/PrimaryButton.jsx";
-import InfoBox from "../components/InfoBox.jsx";
-import EmailFooter from "../components/EmailFooter.jsx";
+import BaseEmail from "../../layouts/BaseEmail.jsx";
+import EmailHeader from "../../components/EmailHeader.jsx";
+import EmailContent from "../../components/EmailContent.jsx";
+import PrimaryButton from "../../components/PrimaryButton.jsx";
+import InfoBox from "../../components/InfoBox.jsx";
+import EmailFooter from "../../components/EmailFooter.jsx";
 
 import {
     COLORS,
@@ -13,15 +13,15 @@ import {
     INFO_BOX_TYPES,
     SPACING,
     TYPOGRAPHY,
-} from "../theme.js";
+} from "../../theme.js";
 
-const PasswordResetSuccessEmail = ({ username, actionUrl }) => {
+const PasswordChangedEmail = ({ username, actionUrl }) => {
     return (
-        <BaseEmail preview={`Your ${COMPANY.name} password has been updated`}>
+        <BaseEmail preview={`Your ${COMPANY.name} password has been changed`}>
             <EmailHeader />
 
             <EmailContent
-                title="Password Updated Successfully"
+                title="Password Changed Successfully"
                 username={username}
             >
                 <Text
@@ -31,11 +31,11 @@ const PasswordResetSuccessEmail = ({ username, actionUrl }) => {
                         lineHeight: TYPOGRAPHY.body.lineHeight,
                     }}
                 >
-                    Your password has been changed successfully. You can now
-                    sign in using your new password.
+                    Your account password has been changed successfully. You can
+                    continue using your account with your new password.
                 </Text>
 
-                <PrimaryButton href={actionUrl}>Sign In</PrimaryButton>
+                <PrimaryButton href={actionUrl}>Go to Dashboard</PrimaryButton>
 
                 <InfoBox variant={INFO_BOX_TYPES.DANGER}>
                     <Text
@@ -47,8 +47,9 @@ const PasswordResetSuccessEmail = ({ username, actionUrl }) => {
                             textAlign: "center",
                         }}
                     >
-                        If you didn't make this change, contact our support team
-                        immediately and secure your account.
+                        If you didn't change your password, secure your account
+                        immediately by resetting your password and contacting
+                        our support team.
                     </Text>
                 </InfoBox>
 
@@ -72,4 +73,4 @@ const PasswordResetSuccessEmail = ({ username, actionUrl }) => {
     );
 };
 
-export default PasswordResetSuccessEmail;
+export default PasswordChangedEmail;

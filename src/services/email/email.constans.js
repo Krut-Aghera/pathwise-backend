@@ -1,11 +1,18 @@
-import requireEnv from "../../utils/env-validator.utility";
+import requireEnv from "../../utils/env-validator.utility.js";
+
+export const AUTH_EMAIL_SUBJECTS = {
+    REGISTRATION: "Welcome to Pathwise LMS",
+
+    EMAIL_VERIFICATION_REQUEST: "Verify your Pathwise account",
+    EMAIL_VERIFICATION_CONFIRM: "Email verified successfully",
+
+    PASSWORD_RESET_REQUEST: "Reset your Pathwise password",
+    PASSWORD_RESET_CONFIRM: "Password reset successful",
+
+    PASSWORD_CHANGED: "Your Pathwise password has been changed",
+};
 
 export const EMAIL_SUBJECTS = {
-    VERIFY_EMAIL: "Verify your Pathwise account",
-    WELCOME: "Welcome to Pathwise LMS",
-    RESET_PASSWORD: "Reset your password",
-    PASSWORD_RESET_SUCCESS: "Password reset successful",
-    EMAIL_VERIFIED: "Email verified successfully",
     EMAIL_CHANGE_VERIFICATION: "Confirm your new email address",
     EMAIL_CHANGED_SUCCESSFULLY: "Email address updated successfully",
     INSTRUCTOR_ACCESS_VERIFICATION: "Verify your instructor access request",

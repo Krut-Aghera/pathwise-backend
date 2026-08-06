@@ -1,9 +1,12 @@
 import express from "express";
+
 import * as authControllers from "../auth.controller.js";
 import * as authValidations from "../auth.validators.js";
 import * as authMiddlewares from "../../../middlewares/auth/auth.middleware.js";
 import * as authRatelimiter from "../../../middlewares/ratelimiter/limiters/auth.ratelimit.js";
+
 import validationEngine from "../../../middlewares/validation.middleware.js";
+
 import { validateCryptoTokenParam } from "../../../validations/common.validators";
 
 ///////////////////////////////////////////////////////////////
@@ -36,6 +39,20 @@ authPublicRouter.post(
 );
 
 ///////////////////////////////////////////////////////////////
+// GET /api/v1/auth/email/confirm/:token
+// Verifies the user's email address using the verification token.
+
+authPublicRouter.get(
+    "/email/confirm/:token",
+    validateCryptoTokenParam({
+        paramName: "token",
+        fieldName: "Email verification token",
+    }),
+    validationEngine,
+    authControllers.confirmEmailVerification
+);
+
+///////////////////////////////////////////////////////////////
 // POST /api/v1/auth/rotate-tokens
 // Rotates the authenticated user's access and refresh tokens.
 
@@ -46,7 +63,7 @@ authPublicRouter.post(
 );
 
 ///////////////////////////////////////////////////////////////
-// POST /api/v1/auth/forgot-password
+// POST /api/v1/auth/password/forgot
 // Initiates a password reset request.
 
 authPublicRouter.post(
@@ -58,7 +75,7 @@ authPublicRouter.post(
 );
 
 ///////////////////////////////////////////////////////////////
-// POST /api/v1/auth/reset-password/:token
+// POST /api/v1/auth/password/reset/:token
 // Resets the user's password using a valid password reset token.
 
 authPublicRouter.post(

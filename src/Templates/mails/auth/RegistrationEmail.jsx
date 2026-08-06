@@ -1,14 +1,14 @@
 import { Section, Heading, Text } from "react-email";
 
-import { COLORS, COMPANY, SPACING, TYPOGRAPHY } from "../theme.js";
+import { COLORS, COMPANY, SPACING, TYPOGRAPHY } from "../../theme.js";
 
-import BaseEmail from "../layouts/BaseEmail.jsx";
-import EmailHeader from "../components/EmailHeader.jsx";
-import EmailContent from "../components/EmailContent.jsx";
-import PrimaryButton from "../components/PrimaryButton.jsx";
-import EmailFooter from "../components/EmailFooter.jsx";
+import BaseEmail from "../../layouts/BaseEmail.jsx";
+import EmailHeader from "../../components/EmailHeader.jsx";
+import EmailContent from "../../components/EmailContent.jsx";
+import PrimaryButton from "../../components/PrimaryButton.jsx";
+import EmailFooter from "../../components/EmailFooter.jsx";
 
-const WelcomeEmail = ({ username, actionUrl }) => {
+const RegistrationEmail = ({ username, actionUrl }) => {
     return (
         <BaseEmail preview={`Welcome to ${COMPANY.name}!`}>
             <EmailHeader />
@@ -74,4 +74,4 @@ const WelcomeEmail = ({ username, actionUrl }) => {
     );
 };
 
-export default WelcomeEmail;
+export default RegistrationEmail;

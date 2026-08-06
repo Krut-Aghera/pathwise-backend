@@ -1,7 +1,9 @@
-import { jwtConfig } from "../../config/env.config.js";
-import * as userRepository from "../user/user.repository.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+
+import * as userRepository from "../user/user.repository.js";
+
+import { jwtEnvConfig } from "../../config/env.config.js";
 
 ///////////////////////////////////////////////////////////////
 // generate auth tokens
@@ -12,20 +14,20 @@ const generateAuthTokens = (user) => {
             userId: user._id,
             userEmail: user.email,
         },
-        jwtConfig.JWT_ACCESS_SECRET,
+        jwtEnvConfig.JWT_ACCESS_SECRET,
         {
-            expiresIn: jwtConfig.ACCESS_TOKEN_EXPIRY,
+            expiresIn: jwtEnvConfig.ACCESS_TOKEN_EXPIRY,
         }
     );
 
     const refreshToken = jwt.sign(
         {
             userId: user._id,
-            userEmail: user.emil,
+            userEmail: user.email,
         },
-        jwtConfig.JWT_REFRESH_SECRET,
+        jwtEnvConfig.JWT_REFRESH_SECRET,
         {
-            expiresIn: jwtConfig.REFRESH_TOKEN_EXPIRY,
+            expiresIn: jwtEnvConfig.REFRESH_TOKEN_EXPIRY,
         }
     );
 
@@ -38,7 +40,7 @@ const generateAuthTokens = (user) => {
 ///////////////////////////////////////////////////////////////
 // create session
 
-const createUserSession = async (user) => {
+const createSession = async (user) => {
     const { accessToken, refreshToken } = generateAuthTokens(user);
 
     const hashedRefreshToken = crypto
@@ -59,7 +61,7 @@ const createUserSession = async (user) => {
 ///////////////////////////////////////////////////////////////
 // destroy session
 
-const destroyUserSession = async (user) => {
+const destroySession = async (user) => {
     user.refreshToken = null;
     await userRepository.saveUser(user);
 };
@@ -67,4 +69,4 @@ const destroyUserSession = async (user) => {
 ///////////////////////////////////////////////////////////////
 // exports
 
-export { createUserSession, destroyUserSession };
+export { createSession, destroySession };

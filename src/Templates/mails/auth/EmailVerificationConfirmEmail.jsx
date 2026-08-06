@@ -1,4 +1,4 @@
-import { Text } from "react-email";
+import { Heading, Section, Text } from "react-email";
 
 import {
     COLORS,
@@ -6,21 +6,24 @@ import {
     INFO_BOX_TYPES,
     SPACING,
     TYPOGRAPHY,
-} from "../theme.js";
+} from "../../theme.js";
 
-import BaseEmail from "../layouts/BaseEmail.jsx";
-import EmailHeader from "../components/EmailHeader.jsx";
-import EmailContent from "../components/EmailContent.jsx";
-import PrimaryButton from "../components/PrimaryButton.jsx";
-import InfoBox from "../components/InfoBox.jsx";
-import EmailFooter from "../components/EmailFooter.jsx";
+import BaseEmail from "../../layouts/BaseEmail.jsx";
+import EmailHeader from "../../components/EmailHeader.jsx";
+import EmailContent from "../../components/EmailContent.jsx";
+import PrimaryButton from "../../components/PrimaryButton.jsx";
+import InfoBox from "../../components/InfoBox.jsx";
+import EmailFooter from "../../components/EmailFooter.jsx";
 
-const ResetPasswordEmail = ({ username, actionUrl }) => {
+const EmailVerificationConfirmEmail = ({ username, actionUrl }) => {
     return (
-        <BaseEmail preview={`Reset your ${COMPANY.name} password`}>
+        <BaseEmail preview={`Your ${COMPANY.name} account has been verified`}>
             <EmailHeader />
 
-            <EmailContent title="Reset Your Password" username={username}>
+            <EmailContent
+                title="Email Verified Successfully 🎉"
+                username={username}
+            >
                 <Text
                     style={{
                         color: COLORS.textSecondary,
@@ -28,8 +31,9 @@ const ResetPasswordEmail = ({ username, actionUrl }) => {
                         lineHeight: TYPOGRAPHY.body.lineHeight,
                     }}
                 >
-                    We received a request to reset the password for your{" "}
-                    <strong>{COMPANY.name}</strong> account.
+                    Great news! Your email address has been successfully
+                    verified and your <strong>{COMPANY.name}</strong> account is
+                    now fully activated.
                 </Text>
 
                 <Text
@@ -39,13 +43,13 @@ const ResetPasswordEmail = ({ username, actionUrl }) => {
                         lineHeight: TYPOGRAPHY.body.lineHeight,
                     }}
                 >
-                    Click the button below to create a new password. For your
-                    security, this link can only be used once.
+                    You can now access all platform features, enroll in courses,
+                    track your progress, and continue your learning journey.
                 </Text>
 
-                <PrimaryButton href={actionUrl}>Reset Password</PrimaryButton>
+                <PrimaryButton href={actionUrl}>Go to Dashboard</PrimaryButton>
 
-                <InfoBox variant={INFO_BOX_TYPES.WARNING}>
+                <InfoBox variant={INFO_BOX_TYPES.SUCCESS}>
                     <Text
                         style={{
                             margin: 0,
@@ -55,20 +59,9 @@ const ResetPasswordEmail = ({ username, actionUrl }) => {
                             textAlign: "center",
                         }}
                     >
-                        This password reset link will expire in 15 minutes.
+                        Your account is now verified and ready to use.
                     </Text>
                 </InfoBox>
-
-                <Text
-                    style={{
-                        color: COLORS.textSecondary,
-                        fontSize: TYPOGRAPHY.small.fontSize,
-                        lineHeight: TYPOGRAPHY.small.lineHeight,
-                    }}
-                >
-                    If you didn't request a password reset, you can safely
-                    ignore this email. Your password will remain unchanged.
-                </Text>
 
                 <Text
                     style={{
@@ -79,7 +72,7 @@ const ResetPasswordEmail = ({ username, actionUrl }) => {
                         marginTop: SPACING.md,
                     }}
                 >
-                    Stay secure,
+                    Happy Learning!
                     <br />
                     The {COMPANY.name} Team
                 </Text>
@@ -90,4 +83,4 @@ const ResetPasswordEmail = ({ username, actionUrl }) => {
     );
 };
 
-export default ResetPasswordEmail;
+export default EmailVerificationConfirmEmail;

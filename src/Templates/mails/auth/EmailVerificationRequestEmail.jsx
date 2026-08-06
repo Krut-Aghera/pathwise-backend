@@ -6,16 +6,16 @@ import {
     INFO_BOX_TYPES,
     SPACING,
     TYPOGRAPHY,
-} from "../theme.js";
+} from "../../theme.js";
 
-import BaseEmail from "../layouts/BaseEmail.jsx";
-import EmailHeader from "../components/EmailHeader.jsx";
-import EmailContent from "../components/EmailContent.jsx";
-import PrimaryButton from "../components/PrimaryButton.jsx";
-import InfoBox from "../components/InfoBox.jsx";
-import EmailFooter from "../components/EmailFooter.jsx";
+import BaseEmail from "../../layouts/BaseEmail.jsx";
+import EmailHeader from "../../components/EmailHeader.jsx";
+import EmailContent from "../../components/EmailContent.jsx";
+import PrimaryButton from "../../components/PrimaryButton.jsx";
+import InfoBox from "../../components/InfoBox.jsx";
+import EmailFooter from "../../components/EmailFooter.jsx";
 
-const VerifyEmail = ({ username, actionUrl }) => {
+const EmailVerificationRequestEmail = ({ username, actionUrl }) => {
     return (
         <BaseEmail preview={`Verify your ${COMPANY.name} account`}>
             <EmailHeader />
@@ -89,4 +89,4 @@ const VerifyEmail = ({ username, actionUrl }) => {
     );
 };
 
-export default VerifyEmail;
+export default EmailVerificationRequestEmail;

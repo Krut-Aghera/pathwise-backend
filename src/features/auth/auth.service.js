@@ -1,28 +1,31 @@
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import crypto, { hash, Hash } from "crypto";
-import HTTP_STATUS from "../../constants/http.constants.js";
+
+import * as authSession from "./auth.session.js";
+import * as userRepository from "../user/user.repository.js";
+import * as authEmail from "../../services/email/mailers/auth.mailer.js";
+
+import User from "../user/user.model.js";
+
+import logger from "../../utils/pino-logger.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
+
 import {
     generateSecureTokens,
     getTokenExpiry,
 } from "../../utils/token-generator.utility.js";
-import * as userRepository from "../user/user.repository.js";
-import * as authSession from "./auth.session.js";
-import User from "../user/user.model.js";
-import {
-    sendEmailVerificationEmail,
-    sendEmailVerifiedEmail,
-    sendPasswordResetEmail,
-    sendPasswordResetSuccessEmail,
-    sendWelcomeEmail,
-} from "../../services/email/email.services.js";
-import { EMAIL_EXPIRY_MINUTES } from "../../services/email/email.constans.js";
+
 import {
     createPasswordResetUrl,
     getEmailVerificationUrl,
 } from "../../services/email/email.utility.js";
-import logger from "../../utils/pino-logger.utility.js";
+
+import HTTP_STATUS from "../../constants/http.constants.js";
+import { EMAIL_EXPIRY_MINUTES } from "../../services/email/email.constans.js";
 import { USER_TOKEN_FIELDS } from "../user/user.constants.js";
+import { AUTH_ERROR_MESSAGES } from "./auth.constants.js";
+import { jwtEnvConfig } from "../../config/env.config.js";
+
 
 ///////////////////////////////////////////////////////////////
 // registration service
@@ -33,7 +36,7 @@ const registerUser = async ({ username, email, password }) => {
     if (existingUser) {
         throw new ApiError({
             statusCode: HTTP_STATUS.CONFLICT,
-            message: "User already exists with provided email.",
+            message: AUTH_ERROR_MESSAGES.EMAIL_ALREADY_EXISTS,
         });
     }
 
@@ -44,9 +47,9 @@ const registerUser = async ({ username, email, password }) => {
     });
 
     const { user, accessToken, refreshToken } =
-        await authSession.createUserSession(createdUser);
+        await authSession.createSession(createdUser);
 
-    await sendWelcomeEmail({
+    await authEmail.sendRegistrationEmail({
         email: user.email,
         username: user.username,
         // TODO : add user dashboard link
@@ -62,7 +65,7 @@ const requestEmailVerification = async ({ user }) => {
     if (user.isEmailVerified) {
         throw new ApiError({
             statusCode: HTTP_STATUS.FORBIDDEN,
-            message: "Your email address is already verified.",
+            message: AUTH_ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED,
         });
     }
 
@@ -76,7 +79,7 @@ const requestEmailVerification = async ({ user }) => {
     await userRepository.saveUser(user);
 
     try {
-        await sendEmailVerificationEmail({
+        await authEmail.sendEmailVerificationRequestEmail({
             email: user.email,
             username: user.username,
             actionUrl: getEmailVerificationUrl(token),
@@ -96,10 +99,10 @@ const requestEmailVerification = async ({ user }) => {
 
 const confirmEmailVerification = async ({ token }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-
     const user = await userRepository
         .findUserByToken({
-            ...USER_TOKEN_FIELDS.EMAIL_VERIFICATION,
+            tokenField: USER_TOKEN_FIELDS.EMAIL_VERIFICATION.token,
+            expiryField: USER_TOKEN_FIELDS.EMAIL_VERIFICATION.expiry,
             hashedToken,
         })
         .select("+emailVerificationToken +emailVerificationExpiry");
@@ -108,7 +111,7 @@ const confirmEmailVerification = async ({ token }) => {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
             message:
-                "Invalid or expired verification link. Please request a new verification email.",
+                AUTH_ERROR_MESSAGES.INVALID_OR_EXPIRED_EMAIL_VERIFICATION_TOKEN,
         });
     }
 
@@ -119,7 +122,7 @@ const confirmEmailVerification = async ({ token }) => {
     await userRepository.saveUser(user);
 
     try {
-        await sendEmailVerifiedEmail({
+        await authEmail.sendEmailVerificationConfirmEmail({
             email: user.email,
             username: user.username,
             // actionUrl: `${serverAppConfig.CLIENT_URL}/dashboard`,
@@ -148,14 +151,14 @@ const login = async ({ email, password }) => {
     if (!existingUser) {
         throw new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
-            message: "Invalid credentials.",
+            message: AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS,
         });
     }
 
     if (!existingUser.isActive) {
         throw new ApiError({
             statusCode: HTTP_STATUS.FORBIDDEN,
-            message: "This account has been deactivated.",
+            message: AUTH_ERROR_MESSAGES.ACCOUNT_DEACTIVATED,
         });
     }
 
@@ -164,18 +167,18 @@ const login = async ({ email, password }) => {
     if (!isValidPassword) {
         throw new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
-            message: "Invalid credentials.",
+            message: AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS,
         });
     }
 
-    return await authSession.createUserSession(existingUser);
+    return await authSession.createSession(existingUser);
 };
 
 ///////////////////////////////////////////////////////////////
 // logout service
 
 const logout = async ({ user }) => {
-    return authSession.destroyUserSession(user);
+    return authSession.destroySession(user);
 };
 
 ///////////////////////////////////////////////////////////////
@@ -184,7 +187,7 @@ const logout = async ({ user }) => {
 const rotateTokens = async ({ refreshToken }) => {
     const { userId, userEmail } = jwt.verify(
         refreshToken,
-        jwtConfig.JWT_REFRESH_SECRET
+        jwtEnvConfig.JWT_REFRESH_SECRET
     );
 
     const user = await userRepository
@@ -194,7 +197,7 @@ const rotateTokens = async ({ refreshToken }) => {
     if (!user) {
         throw new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
-            message: "Invalid or expired refresh token.",
+            message: AUTH_ERROR_MESSAGES.INVALID_OR_EXPIRED_REFRESH_TOKEN,
         });
     }
 
@@ -206,11 +209,11 @@ const rotateTokens = async ({ refreshToken }) => {
     if (user.refreshToken !== hashedRefreshToken) {
         throw new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
-            message: "Invalid or expired refresh token.",
+            message: AUTH_ERROR_MESSAGES.INVALID_OR_EXPIRED_REFRESH_TOKEN,
         });
     }
 
-    return authSession.createUserSession(user);
+    return authSession.createSession(user);
 };
 
 ///////////////////////////////////////////////////////////////
@@ -235,7 +238,7 @@ const requestPasswordReset = async ({ email }) => {
     await userRepository.saveUser(user);
 
     try {
-        await sendPasswordResetEmail({
+        await authEmail.sendPasswordResetRequestEmail({
             email: user.email,
             username: user.username,
             // actionUrl: createPasswordResetUrl(token),
@@ -258,21 +261,23 @@ const resetPassword = async ({ token, newPassword }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const user = await userRepository.findUserByToken({
-        ...USER_TOKEN_FIELDS.PASSWORD_RESET,
+        tokenField: USER_TOKEN_FIELDS.PASSWORD_RESET.token,
+        expiryField: USER_TOKEN_FIELDS.PASSWORD_RESET.expiry,
         hashedToken,
     });
 
     if (!user) {
         throw new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
-            message: "Invalid or expired token",
+            message:
+                AUTH_ERROR_MESSAGES.INVALID_OR_EXPIRED_RESET_PASSWORD_TOKEN,
         });
     }
 
     if (!user.isActive) {
         throw new ApiError({
             statusCode: HTTP_STATUS.FORBIDDEN,
-            message: "This account has been deactivated.",
+            message: AUTH_ERROR_MESSAGES.ACCOUNT_DEACTIVATED,
         });
     }
 
@@ -284,7 +289,7 @@ const resetPassword = async ({ token, newPassword }) => {
     await userRepository.saveUser(user, true);
 
     try {
-        await sendPasswordResetSuccessEmail({
+        await authEmail.sendPasswordResetConfirmEmail({
             email: user.email,
             username: user.username,
             //TODO add login page action url
@@ -318,7 +323,7 @@ const changePassword = async ({ userId, currentPassword, newPassword }) => {
     if (!isValidPassword) {
         throw new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
-            message: "Current password is incorrect.",
+            message: AUTH_ERROR_MESSAGES.CURRENT_PASSWORD_INCORRECT,
         });
     }
 
@@ -327,8 +332,7 @@ const changePassword = async ({ userId, currentPassword, newPassword }) => {
     if (isSamePassword) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message:
-                "New password must be different from your current password.",
+            message: AUTH_ERROR_MESSAGES.PASSWORD_MUST_BE_DIFFERENT,
         });
     }
 

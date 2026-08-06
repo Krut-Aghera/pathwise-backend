@@ -29,7 +29,7 @@ const getAuthorizedInstructorLecture = async ({ lectureId, instructorId }) => {
 
 const getPublishedStudentLecture = async ({ lectureId }) => {
     const lecture = await lectureRepository.findPublishedLecture({
-        lectureId
+        lectureId,
     });
 
     if (!lecture || !lecture.section || !lecture.section.course) {
@@ -40,7 +40,7 @@ const getPublishedStudentLecture = async ({ lectureId }) => {
     }
 
     return lecture;
-}
+};
 
 ///////////////////////////////////////////////////////////////
 // validate lecture reorder payload

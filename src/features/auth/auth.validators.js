@@ -1,4 +1,5 @@
 import { body } from "express-validator";
+
 import REGEX_VALIDATIONS from "../../constants/regex.constants.js";
 
 //
@@ -39,7 +40,7 @@ const currentPasswordValidations = body("currentPassword")
     .withMessage("Current password is required")
     .bail()
     .matches(REGEX_VALIDATIONS.password.PATTERN)
-    .withMessage(REGEX_VALIDATIONS.password.MESSAGE);
+    .withMessage("Current password is incorrect");
 
 const newPasswordValidations = body("newPassword")
     .notEmpty()

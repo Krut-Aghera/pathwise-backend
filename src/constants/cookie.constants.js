@@ -1,5 +1,10 @@
 const isProduction = process.env.NODE_ENV === "production";
 
+export const JWT_TOKEN_TYPE = Object.freeze({
+    ACCESS: "accessToken",
+    REFRESH: "refreshToken",
+});
+
 export const ACCESS_COOKIE_OPTIONS = {
     httpOnly: true,
     secure: isProduction,

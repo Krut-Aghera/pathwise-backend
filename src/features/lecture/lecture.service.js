@@ -1,5 +1,5 @@
 import * as lectureRepository from "./lecture.repository.js";
-import * as enrollmentRepository from "../enrollment/enrollment.repository.js"
+import * as enrollmentRepository from "../enrollment/enrollment.repository.js";
 import { getAuthorizedInstructorSection } from "../section/section.utility.js";
 import {
     getAuthorizedInstructorLecture,
@@ -268,37 +268,37 @@ const saveLectureAsDraft = async ({ instructorId, lectureId }) => {
 // fetch instructor lecture service
 
 const fetchInstructorLecture = async ({ instructorId, lectureId }) => {
-    return await getAuthorizedInstructorLecture({ instructorId, lectureId })
+    return await getAuthorizedInstructorLecture({ instructorId, lectureId });
 };
 
 ///////////////////////////////////////////////////////////////
 // fetch instructor lectures service
 
 const fetchSectionLectures = async ({ instructorId, sectionId }) => {
-    await getAuthorizedInstructorSection({ instructorId, sectionId })
+    await getAuthorizedInstructorSection({ instructorId, sectionId });
 
-    return lectureRepository.findSectionLectures({ sectionId })
+    return lectureRepository.findSectionLectures({ sectionId });
 };
 
 ///////////////////////////////////////////////////////////////
 // fetch student lectures service
 
 const fetchStudentLecture = async ({ lectureId, studentId }) => {
-    const lecture = await getPublishedStudentLecture({ lectureId })
+    const lecture = await getPublishedStudentLecture({ lectureId });
 
     const enrollment = await enrollmentRepository.findEnrollment({
         studentId,
-        courseId: lecture.section.course._id
-    })
+        courseId: lecture.section.course._id,
+    });
 
     if (!enrollment) {
         throw new ApiError({
             statusCode: HTTP_STATUS.FORBIDDEN,
-            message: ENROLLMENT_ERROR_MESSAGES.NOT_ENROLLED
-        })
+            message: ENROLLMENT_ERROR_MESSAGES.NOT_ENROLLED,
+        });
     }
 
-    return lecture
+    return lecture;
 };
 
 export {
@@ -312,5 +312,5 @@ export {
     saveLectureAsDraft,
     fetchInstructorLecture,
     fetchSectionLectures,
-    fetchStudentLecture
+    fetchStudentLecture,
 };
