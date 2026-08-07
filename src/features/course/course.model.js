@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 import {
     COURSE_LANGUAGES,
     COURSE_LANGUAGES_ARRAY,
@@ -9,6 +10,9 @@ import {
     RESOURCE_STATUS,
     RESOURCE_STATUS_ARRAY,
 } from "../../constants/resource.constants.js";
+
+////////////////////////////////////////////////////////////////
+// course schema model
 
 const courseSchema = new mongoose.Schema(
     {

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import * as courseRepository from "./course.repository.js";
 import Course from "./course.model.js";
 import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
+import { COURSE_ERROR_MESSAGES } from "./course.constants.js";
 
 //////////////////////////////////////////////////////////////
 // get authorized instructor course
@@ -15,7 +16,7 @@ const getAuthorizedInstructorCourse = async ({ courseId, instructorId }) => {
     if (!course) {
         throw new ApiError({
             statusCode: HTTP_STATUS.NOT_FOUND,
-            message: "Course not found.",
+            message: COURSE_ERROR_MESSAGES.COURSE_NOT_FOUND,
         });
     }
 

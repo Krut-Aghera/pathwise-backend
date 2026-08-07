@@ -1,4 +1,37 @@
 ///////////////////////////////////////////////////////////////
+// course success messages
+
+const COURSE_SUCCESS_MESSAGES = Object.freeze({
+    COURSES_FETCHED: "Courses fetched successfully.",
+    COURSE_FETCHED: "Course fetched successfully.",
+    INSTRUCTOR_COURSE_FETCHED: "Instructor course fetched successfully.",
+    INSTRUCTOR_COURSES_FETCHED: "Instructor courses fetched successfully.",
+
+    COURSE_CREATED: "Course created successfully.",
+    COURSE_UPDATED: "Course updated successfully.",
+    COURSE_THUMBNAIL_UPDATED: "Course thumbnail updated successfully.",
+
+    COURSE_DELETED: "Course deleted successfully.",
+    COURSE_PUBLISHED: "Course published successfully.",
+    COURSE_SAVED_AS_DRAFT: "Course saved as draft successfully.",
+});
+
+///////////////////////////////////////////////////////////////
+// course error messages
+
+const COURSE_ERROR_MESSAGES = Object.freeze({
+    COURSE_NOT_FOUND: "Course not found.",
+
+    COURSE_ALREADY_DRAFT: "Course is already saved as draft.",
+
+    COURSE_NOT_ELIGIBLE_FOR_PUBLISH: "Course is not eligible for publishing.",
+
+    COURSE_TITLE_ALREADY_EXISTS: "A course with this title already exists.",
+
+    THUMBNAIL_REQUIRED: "Course thumbnail is required.",
+});
+
+///////////////////////////////////////////////////////////////
 // allowed course field constants
 
 const COURSE_ALLOWED_FIELDS = [
@@ -69,6 +102,8 @@ const COURSE_LEVELS_ARRAY = Object.values(COURSE_LEVELS);
 // exports
 
 export {
+    COURSE_SUCCESS_MESSAGES,
+    COURSE_ERROR_MESSAGES,
     COURSE_ALLOWED_FIELDS,
     COURSE_FETCH_QUERY_FIELDS,
     COURSE_QUERY_DEFAULTS,

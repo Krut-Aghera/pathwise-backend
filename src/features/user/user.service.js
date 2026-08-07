@@ -112,11 +112,13 @@ const requestEmailUpdation = async ({ user, password, newEmail }) => {
 const confirmEmailUpdation = async ({ user, token }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    const dbUser = await userRepository.findUserByToken({
-        tokenField: USER_TOKEN_FIELDS.EMAIL_CHANGE.token,
-        expiryField: USER_TOKEN_FIELDS.EMAIL_CHANGE.expiry,
-        hashedToken,
-    }).select("+pendingEmail");
+    const dbUser = await userRepository
+        .findUserByToken({
+            tokenField: USER_TOKEN_FIELDS.EMAIL_CHANGE.token,
+            expiryField: USER_TOKEN_FIELDS.EMAIL_CHANGE.expiry,
+            hashedToken,
+        })
+        .select("+pendingEmail");
 
     if (!dbUser) {
         throw new ApiError({

@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////
 // auth success messages
 
-const AUTH_SUCCESS_MESSAGES = {
+const AUTH_SUCCESS_MESSAGES = Object.freeze({
     REGISTER: "Registration successful. Please verify your email.",
     EMAIL_VERIFICATION_REQUESTED: "Verification email sent successfully.",
     EMAIL_VERIFIED: "Email verified successfully.",
@@ -14,12 +14,12 @@ const AUTH_SUCCESS_MESSAGES = {
         "If an account with that email exists, a password reset link has been sent.",
     PASSWORD_RESET: "Password reset successfully.",
     PASSWORD_CHANGED: "Password changed successfully.",
-};
+});
 
 ///////////////////////////////////////////////////////////////
 // auth error messages
 
-const AUTH_ERROR_MESSAGES = {
+const AUTH_ERROR_MESSAGES = Object.freeze({
     USER_NOT_FOUND: "User not found.",
 
     INVALID_CREDENTIALS: "Invalid credentials.",
@@ -43,7 +43,7 @@ const AUTH_ERROR_MESSAGES = {
     EMAIL_ALREADY_VERIFIED: "Email is already verified.",
 
     EMAIL_ALREADY_EXISTS: "An account with this email already exists.",
-};
+});
 
 ///////////////////////////////////////////////////////////////
 // exports

@@ -1,98 +1,28 @@
-import HTTP_STATUS from "../../constants/http.constants.js";
-import {
-    CLOUDINARY_FOLDERS,
-    MEDIA_RESOURCE_TYPES,
-} from "../../services/media/media.constants.js";
-import {
-    destroyMedia,
-    uploadImageMedia,
-} from "../../services/media/media.services.js";
+import * as courseRepository from "./course.repository.js";
+
+import logger from "../../utils/pino-logger.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
 import generateSlug from "../../utils/slug-generator.utility.js";
-import logger from "../../utils/pino-logger.utility.js";
-import * as courseRepository from "./course.repository.js";
 import {
     getAuthorizedInstructorCourse,
     validateCoursePublishEligibility,
 } from "./course.utility.js";
-import { COURSE_QUERY_DEFAULTS } from "./course.constants.js";
+
+import {
+    destroyMedia,
+    uploadImageMedia,
+} from "../../services/media/media.services.js";
+
+import HTTP_STATUS from "../../constants/http.constants.js";
+import {
+    COURSE_ERROR_MESSAGES,
+    COURSE_QUERY_DEFAULTS,
+} from "./course.constants.js";
 import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
-
-///////////////////////////////////////////////////////////////
-// fetch courses service
-
-const fetchCourses = ({ queryData }) => {
-    const { page, limit, search, sortBy, sortOrder, level, language } =
-        queryData;
-
-    const filters = {};
-
-    if (level) {
-        filters.level = level;
-    }
-
-    if (language) {
-        filters.language = language;
-    }
-
-    const options = {
-        pagination: {
-            page: Number(page) || COURSE_QUERY_DEFAULTS.PAGE,
-            limit: Number(limit) || COURSE_QUERY_DEFAULTS.LIMIT,
-        },
-
-        filters,
-
-        sort: {
-            by: sortBy ?? COURSE_QUERY_DEFAULTS.SORT_BY,
-            order: sortOrder ?? COURSE_QUERY_DEFAULTS.SORT_ORDER,
-        },
-    };
-
-    if (search) {
-        options.search = search;
-    }
-
-    return courseRepository.findCourses({ options });
-};
-
-///////////////////////////////////////////////////////////////
-// fetch current course service
-
-const fetchCurrentCourse = async ({ courseId }) => {
-    const course = await courseRepository.aggregateCurrentCourseData({
-        courseId,
-    });
-
-    if (!course) {
-        throw new ApiError({
-            statusCode: HTTP_STATUS.NOT_FOUND,
-            message: "course not found",
-        });
-    }
-
-    return course;
-};
-
-///////////////////////////////////////////////////////////////
-// fetch instructor courses service
-
-const fetchInstructorCourses = ({ instructorId, page, limit }) => {
-    const options = {
-        instructor: instructorId,
-        page: Number(page) || COURSE_QUERY_DEFAULTS.PAGE,
-        limit: Number(limit) || COURSE_QUERY_DEFAULTS.LIMIT,
-    };
-
-    return courseRepository.findInstructorCourses({ options });
-};
-
-///////////////////////////////////////////////////////////////
-// fetch instructor current course service
-
-const fetchInstructorCourse = async ({ courseId, instructorId }) => {
-    return getAuthorizedInstructorCourse({ courseId, instructorId });
-};
+import {
+    CLOUDINARY_FOLDERS,
+    MEDIA_RESOURCE_TYPES,
+} from "../../services/media/media.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create course service
@@ -109,7 +39,7 @@ const createCourse = async ({
     if (existingSlug) {
         throw new ApiError({
             statusCode: HTTP_STATUS.CONFLICT,
-            message: `Course is already exist with ${slug} slug, change title to create course.`,
+            message: COURSE_ERROR_MESSAGES.COURSE_TITLE_ALREADY_EXISTS,
         });
     }
 
@@ -176,7 +106,7 @@ const updateCourse = async ({ courseId, instructorId, courseData }) => {
         ) {
             throw new ApiError({
                 statusCode: HTTP_STATUS.CONFLICT,
-                message: "A course with this title already exists.",
+                message: COURSE_ERROR_MESSAGES.COURSE_TITLE_ALREADY_EXISTS,
             });
         }
 
@@ -279,7 +209,7 @@ const publishCourse = async ({ courseId, instructorId }) => {
     if (!course) {
         throw new ApiError({
             statusCode: HTTP_STATUS.NOT_FOUND,
-            message: "Course not found",
+            message: COURSE_ERROR_MESSAGES.COURSE_NOT_FOUND,
         });
     }
 
@@ -288,7 +218,7 @@ const publishCourse = async ({ courseId, instructorId }) => {
     if (!isValid && errors.length > 0) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: "Course is not eligible to be published.",
+            message: COURSE_ERROR_MESSAGES.COURSE_NOT_ELIGIBLE_FOR_PUBLISH,
             errors,
         });
     }
@@ -311,7 +241,7 @@ const saveCourseAsDraft = async ({ courseId, instructorId }) => {
     if (course.status === RESOURCE_STATUS.DRAFT) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: "Course is already saved as draft.",
+            message: COURSE_ERROR_MESSAGES.COURSE_ALREADY_DRAFT,
         });
     }
 
@@ -322,17 +252,93 @@ const saveCourseAsDraft = async ({ courseId, instructorId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// fetch instructor courses service
+
+const fetchInstructorCourses = ({ instructorId, page, limit }) => {
+    const options = {
+        instructor: instructorId,
+        page: Number(page) || COURSE_QUERY_DEFAULTS.PAGE,
+        limit: Number(limit) || COURSE_QUERY_DEFAULTS.LIMIT,
+    };
+
+    return courseRepository.findInstructorCourses({ options });
+};
+
+///////////////////////////////////////////////////////////////
+// fetch instructor current course service
+
+const fetchInstructorCourse = async ({ courseId, instructorId }) => {
+    return getAuthorizedInstructorCourse({ courseId, instructorId });
+};
+
+///////////////////////////////////////////////////////////////
+// fetch courses service
+
+const fetchCourses = ({ queryData }) => {
+    const { page, limit, search, sortBy, sortOrder, level, language } =
+        queryData;
+
+    const filters = {};
+
+    if (level) {
+        filters.level = level;
+    }
+
+    if (language) {
+        filters.language = language;
+    }
+
+    const options = {
+        pagination: {
+            page: Number(page) || COURSE_QUERY_DEFAULTS.PAGE,
+            limit: Number(limit) || COURSE_QUERY_DEFAULTS.LIMIT,
+        },
+
+        filters,
+
+        sort: {
+            by: sortBy ?? COURSE_QUERY_DEFAULTS.SORT_BY,
+            order: sortOrder ?? COURSE_QUERY_DEFAULTS.SORT_ORDER,
+        },
+    };
+
+    if (search) {
+        options.search = search;
+    }
+
+    return courseRepository.findCourses({ options });
+};
+
+///////////////////////////////////////////////////////////////
+// fetch current course service
+
+const fetchCurrentCourse = async ({ courseId }) => {
+    const [course] = await courseRepository.aggregateCurrentCourseData({
+        courseId,
+    });
+
+    if (!course) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: COURSE_ERROR_MESSAGES.COURSE_NOT_FOUND,
+        });
+    }
+
+    return course;
+};
+
+///////////////////////////////////////////////////////////////
 // exports
 
 export {
-    fetchCourses,
-    fetchCurrentCourse,
-    fetchInstructorCourses,
-    fetchInstructorCourse,
     createCourse,
     updateCourse,
     updateThumbnail,
     removeCourse,
     publishCourse,
     saveCourseAsDraft,
+    fetchInstructorCourses,
+    fetchInstructorCourse,
+    fetchCourses,
+    fetchCurrentCourse,
 };
