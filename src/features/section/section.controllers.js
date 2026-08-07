@@ -1,7 +1,12 @@
 import * as sectionService from "./section.service.js";
-import HTTP_STATUS from "../../constants/http.constants.js";
+
 import ApiResponse from "../../utils/response-handler.utility.js";
-import { SECTION_UPDATE_FIELDS } from "./section.constants.js";
+
+import HTTP_STATUS from "../../constants/http.constants.js";
+import {
+    SECTION_SUCCESS_MESSAGES,
+    SECTION_UPDATE_FIELDS,
+} from "./section.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create section controller
@@ -16,7 +21,7 @@ const createSection = async (req, res) => {
     return res.status(HTTP_STATUS.CREATED).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.CREATED,
-            message: `${section.title} created successfully.`,
+            message: SECTION_SUCCESS_MESSAGES.SECTION_CREATED,
             data: section,
         })
     );
@@ -26,7 +31,7 @@ const createSection = async (req, res) => {
 // update section controller
 
 const updateSection = async (req, res) => {
-    const data = SECTION_UPDATE_FIELDS.reduce((acc, key) => {
+    const sectionData = SECTION_UPDATE_FIELDS.reduce((acc, key) => {
         if (req.body[key] !== undefined) {
             acc[key] = req.body[key];
         }
@@ -36,13 +41,13 @@ const updateSection = async (req, res) => {
     const section = await sectionService.updateSection({
         sectionId: req.params.sectionId,
         instructorId: req.user._id,
-        data,
+        sectionData,
     });
 
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: `${section.title} updated successfully.`,
+            message: SECTION_SUCCESS_MESSAGES.SECTION_UPDATED,
             data: section,
         })
     );
@@ -60,7 +65,7 @@ const removeSection = async (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: "Section removed successfully.",
+            message: SECTION_SUCCESS_MESSAGES.SECTION_DELETED,
         })
     );
 };
@@ -78,7 +83,7 @@ const reorderSections = async (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: "Sections reordered successfully.",
+            message: SECTION_SUCCESS_MESSAGES.SECTIONS_REORDERED,
         })
     );
 };
@@ -95,7 +100,7 @@ const publishSection = async (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: `${section.title} published successfully.`,
+            message: SECTION_SUCCESS_MESSAGES.SECTION_PUBLISHED,
             data: section,
         })
     );
@@ -113,7 +118,7 @@ const saveSectionAsDraft = async (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: `${section.title} saved as draft successfully.`,
+            message: SECTION_SUCCESS_MESSAGES.SECTION_SAVED_AS_DRAFT,
             data: section,
         })
     );
@@ -131,17 +136,17 @@ const fetchInstructorSection = async (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: `${section.title} fetched successfully.`,
+            message: SECTION_SUCCESS_MESSAGES.SECTIONS_FETCHED,
             data: section,
         })
     );
 };
 
 ///////////////////////////////////////////////////////////////
-// fetch instructor sections controller
+// fetch course sections controller
 
-const fetchInstructorSections = async (req, res) => {
-    const sections = await sectionService.fetchInstructorSections({
+const fetchCourseSections = async (req, res) => {
+    const sections = await sectionService.fetchCourseSections({
         courseId: req.params.courseId,
         instructorId: req.user._id,
     });
@@ -149,7 +154,7 @@ const fetchInstructorSections = async (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: "Sections fetched successfully.",
+            message: SECTION_SUCCESS_MESSAGES.SECTIONS_FETCHED,
             data: sections,
         })
     );
@@ -165,6 +170,6 @@ export {
     reorderSections,
     publishSection,
     saveSectionAsDraft,
-    fetchInstructorSections,
     fetchInstructorSection,
+    fetchCourseSections,
 };

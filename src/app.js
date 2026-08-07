@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import authRouter from "./features/auth/routes/auth.routes.js";
 import userRouter from "./features/user/routes/user.routes.js";
 import courseRouter from "./features/course/routes/course.routes.js";
-import sectionRouter from "./features/section/section.routes.js";
+import sectionRouter from "./features/section/routes/section.routes.js";
 import lectureRouter from "./features/lecture/routes/lecture.routes.js";
 import { serverAppConfig } from "./config/env.config.js";
 import morganLogger from "./config/morgan.config.js";

@@ -1,31 +1,25 @@
 import * as courseRepository from "../course/course.repository.js";
 import * as sectionRepository from "./section.repository.js";
 import * as lectureRepository from "../lecture/lecture.repository.js";
+
 import ApiError from "../../utils/error-handler.utility.js";
+import { getAuthorizedInstructorCourse } from "../course/course.utility.js";
+
 import HTTP_STATUS from "../../constants/http.constants.js";
+import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
+import { COURSE_ERROR_MESSAGES } from "../course/course.constants.js";
+import { SECTION_ERROR_MESSAGES } from "./section.constants.js";
 import {
     getAuthorizedInstructorSection,
     validateCourseSectionReorder,
     validateSectionReorderPayload,
 } from "./section.utility.js";
-import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
-import { getAuthorizedInstructorCourse } from "../course/course.utility.js";
 
 ///////////////////////////////////////////////////////////////
 // create section service
 
 const createSection = async ({ courseId, instructorId, title }) => {
-    const course = await courseRepository.findInstructorCourseById({
-        courseId,
-        instructorId,
-    });
-
-    if (!course) {
-        throw new ApiError({
-            statusCode: HTTP_STATUS.NOT_FOUND,
-            message: "Course not found.",
-        });
-    }
+    await getAuthorizedInstructorCourse({ courseId, instructorId });
 
     const lastSection = await sectionRepository.findLastSectionOrder(courseId);
 
@@ -41,18 +35,15 @@ const createSection = async ({ courseId, instructorId, title }) => {
 ///////////////////////////////////////////////////////////////
 // update section service
 
-const updateSection = async ({ sectionId, instructorId, data }) => {
-    await getAuthorizedInstructorSection({
+const updateSection = async ({ sectionId, instructorId, sectionData }) => {
+    const section = await getAuthorizedInstructorSection({
         sectionId,
         instructorId,
     });
 
-    const section = await sectionRepository.updateSection({
-        sectionId,
-        data,
-    });
+    Object.assign(section, sectionData);
 
-    return section;
+    return sectionRepository.saveSection({ section, validateBeforeSave: true });
 };
 
 ///////////////////////////////////////////////////////////////
@@ -102,7 +93,7 @@ const publishSection = async ({ sectionId, instructorId }) => {
     if (section.status !== RESOURCE_STATUS.DRAFT) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: "Only draft section can be published.",
+            message: SECTION_ERROR_MESSAGES.SECTION_NOT_DRAFT,
         });
     }
 
@@ -113,12 +104,14 @@ const publishSection = async ({ sectionId, instructorId }) => {
     if (lectureCount === 0) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message:
-                "Section must contain at least one lecture before publishing.",
+            message: SECTION_ERROR_MESSAGES.SECTION_MUST_CONTAIN_LECTURE,
         });
     }
 
-    return sectionRepository.publishSection({ sectionId });
+    return sectionRepository.toggleSectionStatus({
+        sectionId,
+        status: RESOURCE_STATUS.PUBLISHED,
+    });
 };
 
 ///////////////////////////////////////////////////////////////
@@ -133,11 +126,14 @@ const saveSectionAsDraft = async ({ sectionId, instructorId }) => {
     if (section.status === RESOURCE_STATUS.DRAFT) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: "This section is already saved as draft",
+            message: SECTION_ERROR_MESSAGES.SECTION_ALREADY_DRAFT,
         });
     }
 
-    return sectionRepository.saveSectionAsDraft({ sectionId });
+    return sectionRepository.toggleSectionStatus({
+        sectionId,
+        status: RESOURCE_STATUS.DRAFT,
+    });
 };
 
 ///////////////////////////////////////////////////////////////
@@ -148,9 +144,9 @@ const fetchInstructorSection = async ({ sectionId, instructorId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// fetch instructor sections service
+// fetch course sections service
 
-const fetchInstructorSections = async ({ courseId, instructorId }) => {
+const fetchCourseSections = async ({ courseId, instructorId }) => {
     const course = await getAuthorizedInstructorCourse({
         courseId,
         instructorId,
@@ -172,5 +168,5 @@ export {
     publishSection,
     saveSectionAsDraft,
     fetchInstructorSection,
-    fetchInstructorSections,
+    fetchCourseSections,
 };

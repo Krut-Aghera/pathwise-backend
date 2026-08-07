@@ -1,9 +1,9 @@
-import { body, query } from "express-validator";
+import { body } from "express-validator";
 
 ///////////////////////////////////////////////////////////////
 // reusable validators
 
-const titleValidator = body("title")
+const titleValidations = body("title")
     .trim()
     .notEmpty()
     .withMessage("Section title is required.")
@@ -14,17 +14,17 @@ const titleValidator = body("title")
 ///////////////////////////////////////////////////////////////
 // create section
 
-export const createSection = [titleValidator];
+const createSectionValidators = [titleValidations];
 
 ///////////////////////////////////////////////////////////////
 // update section
 
-export const updateSection = [titleValidator];
+const updateSectionValidators = [titleValidations];
 
 ///////////////////////////////////////////////////////////////
 // reorder course sections validator
 
-export const reorderSections = [
+const reorderSectionValidators = [
     body("sections")
         .isArray({ min: 1 })
         .withMessage("Sections must be a non-empty array."),
@@ -43,3 +43,12 @@ export const reorderSections = [
         .isInt({ min: 1 })
         .withMessage("Order must be a positive integer."),
 ];
+
+///////////////////////////////////////////////////////////////
+// exports
+
+export {
+    createSectionValidators,
+    updateSectionValidators,
+    reorderSectionValidators,
+};

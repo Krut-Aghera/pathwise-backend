@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
+
+import Section from "./section.model.js";
+
 import {
     REORDER_TEMP_OFFSET,
     RESOURCE_STATUS,
 } from "../../constants/resource.constants.js";
-import Section from "./section.model.js";
 
 ///////////////////////////////////////////////////////////////
 // create section repository
@@ -13,22 +15,12 @@ const createSection = (sectionData) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// update section
+// save section
 
-const updateSection = ({ sectionId, data }) => {
-    return Section.findByIdAndUpdate(
-        {
-            _id: sectionId,
-            isDeleted: false,
-        },
-        {
-            $set: data,
-        },
-        {
-            returnDocument: "after",
-            runValidators: true,
-        }
-    );
+const saveSection = ({ section, validateBeforeSave = false }) => {
+    return section.save({
+        validateBeforeSave,
+    });
 };
 
 ///////////////////////////////////////////////////////////////
@@ -50,9 +42,6 @@ const removeSection = ({ sectionId }) => {
         }
     );
 };
-
-///////////////////////////////////////////////////////////////
-// reorder sections repository
 
 ///////////////////////////////////////////////////////////////
 // reorder sections repository
@@ -103,9 +92,9 @@ const reorderSections = async ({ sections }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// publish section repository
+// toggle section status
 
-const publishSection = ({ sectionId }) => {
+const toggleSectionStatus = ({ sectionId, status }) => {
     return Section.findByIdAndUpdate(
         {
             _id: sectionId,
@@ -113,27 +102,7 @@ const publishSection = ({ sectionId }) => {
         },
         {
             $set: {
-                status: RESOURCE_STATUS.PUBLISHED,
-            },
-        },
-        {
-            returnDocument: "after",
-        }
-    );
-};
-
-///////////////////////////////////////////////////////////////
-// save section as draft repository
-
-const saveSectionAsDraft = async ({ sectionId }) => {
-    return Section.findByIdAndUpdate(
-        {
-            _id: sectionId,
-            isDeleted: false,
-        },
-        {
-            $set: {
-                status: RESOURCE_STATUS.DRAFT,
+                status,
             },
         },
         {
@@ -215,11 +184,10 @@ const findCourseSectionIds = ({ courseId }) => {
 
 export {
     createSection,
-    updateSection,
+    saveSection,
     removeSection,
     reorderSections,
-    publishSection,
-    saveSectionAsDraft,
+    toggleSectionStatus,
     findSectionByTitle,
     findLastSectionOrder,
     findInstructorSection,

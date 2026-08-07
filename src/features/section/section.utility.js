@@ -1,15 +1,12 @@
 import HTTP_STATUS from "../../constants/http.constants.js";
 import ApiError from "../../utils/error-handler.utility.js";
+import { SECTION_ERROR_MESSAGES } from "./section.constants.js";
 import * as sectionRepository from "./section.repository.js";
 
 //////////////////////////////////////////////////////////////
 // get authorized instructor section
 
-const getAuthorizedInstructorSection = async ({
-    sectionId,
-    instructorId,
-    includeCourse = false,
-}) => {
+const getAuthorizedInstructorSection = async ({ sectionId, instructorId }) => {
     const section = await sectionRepository.findInstructorSection({
         sectionId,
         instructorId,
@@ -18,12 +15,8 @@ const getAuthorizedInstructorSection = async ({
     if (!section || !section.course) {
         throw new ApiError({
             statusCode: HTTP_STATUS.NOT_FOUND,
-            message: "Section not found.",
+            message: SECTION_ERROR_MESSAGES.SECTION_NOT_FOUND,
         });
-    }
-
-    if (!includeCourse) {
-        section.course = undefined;
     }
 
     return section;
@@ -40,14 +33,14 @@ const validateSectionReorderPayload = ({ sections }) => {
         if (sectionIds.has(sectionId)) {
             throw new ApiError({
                 statusCode: HTTP_STATUS.BAD_REQUEST,
-                message: "Duplicate section IDs are not allowed.",
+                message: SECTION_ERROR_MESSAGES.DUPLICATE_SECTION_IDS,
             });
         }
 
         if (orders.has(order)) {
             throw new ApiError({
                 statusCode: HTTP_STATUS.BAD_REQUEST,
-                message: "Duplicate section orders are not allowed.",
+                message: SECTION_ERROR_MESSAGES.DUPLICATE_SECTION_ORDERS,
             });
         }
 
@@ -63,7 +56,8 @@ const validateSectionReorderPayload = ({ sections }) => {
         if (sortedOrders[index] !== expectedOrder) {
             throw new ApiError({
                 statusCode: HTTP_STATUS.BAD_REQUEST,
-                message: "Section orders must start from 1 and be sequential.",
+                message:
+                    SECTION_ERROR_MESSAGES.SECTION_ORDERS_MUST_BE_SEQUENTIAL,
             });
         }
     }
@@ -76,7 +70,7 @@ const validateCourseSectionReorder = ({ sections, courseSections }) => {
     if (sections.length !== courseSections.length) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: "Invalid section reorder payload.",
+            message: SECTION_ERROR_MESSAGES.INVALID_SECTION_REORDER_PAYLOAD,
         });
     }
 
@@ -88,7 +82,7 @@ const validateCourseSectionReorder = ({ sections, courseSections }) => {
         if (!courseSectionIds.has(sectionId)) {
             throw new ApiError({
                 statusCode: HTTP_STATUS.BAD_REQUEST,
-                message: "Invalid section reorder payload.",
+                message: SECTION_ERROR_MESSAGES.INVALID_SECTION_REORDER_PAYLOAD,
             });
         }
     }

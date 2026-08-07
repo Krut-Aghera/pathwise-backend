@@ -1,98 +1,44 @@
 import express from "express";
-import * as authMiddlewares from "../../middlewares/auth/auth.middleware.js";
-import * as sectionControllers from "./section.controllers.js";
-import * as sectionValidations from "./section.validators.js";
-import validationEngine from "../../middlewares/validation.middleware.js";
-import { ROLES } from "../user/user.constants.js";
-import { validateMongoIdParam } from "../../validations/common.validators.js";
-import {
-    createSectionRateLimiter,
-    updateSectionRateLimiter,
-    removeSectionRateLimiter,
-    reorderSectionsRateLimiter,
-    publishSectionRateLimiter,
-    saveSectionAsDraftRateLimiter,
-    fetchInstructorSectionRateLimiter,
-    fetchInstructorSectionsRateLimiter,
-} from "../../middlewares/ratelimiter/limiters/section.ratelimit.js";
+
+import * as sectionControllers from "../section.controllers.js";
+import * as sectionValidations from "../section.validators.js";
+import * as sectionRatelimiter from "../../../middlewares/ratelimiter/limiters/section.ratelimit.js";
+
+import instructorAuthMiddleware from "../../../middlewares/auth/instructor-auth.middleware.js";
+import validationEngine from "../../../middlewares/validation.middleware.js";
+
+import { validateMongoIdParam } from "../../../validations/common.validators.js";
+import { ROLES } from "../../user/user.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create router
 
-const sectionRouter = express.Router();
-
-//
-//
-//  ------------------------------------------------
-//   PRIVATE ROUTES [ INSTRUCTOR ] only
-//  ------------------------------------------------
-//
-//
-
-///////////////////////////////////////////////////////////////
-// authentication & authorization middleware
-
-sectionRouter.use(
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.authorizeRole(ROLES.INSTRUCTOR),
-    authMiddlewares.requireActiveAccount,
-    authMiddlewares.requireVerifiedEmail
-);
+const sectionInstructorRouter = express.Router();
 
 ///////////////////////////////////////////////////////////////
 // GET /api/v1/sections/course/:courseId
 // Retrieves all sections of an instructor-owned course.
 
-sectionRouter.get(
+sectionInstructorRouter.get(
     "/course/:courseId",
-    fetchInstructorSectionsRateLimiter,
+    sectionRatelimiter.fetchInstructorSectionsRateLimiter,
+    ...instructorAuthMiddleware,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
     }),
     validationEngine,
-    sectionControllers.fetchInstructorSections
-);
-
-///////////////////////////////////////////////////////////////
-// POST /api/v1/sections/course/:courseId
-// Creates a new section inside an instructor-owned course.
-
-sectionRouter.post(
-    "/course/:courseId",
-    createSectionRateLimiter,
-    validateMongoIdParam({
-        paramName: "courseId",
-        fieldName: "Course ID",
-    }),
-    sectionValidations.createSection,
-    validationEngine,
-    sectionControllers.createSection
-);
-
-///////////////////////////////////////////////////////////////
-// PATCH /api/v1/sections/course/:courseId/reorder
-// Reorders sections of an instructor-owned course.
-
-sectionRouter.patch(
-    "/courses/:courseId/reorder",
-    reorderSectionsRateLimiter,
-    validateMongoIdParam({
-        paramName: "courseId",
-        fieldName: "Course ID",
-    }),
-    sectionValidations.reorderSections,
-    validationEngine,
-    sectionControllers.reorderSections
+    sectionControllers.fetchCourseSections
 );
 
 ///////////////////////////////////////////////////////////////
 // GET /api/v1/sections/:sectionId
 // Retrieves a specific instructor-owned section.
 
-sectionRouter.get(
+sectionInstructorRouter.get(
     "/:sectionId",
-    fetchInstructorSectionRateLimiter,
+    sectionRatelimiter.fetchInstructorSectionRateLimiter,
+    ...instructorAuthMiddleware,
     validateMongoIdParam({
         paramName: "sectionId",
         fieldName: "Section ID",
@@ -102,17 +48,52 @@ sectionRouter.get(
 );
 
 ///////////////////////////////////////////////////////////////
+// POST /api/v1/sections/course/:courseId
+// Creates a new section inside an instructor-owned course.
+
+sectionInstructorRouter.post(
+    "/course/:courseId",
+    sectionRatelimiter.createSectionRateLimiter,
+    ...instructorAuthMiddleware,
+    validateMongoIdParam({
+        paramName: "courseId",
+        fieldName: "Course ID",
+    }),
+    sectionValidations.createSectionValidators,
+    validationEngine,
+    sectionControllers.createSection
+);
+
+///////////////////////////////////////////////////////////////
+// PATCH /api/v1/sections/course/:courseId/reorder
+// Reorders sections of an instructor-owned course.
+
+sectionInstructorRouter.patch(
+    "/courses/:courseId/reorder",
+    sectionRatelimiter.reorderSectionsRateLimiter,
+    ...instructorAuthMiddleware,
+    validateMongoIdParam({
+        paramName: "courseId",
+        fieldName: "Course ID",
+    }),
+    sectionValidations.reorderSectionValidators,
+    validationEngine,
+    sectionControllers.reorderSections
+);
+
+///////////////////////////////////////////////////////////////
 // PATCH /api/v1/sections/:sectionId
 // Updates an instructor-owned section.
 
-sectionRouter.patch(
+sectionInstructorRouter.patch(
     "/:sectionId",
-    updateSectionRateLimiter,
+    sectionRatelimiter.updateSectionRateLimiter,
+    ...instructorAuthMiddleware,
     validateMongoIdParam({
         paramName: "sectionId",
         fieldName: "Section ID",
     }),
-    sectionValidations.updateSection,
+    sectionValidations.updateSectionValidators,
     validationEngine,
     sectionControllers.updateSection
 );
@@ -121,9 +102,10 @@ sectionRouter.patch(
 // PATCH /api/v1/sections/:sectionId/publish
 // Publishes an instructor-owned section.
 
-sectionRouter.patch(
+sectionInstructorRouter.patch(
     "/:sectionId/publish",
-    publishSectionRateLimiter,
+    sectionRatelimiter.publishSectionRateLimiter,
+    ...instructorAuthMiddleware,
     validateMongoIdParam({
         paramName: "sectionId",
         fieldName: "Section ID",
@@ -136,9 +118,10 @@ sectionRouter.patch(
 // PATCH /api/v1/sections/:sectionId/draft
 // Saves an instructor-owned section as draft.
 
-sectionRouter.patch(
+sectionInstructorRouter.patch(
     "/:sectionId/draft",
-    saveSectionAsDraftRateLimiter,
+    sectionRatelimiter.saveSectionAsDraftRateLimiter,
+    ...instructorAuthMiddleware,
     validateMongoIdParam({
         paramName: "sectionId",
         fieldName: "Section ID",
@@ -151,9 +134,10 @@ sectionRouter.patch(
 // DELETE /api/v1/sections/:sectionId
 // Soft deletes an instructor-owned section.
 
-sectionRouter.delete(
+sectionInstructorRouter.delete(
     "/:sectionId",
-    removeSectionRateLimiter,
+    sectionRatelimiter.removeSectionRateLimiter,
+    ...instructorAuthMiddleware,
     validateMongoIdParam({
         paramName: "sectionId",
         fieldName: "Section ID",
@@ -165,4 +149,4 @@ sectionRouter.delete(
 ///////////////////////////////////////////////////////////////
 // exports
 
-export default sectionRouter;
+export default sectionInstructorRouter;

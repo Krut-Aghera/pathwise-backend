@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
+
 import {
     RESOURCE_STATUS,
     RESOURCE_STATUS_ARRAY,
 } from "../../constants/resource.constants.js";
 
 ///////////////////////////////////////////////////////////////
-// section schema
+// section schema model
 
 const sectionSchema = new mongoose.Schema(
     {
