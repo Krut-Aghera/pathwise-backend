@@ -6,22 +6,24 @@ import {
     INFO_BOX_TYPES,
     SPACING,
     TYPOGRAPHY,
-} from "../theme.js";
+} from "../../theme.js";
 
-import BaseEmail from "../layouts/BaseEmail.jsx";
-import EmailHeader from "../components/EmailHeader.jsx";
-import EmailContent from "../components/EmailContent.jsx";
-import InfoBox from "../components/InfoBox.jsx";
-import EmailFooter from "../components/EmailFooter.jsx";
+import BaseEmail from "../../layouts/BaseEmail.jsx";
+import EmailHeader from "../../components/EmailHeader.jsx";
+import EmailContent from "../../components/EmailContent.jsx";
+import PrimaryButton from "../../components/PrimaryButton.jsx";
+import InfoBox from "../../components/InfoBox.jsx";
+import EmailFooter from "../../components/EmailFooter.jsx";
 
-const EmailChangedSuccessfullyEmail = ({ username }) => {
+const EmailChangeRequestEmail = ({ username, actionUrl }) => {
     return (
-        <BaseEmail
-            preview={`Your ${COMPANY.name} email address has been updated`}
-        >
+        <BaseEmail preview={`Confirm your new ${COMPANY.name} email address`}>
             <EmailHeader />
 
-            <EmailContent title="Email Address Updated" username={username}>
+            <EmailContent
+                title="Confirm Your New Email Address"
+                username={username}
+            >
                 <Text
                     style={{
                         color: COLORS.textSecondary,
@@ -29,11 +31,26 @@ const EmailChangedSuccessfullyEmail = ({ username }) => {
                         lineHeight: TYPOGRAPHY.body.lineHeight,
                     }}
                 >
-                    Your <strong>{COMPANY.name}</strong> account email address
-                    has been updated successfully.
+                    We received a request to update the email address associated
+                    with your <strong>{COMPANY.name}</strong> account.
                 </Text>
 
-                <InfoBox variant={INFO_BOX_TYPES.SUCCESS}>
+                <Text
+                    style={{
+                        color: COLORS.textSecondary,
+                        fontSize: TYPOGRAPHY.body.fontSize,
+                        lineHeight: TYPOGRAPHY.body.lineHeight,
+                    }}
+                >
+                    To complete this change, please verify ownership of your new
+                    email address by clicking the button below.
+                </Text>
+
+                <PrimaryButton href={actionUrl}>
+                    Confirm Email Address
+                </PrimaryButton>
+
+                <InfoBox variant={INFO_BOX_TYPES.WARNING}>
                     <Text
                         style={{
                             margin: 0,
@@ -43,22 +60,9 @@ const EmailChangedSuccessfullyEmail = ({ username }) => {
                             textAlign: "center",
                         }}
                     >
-                        Your new email address is now associated with your
-                        account and will be used for future sign-ins and
-                        important account notifications.
+                        This verification link will expire in 15 minutes.
                     </Text>
                 </InfoBox>
-
-                <Text
-                    style={{
-                        color: COLORS.textSecondary,
-                        fontSize: TYPOGRAPHY.body.fontSize,
-                        lineHeight: TYPOGRAPHY.body.lineHeight,
-                    }}
-                >
-                    For your security, you've been signed out of your account.
-                    Please sign in again using your new email address.
-                </Text>
 
                 <Text
                     style={{
@@ -67,8 +71,9 @@ const EmailChangedSuccessfullyEmail = ({ username }) => {
                         lineHeight: TYPOGRAPHY.small.lineHeight,
                     }}
                 >
-                    If you didn't make this change, please contact our support
-                    team immediately.
+                    If you didn't request this change, you can safely ignore
+                    this email. Your account email address will remain
+                    unchanged.
                 </Text>
 
                 <Text
@@ -91,4 +96,4 @@ const EmailChangedSuccessfullyEmail = ({ username }) => {
     );
 };
 
-export default EmailChangedSuccessfullyEmail;
+export default EmailChangeRequestEmail;

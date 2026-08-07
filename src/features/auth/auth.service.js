@@ -26,7 +26,6 @@ import { USER_TOKEN_FIELDS } from "../user/user.constants.js";
 import { AUTH_ERROR_MESSAGES } from "./auth.constants.js";
 import { jwtEnvConfig } from "../../config/env.config.js";
 
-
 ///////////////////////////////////////////////////////////////
 // registration service
 

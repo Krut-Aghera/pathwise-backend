@@ -1,27 +1,27 @@
+import crypto from "crypto";
+
 import * as userRepository from "./user.repository.js";
-import generateSecureOtp from "../../utils/otp-generator.utility.js";
+import * as userEmail from "../../services/email/mailers/user.mailers.js";
+
+import logger from "../../utils/pino-logger.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
-import HTTP_STATUS from "../../constants/http.constants.js";
+import generateSecureOtp from "../../utils/otp-generator.utility.js";
 import {
     generateSecureTokens,
     getTokenExpiry,
 } from "../../utils/token-generator.utility.js";
-import { EMAIL_EXPIRY_MINUTES } from "../../services/email/email.constans.js";
-import {
-    sendEmailChangedSuccessfullyEmail,
-    sendEmailChangeVerificationEmail,
-    sendInstructorAccessVerificationEmail,
-    sendInstructorAccessGrantedEmail,
-    sendAccountDeactivationOtpEmail,
-    sendAccountDeactivatedEmail,
-} from "../../services/email/email.services.js";
 import {
     createEmailChangeVerificationUrl,
     createInstructorAccessVerificationUrl,
 } from "../../services/email/email.utility.js";
-import logger from "../../utils/pino-logger.utility.js";
-import crypto from "crypto";
-import { ROLES, USER_TOKEN_FIELDS } from "./user.constants.js";
+
+import HTTP_STATUS from "../../constants/http.constants.js";
+import { EMAIL_EXPIRY_MINUTES } from "../../services/email/email.constans.js";
+import {
+    ROLES,
+    USER_ERROR_MESSAGES,
+    USER_TOKEN_FIELDS,
+} from "./user.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // update username service
@@ -42,7 +42,7 @@ const requestEmailUpdation = async ({ user, password, newEmail }) => {
     if (!dbUser) {
         throw new ApiError({
             statusCode: HTTP_STATUS.NOT_FOUND,
-            message: "User not found.",
+            message: USER_ERROR_MESSAGES.USER_NOT_FOUND,
         });
     }
 
@@ -51,15 +51,14 @@ const requestEmailUpdation = async ({ user, password, newEmail }) => {
     if (!isValidPassword) {
         throw new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
-            message: "Current password is incorrect.",
+            message: USER_ERROR_MESSAGES.INCORRECT_PASSWORD,
         });
     }
 
     if (dbUser.email === newEmail) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message:
-                "New email address must be different from your current email address.",
+            message: USER_ERROR_MESSAGES.EMAIL_MUST_BE_DIFFERENT,
         });
     }
 
@@ -68,7 +67,7 @@ const requestEmailUpdation = async ({ user, password, newEmail }) => {
     if (existingUser) {
         throw new ApiError({
             statusCode: HTTP_STATUS.CONFLICT,
-            message: "Email address is already in use.",
+            message: USER_ERROR_MESSAGES.EMAIL_ALREADY_IN_USE,
         });
     }
 
@@ -83,7 +82,7 @@ const requestEmailUpdation = async ({ user, password, newEmail }) => {
     await userRepository.saveUser(dbUser);
 
     try {
-        await sendEmailChangeVerificationEmail({
+        await userEmail.sendEmailUpdateRequestEmail({
             email: dbUser.pendingEmail,
             username: dbUser.username,
             actionUrl: createEmailChangeVerificationUrl(token),
@@ -114,28 +113,29 @@ const confirmEmailUpdation = async ({ user, token }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const dbUser = await userRepository.findUserByToken({
-        ...USER_TOKEN_FIELDS.EMAIL_CHANGE,
+        tokenField: USER_TOKEN_FIELDS.EMAIL_CHANGE.token,
+        expiryField: USER_TOKEN_FIELDS.EMAIL_CHANGE.expiry,
         hashedToken,
-    });
+    }).select("+pendingEmail");
 
     if (!dbUser) {
         throw new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
-            message: "Invalid or expired verification link.",
+            message: USER_ERROR_MESSAGES.INVALID_OR_EXPIRED_VERIFICATION_LINK,
         });
     }
 
     if (!dbUser._id.equals(user._id)) {
         throw new ApiError({
             statusCode: HTTP_STATUS.FORBIDDEN,
-            message: "You are not authorized to perform this action.",
+            message: USER_ERROR_MESSAGES.NOT_AUTHORIZED,
         });
     }
 
     if (!dbUser.pendingEmail) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: "No email change request was found.",
+            message: USER_ERROR_MESSAGES.EMAIL_CHANGE_REQUEST_NOT_FOUND,
         });
     }
 
@@ -150,7 +150,7 @@ const confirmEmailUpdation = async ({ user, token }) => {
     await userRepository.saveUser(dbUser);
 
     try {
-        await sendEmailChangedSuccessfullyEmail({
+        await userEmail.sendEmailUpdateConfirmEmail({
             email: dbUser.email,
             username: dbUser.username,
         });
@@ -174,14 +174,14 @@ const requestInstructorAccess = async ({ user }) => {
     if (!dbUser) {
         throw new ApiError({
             statusCode: HTTP_STATUS.NOT_FOUND,
-            message: "User not found.",
+            message: USER_ERROR_MESSAGES.USER_NOT_FOUND,
         });
     }
 
     if (dbUser.role === ROLES.INSTRUCTOR) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: "You already have instructor access.",
+            message: USER_ERROR_MESSAGES.ALREADY_INSTRUCTOR,
         });
     }
 
@@ -195,7 +195,7 @@ const requestInstructorAccess = async ({ user }) => {
     await userRepository.saveUser(dbUser);
 
     try {
-        await sendInstructorAccessVerificationEmail({
+        await userEmail.sendInstructorAccessRequestEmail({
             email: dbUser.email,
             username: dbUser.username,
             actionUrl: createInstructorAccessVerificationUrl(token),
@@ -225,28 +225,29 @@ const confirmInstructorAccess = async ({ user, token }) => {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const dbUser = await userRepository.findUserByToken({
-        ...USER_TOKEN_FIELDS.INSTRUCTOR_ACCESS,
+        tokenField: USER_TOKEN_FIELDS.INSTRUCTOR_ACCESS.token,
+        expiryField: USER_TOKEN_FIELDS.INSTRUCTOR_ACCESS.expiry,
         hashedToken,
     });
 
     if (!dbUser) {
         throw new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
-            message: "Invalid or expired verification link.",
+            message: USER_ERROR_MESSAGES.INVALID_OR_EXPIRED_VERIFICATION_LINK,
         });
     }
 
     if (!dbUser._id.equals(user._id)) {
         throw new ApiError({
             statusCode: HTTP_STATUS.FORBIDDEN,
-            message: "You are not authorized to perform this action.",
+            message: USER_ERROR_MESSAGES.NOT_AUTHORIZED,
         });
     }
 
     if (dbUser.role === ROLES.INSTRUCTOR) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: "You already have instructor access.",
+            message: USER_ERROR_MESSAGES.ALREADY_INSTRUCTOR,
         });
     }
 
@@ -258,9 +259,10 @@ const confirmInstructorAccess = async ({ user, token }) => {
     await userRepository.saveUser(dbUser);
 
     try {
-        await sendInstructorAccessGrantedEmail({
+        await userEmail.sendInstructorAccessConfirmEmail({
             email: dbUser.email,
             username: dbUser.username,
+            // TODO: add action url
         });
     } catch (error) {
         logger.warn(
@@ -281,17 +283,10 @@ const fetchInstructorProfile = async ({ instructorId }) => {
         userId: instructorId,
     });
 
-    if (!instructor) {
+    if (!instructor || instructor.role !== ROLES.INSTRUCTOR) {
         throw new ApiError({
             statusCode: HTTP_STATUS.NOT_FOUND,
-            message: "Instructor profile not found",
-        });
-    }
-
-    if (instructor.role !== ROLES.INSTRUCTOR) {
-        throw new ApiError({
-            statusCode: HTTP_STATUS.NOT_FOUND,
-            message: "Instructor profile not found",
+            message: USER_ERROR_MESSAGES.USER_NOT_FOUND,
         });
     }
 
@@ -309,7 +304,7 @@ const requestAccountDeactivation = async ({ user, password }) => {
     if (!dbUser) {
         throw new ApiError({
             statusCode: HTTP_STATUS.NOT_FOUND,
-            message: "User not found.",
+            message: USER_ERROR_MESSAGES.USER_NOT_FOUND,
         });
     }
 
@@ -318,7 +313,7 @@ const requestAccountDeactivation = async ({ user, password }) => {
     if (!isValidPassword) {
         throw new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
-            message: "Incorrect password.",
+            message: USER_ERROR_MESSAGES.INCORRECT_PASSWORD,
         });
     }
 
@@ -333,7 +328,7 @@ const requestAccountDeactivation = async ({ user, password }) => {
     await userRepository.saveUser(dbUser);
 
     try {
-        await sendAccountDeactivationOtpEmail({
+        await userEmail.sendAccountDeactivationRequestEmail({
             email: dbUser.email,
             username: dbUser.username,
             otp,
@@ -360,7 +355,7 @@ const confirmAccountDeactivation = async ({ user, otp }) => {
     if (!dbUser) {
         throw new ApiError({
             statusCode: HTTP_STATUS.NOT_FOUND,
-            message: "User not found.",
+            message: USER_ERROR_MESSAGES.USER_NOT_FOUND,
         });
     }
 
@@ -371,7 +366,7 @@ const confirmAccountDeactivation = async ({ user, otp }) => {
     ) {
         throw new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
-            message: "Invalid or expired verification code.",
+            message: USER_ERROR_MESSAGES.INVALID_OR_EXPIRED_VERIFICATION_CODE,
         });
     }
 
@@ -385,7 +380,7 @@ const confirmAccountDeactivation = async ({ user, otp }) => {
     await userRepository.saveUser(dbUser);
 
     try {
-        await sendAccountDeactivatedEmail({
+        await userEmail.sendAccountDeactivationConfirmEmail({
             email: dbUser.email,
             username: dbUser.username,
         });

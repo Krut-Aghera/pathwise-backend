@@ -1,6 +1,6 @@
 import sendEmail from "../email.provider.js";
 import renderEmail from "../email.renderer.js";
-import * as authEmailTemplates from "../../../templates/mails/auth/auth-email.index.js";
+import * as authEmailTemplates from "../../../templates/mails/auth-mailTemplates/auth-email.index.js";
 import { AUTH_EMAIL_SUBJECTS } from "../email.constans.js";
 
 ///////////////////////////////////////////////////////////////

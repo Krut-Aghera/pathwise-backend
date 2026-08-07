@@ -1,10 +1,14 @@
 import * as userServices from "./user.service.js";
+
 import ApiResponse from "../../utils/response-handler.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
+
 import HTTP_STATUS from "../../constants/http.constants.js";
+import { USER_SUCCESS_MESSAGES } from "./user.constants.js";
 import {
     ACCESS_COOKIE_OPTIONS,
     REFRESH_COOKIE_OPTIONS,
+    JWT_TOKEN_TYPE,
 } from "../../constants/cookie.constants.js";
 
 ///////////////////////////////////////////////////////////////
@@ -14,7 +18,7 @@ const currentUser = (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: "Current user fetched successfully.",
+            message: USER_SUCCESS_MESSAGES.CURRENT_USER_FETCHED,
             data: req.user,
         })
     );
@@ -32,7 +36,7 @@ const updateUsername = async (req, res) => {
     res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: "Username has been updated successfully.",
+            message: USER_SUCCESS_MESSAGES.USERNAME_UPDATED,
             data: user,
         })
     );
@@ -43,13 +47,13 @@ const updateUsername = async (req, res) => {
 
 const fetchInstructorProfile = async (req, res) => {
     const instructor = await userServices.fetchInstructorProfile({
-        instructorId: req.params.id,
+        instructorId: req.params.instructorId,
     });
 
     res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: "Instructor profile fetched successfully.",
+            message: USER_SUCCESS_MESSAGES.INSTRUCTOR_PROFILE_FETCHED,
             data: instructor,
         })
     );
@@ -59,19 +63,16 @@ const fetchInstructorProfile = async (req, res) => {
 // request email updation controller
 
 const requestEmailUpdation = async (req, res) => {
-    const { password, newEmail } = req.body;
-
     await userServices.requestEmailUpdation({
         user: req.user,
-        password,
-        newEmail,
+        password: req.body.password,
+        newEmail: req.body.newEmail,
     });
 
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message:
-                "We've sent a verification link to your new email address.",
+            message: USER_SUCCESS_MESSAGES.REQUEST_EMAIL_UPDATION,
         })
     );
 };
@@ -80,29 +81,19 @@ const requestEmailUpdation = async (req, res) => {
 // change email confirmation controller
 
 const confirmEmailUpdation = async (req, res) => {
-    const { token } = req.params;
-
-    if (!token) {
-        throw new ApiError({
-            statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: "Email change token is missing.",
-        });
-    }
-
     await userServices.confirmEmailUpdation({
         user: req.user,
-        token,
+        token: req.params.token,
     });
 
     return res
         .status(HTTP_STATUS.OK)
-        .clearCookie("accessToken", ACCESS_COOKIE_OPTIONS)
-        .clearCookie("refreshToken", REFRESH_COOKIE_OPTIONS)
+        .clearCookie(JWT_TOKEN_TYPE.ACCESS, ACCESS_COOKIE_OPTIONS)
+        .clearCookie(JWT_TOKEN_TYPE.REFRESH, REFRESH_COOKIE_OPTIONS)
         .json(
             new ApiResponse({
                 statusCode: HTTP_STATUS.OK,
-                message:
-                    "Your email address has been updated successfully. Please sign in again using your new email address.",
+                message: USER_SUCCESS_MESSAGES.CONFIRM_EMAIL_UPDATION,
             })
         );
 };
@@ -118,8 +109,7 @@ const requestInstructorAccess = async (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message:
-                "We've sent a verification link to your email address. Verify it to become an instructor.",
+            message: USER_SUCCESS_MESSAGES.REQUEST_INSTRUCTOR_ACCESS,
         })
     );
 };
@@ -128,25 +118,15 @@ const requestInstructorAccess = async (req, res) => {
 // Confirm instructor access controller
 
 const confirmInstructorAccess = async (req, res) => {
-    const { token } = req.params;
-
-    if (!token) {
-        throw new ApiError({
-            statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: "Instructor verification token is missing.",
-        });
-    }
-
     await userServices.confirmInstructorAccess({
         user: req.user,
-        token,
+        token: req.params.token,
     });
 
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message:
-                "Congratulations! Your instructor account has been activated successfully.",
+            message: USER_SUCCESS_MESSAGES.CONFIRM_INSTRUCTOR_ACCESS,
         })
     );
 };
@@ -155,18 +135,15 @@ const confirmInstructorAccess = async (req, res) => {
 // deactivate account request controller
 
 const requestAccountDeactivation = async (req, res) => {
-    const { password } = req.body;
-
     await userServices.requestAccountDeactivation({
         user: req.user,
-        password,
+        password: req.body.password,
     });
 
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message:
-                "A verification code for account deactivation has been sent to your registered email address.",
+            message: USER_SUCCESS_MESSAGES.REQUEST_ACCOUNT_DEACTIVATION,
         })
     );
 };
@@ -175,21 +152,19 @@ const requestAccountDeactivation = async (req, res) => {
 // deactivate account confirmation controller
 
 const confirmAccountDeactivation = async (req, res) => {
-    const { otp } = req.body;
-
     await userServices.confirmAccountDeactivation({
         user: req.user,
-        otp,
+        otp: req.body.otp,
     });
 
     return res
         .status(HTTP_STATUS.OK)
-        .clearCookie("accessToken", ACCESS_COOKIE_OPTIONS)
-        .clearCookie("refreshToken", REFRESH_COOKIE_OPTIONS)
+        .clearCookie(JWT_TOKEN_TYPE.ACCESS, ACCESS_COOKIE_OPTIONS)
+        .clearCookie(JWT_TOKEN_TYPE.REFRESH, REFRESH_COOKIE_OPTIONS)
         .json(
             new ApiResponse({
                 statusCode: HTTP_STATUS.OK,
-                message: "Your account has been deactivated successfully.",
+                message: USER_SUCCESS_MESSAGES.CONFIRM_ACCOUNT_DEACTIVATION,
             })
         );
 };

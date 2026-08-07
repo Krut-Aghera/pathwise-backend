@@ -13,9 +13,9 @@ const userPublicRouter = express.Router();
 // Retrieves the public profile of a specific instructor.
 
 userPublicRouter.get(
-    "/instructor/:userId",
+    "/instructor/:instructorId",
     validateMongoIdParam({
-        paramName: "userId",
+        paramName: "instructorId",
         fieldName: "Instructor ID",
     }),
     validationEngine,

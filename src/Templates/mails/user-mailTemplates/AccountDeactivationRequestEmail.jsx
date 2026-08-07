@@ -6,15 +6,15 @@ import {
     INFO_BOX_TYPES,
     SPACING,
     TYPOGRAPHY,
-} from "../theme.js";
+} from "../../theme.js";
 
-import BaseEmail from "../layouts/BaseEmail.jsx";
-import EmailHeader from "../components/EmailHeader.jsx";
-import EmailContent from "../components/EmailContent.jsx";
-import InfoBox from "../components/InfoBox.jsx";
-import EmailFooter from "../components/EmailFooter.jsx";
+import BaseEmail from "../../layouts/BaseEmail.jsx";
+import EmailHeader from "../../components/EmailHeader.jsx";
+import EmailContent from "../../components/EmailContent.jsx";
+import InfoBox from "../../components/InfoBox.jsx";
+import EmailFooter from "../../components/EmailFooter.jsx";
 
-const AccountDeactivationOtpEmail = ({ username, otp }) => {
+const AccountDeactivationRequestEmail = ({ username, otp }) => {
     return (
         <BaseEmail
             preview={`Confirm your ${COMPANY.name} account deactivation`}
@@ -96,4 +96,4 @@ const AccountDeactivationOtpEmail = ({ username, otp }) => {
     );
 };
 
-export default AccountDeactivationOtpEmail;
+export default AccountDeactivationRequestEmail;

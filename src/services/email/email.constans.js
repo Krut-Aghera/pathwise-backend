@@ -1,6 +1,6 @@
 import requireEnv from "../../utils/env-validator.utility.js";
 
-export const AUTH_EMAIL_SUBJECTS = {
+export const AUTH_EMAIL_SUBJECTS = Object.freeze({
     REGISTRATION: "Welcome to Pathwise LMS",
 
     EMAIL_VERIFICATION_REQUEST: "Verify your Pathwise account",
@@ -10,16 +10,21 @@ export const AUTH_EMAIL_SUBJECTS = {
     PASSWORD_RESET_CONFIRM: "Password reset successful",
 
     PASSWORD_CHANGED: "Your Pathwise password has been changed",
-};
+});
+
+export const USER_EMAIL_SUBJECTS = Object.freeze({
+    EMAIL_UPDATE_REQUEST: "Update your Pathwise email",
+    EMAIL_UPDATE_CONFIRM: "Email updated successfully",
+
+    INSTRUCTOR_ACCESS_REQUEST: "Instructor access request",
+    INSTRUCTOR_ACCESS_CONFIRM: "Instructor access approved",
+
+    ACCOUNT_DEACTIVATION_REQUEST: "Deactivate your Pathwise account",
+    ACCOUNT_DEACTIVATION_CONFIRM: "Account deactivated successfully",
+});
 
 export const EMAIL_SUBJECTS = {
-    EMAIL_CHANGE_VERIFICATION: "Confirm your new email address",
-    EMAIL_CHANGED_SUCCESSFULLY: "Email address updated successfully",
-    INSTRUCTOR_ACCESS_VERIFICATION: "Verify your instructor access request",
-    INSTRUCTOR_ACCESS_GRANTED: "Instructor access granted",
     COURSE_ENROLLMENT: "Course enrollment successful",
-    ACCOUNT_DEACTIVATION_OTP: "Confirm Your Pathwise Account Deactivation",
-    ACCOUNT_DEACTIVATED: "Your Pathwise Account Has Been Deactivated",
 };
 
 export const EMAIL_EXPIRY_MINUTES = {

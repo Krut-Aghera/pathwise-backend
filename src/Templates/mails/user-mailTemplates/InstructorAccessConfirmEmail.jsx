@@ -6,15 +6,15 @@ import {
     INFO_BOX_TYPES,
     SPACING,
     TYPOGRAPHY,
-} from "../theme.js";
+} from "../../theme.js";
 
-import BaseEmail from "../layouts/BaseEmail.jsx";
-import EmailHeader from "../components/EmailHeader.jsx";
-import EmailContent from "../components/EmailContent.jsx";
-import InfoBox from "../components/InfoBox.jsx";
-import EmailFooter from "../components/EmailFooter.jsx";
+import BaseEmail from "../../layouts/BaseEmail.jsx";
+import EmailHeader from "../../components/EmailHeader.jsx";
+import EmailContent from "../../components/EmailContent.jsx";
+import InfoBox from "../../components/InfoBox.jsx";
+import EmailFooter from "../../components/EmailFooter.jsx";
 
-const InstructorAccessGrantedEmail = ({ username }) => {
+const InstructorAccessConfirmEmail = ({ username }) => {
     return (
         <BaseEmail
             preview={`Your instructor access has been activated on ${COMPANY.name}`}
@@ -92,4 +92,4 @@ const InstructorAccessGrantedEmail = ({ username }) => {
     );
 };
 
-export default InstructorAccessGrantedEmail;
+export default InstructorAccessConfirmEmail;
