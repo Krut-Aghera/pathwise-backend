@@ -2,17 +2,22 @@ import express from "express";
 import cors from "cors";
 import hpp from "hpp";
 import cookieParser from "cookie-parser";
+
+import { serverAppConfig } from "./config/env.config.js";
+import morganLogger from "./config/morgan.config.js";
+
+import { globalRateLimiter } from "./middlewares/ratelimiter/limiters/global.ratelimit.js";
+
+import helmetMiddleware from "./middlewares/helmet.middleware.js";
+import globalErrorMiddleware from "./middlewares/error/global.error.middleware.js";
+import notFoundErrorMiddleware from "./middlewares/error/not-found.error.middleware.js";
+
 import authRouter from "./features/auth/routes/auth.routes.js";
 import userRouter from "./features/user/routes/user.routes.js";
 import courseRouter from "./features/course/routes/course.routes.js";
 import sectionRouter from "./features/section/routes/section.routes.js";
 import lectureRouter from "./features/lecture/routes/lecture.routes.js";
-import { serverAppConfig } from "./config/env.config.js";
-import morganLogger from "./config/morgan.config.js";
-import helmetMiddleware from "./middlewares/helmet.middleware.js";
-import { globalRateLimiter } from "./middlewares/ratelimiter/limiters/global.ratelimit.js";
-import globalErrorMiddleware from "./middlewares/error/global.error.middleware.js";
-import notFoundErrorMiddleware from "./middlewares/error/not-found.error.middleware.js";
+import orderRouter from "./features/order/routes/order.routes.js";
 
 const app = express();
 
@@ -57,6 +62,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/courses", courseRouter);
 app.use("/api/v1/sections", sectionRouter);
 app.use("/api/v1/lectures", lectureRouter);
+app.use("/api/v1/orders", orderRouter);
 
 ///////////////////////////////////////////////////////////////
 // error middlewares

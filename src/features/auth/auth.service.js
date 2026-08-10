@@ -12,7 +12,7 @@ import ApiError from "../../utils/error-handler.utility.js";
 
 import {
     generateSecureTokens,
-    getTokenExpiry,
+    getExpiry,
 } from "../../utils/token-generator.utility.js";
 
 import {
@@ -71,7 +71,7 @@ const requestEmailVerification = async ({ user }) => {
     const { token, hashedToken } = generateSecureTokens();
 
     user.emailVerificationToken = hashedToken;
-    user.emailVerificationExpiry = getTokenExpiry(
+    user.emailVerificationExpiry = getExpiry(
         EMAIL_EXPIRY_MINUTES.VERIFICATION_TOKEN_EXPIRY
     );
 
@@ -230,7 +230,7 @@ const requestPasswordReset = async ({ email }) => {
     const { token, hashedToken } = generateSecureTokens();
 
     user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpiry = getTokenExpiry(
+    user.resetPasswordExpiry = getExpiry(
         EMAIL_EXPIRY_MINUTES.PASSWORD_RESET_TOKEN_EXPIRY
     );
 

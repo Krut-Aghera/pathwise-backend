@@ -146,9 +146,9 @@ const findCourses = async ({ options }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// find course by id
+// find published course
 
-const findCourseById = ({ courseId }) => {
+const findPublishedCourse = ({ courseId }) => {
     return Course.findOne({
         _id: courseId,
         status: RESOURCE_STATUS.PUBLISHED,
@@ -643,7 +643,7 @@ export {
     softDeleteCourse,
     toggleCourseStatus,
     findCourses,
-    findCourseById,
+    findPublishedCourse,
     findCourseBySlug,
     findInstructorCourses,
     findInstructorCourseById,

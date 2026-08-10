@@ -8,7 +8,7 @@ import ApiError from "../../utils/error-handler.utility.js";
 import generateSecureOtp from "../../utils/otp-generator.utility.js";
 import {
     generateSecureTokens,
-    getTokenExpiry,
+    getExpiry,
 } from "../../utils/token-generator.utility.js";
 import {
     createEmailChangeVerificationUrl,
@@ -75,7 +75,7 @@ const requestEmailUpdation = async ({ user, password, newEmail }) => {
 
     dbUser.pendingEmail = newEmail;
     dbUser.emailChangeToken = hashedToken;
-    dbUser.emailChangeTokenExpiry = getTokenExpiry(
+    dbUser.emailChangeTokenExpiry = getExpiry(
         EMAIL_EXPIRY_MINUTES.CHANGE_EMAIL_TOKEN_EXPIRY
     );
 
@@ -190,7 +190,7 @@ const requestInstructorAccess = async ({ user }) => {
     const { token, hashedToken } = generateSecureTokens();
 
     dbUser.instructorAccessToken = hashedToken;
-    dbUser.instructorAccessTokenExpiry = getTokenExpiry(
+    dbUser.instructorAccessTokenExpiry = getExpiry(
         EMAIL_EXPIRY_MINUTES.INSTRUCTOR_ACCESS_TOKEN_EXPIRY
     );
 
@@ -323,7 +323,7 @@ const requestAccountDeactivation = async ({ user, password }) => {
 
     dbUser.accountDeactivationOtp = hashedOtp;
 
-    dbUser.accountDeactivationOtpExpiry = getTokenExpiry(
+    dbUser.accountDeactivationOtpExpiry = getExpiry(
         EMAIL_EXPIRY_MINUTES.ACCOUNT_DEACTIVATION_OTP_EXPIRY
     );
 

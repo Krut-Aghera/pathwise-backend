@@ -8,8 +8,8 @@ const generateSecureTokens = () => {
     return { token, hashedToken };
 };
 
-const getTokenExpiry = (minutes) => {
+const getExpiry = (minutes) => {
     return new Date(Date.now() + minutes * 60 * 1000);
 };
 
-export { generateSecureTokens, getTokenExpiry };
+export { generateSecureTokens, getExpiry };

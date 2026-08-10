@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import * as courseRepository from "./course.repository.js";
 import Course from "./course.model.js";
 import ApiError from "../../utils/error-handler.utility.js";
-import HTTP_STATUS from "../../constants/http.constants.js"
+import HTTP_STATUS from "../../constants/http.constants.js";
 import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 import { COURSE_ERROR_MESSAGES } from "./course.constants.js";
 
@@ -30,7 +30,7 @@ const getAuthorizedInstructorCourse = async ({ courseId, instructorId }) => {
 
 const validateCoursePublishEligibility = (course) => {
     const errors = [];
-    
+
     if (course.status !== RESOURCE_STATUS.DRAFT) {
         errors.push("Only draft courses can be published.");
     }

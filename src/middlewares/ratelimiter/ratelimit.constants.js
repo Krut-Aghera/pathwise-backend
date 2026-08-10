@@ -1,3 +1,11 @@
+const RATE_LIMITER_OPTIONS = Object.freeze({
+    standardHeaders: true,
+    legacyHeaders: false,
+
+    skipSuccessfulRequests: false,
+    skipFailedRequests: false,
+});
+
 const WINDOWS = Object.freeze({
     ONE_MINUTE: 1 * 60 * 1000,
     FIFTEEN_MINUTES: 15 * 60 * 1000,
@@ -5,7 +13,7 @@ const WINDOWS = Object.freeze({
     ONE_HOUR: 60 * 60 * 1000,
 });
 
-export const RATE_LIMIT = Object.freeze({
+const RATE_LIMIT = Object.freeze({
     API: Object.freeze({
         GLOBAL: {
             WINDOW_MS: WINDOWS.FIFTEEN_MINUTES,
@@ -168,18 +176,6 @@ export const RATE_LIMIT = Object.freeze({
         },
     }),
 
-    ENROLLMENT: Object.freeze({
-        ENROLL: {
-            WINDOW_MS: WINDOWS.ONE_MINUTE,
-            LIMIT: 10,
-        },
-
-        UNENROLL: {
-            WINDOW_MS: WINDOWS.ONE_MINUTE,
-            LIMIT: 5,
-        },
-    }),
-
     REVIEW: Object.freeze({
         CREATE: {
             WINDOW_MS: WINDOWS.ONE_MINUTE,
@@ -198,10 +194,51 @@ export const RATE_LIMIT = Object.freeze({
     }),
 });
 
-export const RATE_LIMITER_OPTIONS = Object.freeze({
-    standardHeaders: true,
-    legacyHeaders: false,
+const ORDER_RT = Object.freeze({
+    CREATE: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 5,
+    },
 
-    skipSuccessfulRequests: false,
-    skipFailedRequests: false,
+    CANCEL: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 10,
+    },
 });
+
+const PAYMENT_RT = Object.freeze({
+    CREATE: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 5,
+    },
+
+    VERIFY: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 10,
+    },
+
+    WEBHOOK: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 100,
+    },
+});
+
+const ENROLLMENT_RT = Object.freeze({
+    FETCH_ONE: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 60,
+    },
+
+    FETCH_LIST: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 60,
+    },
+});
+
+export {
+    RATE_LIMITER_OPTIONS,
+    RATE_LIMIT,
+    ORDER_RT,
+    PAYMENT_RT,
+    ENROLLMENT_RT,
+};
