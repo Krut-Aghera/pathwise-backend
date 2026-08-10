@@ -1,5 +1,10 @@
 import * as lectureRepository from "./lecture.repository.js";
 import * as enrollmentRepository from "../enrollment/enrollment.repository.js";
+
+import * as mediaService from "../../services/media/media.services.js";
+
+import ApiError from "../../utils/error-handler.utility.js";
+import logger from "../../utils/pino-logger.utility.js";
 import { getAuthorizedInstructorSection } from "../section/section.utility.js";
 import {
     getAuthorizedInstructorLecture,
@@ -7,21 +12,15 @@ import {
     validateLectureReorderPayload,
     validateSectionLectureReorder,
 } from "./lecture.utility.js";
-import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
-import ApiError from "../../utils/error-handler.utility.js";
-import logger from "../../utils/pino-logger.utility.js";
+
 import HTTP_STATUS from "../../constants/http.constants.js";
 import { LECTURE_ERROR_MESSAGES } from "./lecture.constants.js";
-import {
-    destroyMedia,
-    generateVideoThumbnailUrl,
-    uploadVideoMedia,
-} from "../../services/media/media.services.js";
+import { ENROLLMENT_ERROR_MESSAGES } from "../enrollment/enrollment.constants.js";
+import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 import {
     CLOUDINARY_FOLDERS,
     MEDIA_RESOURCE_TYPES,
 } from "../../services/media/media.constants.js";
-import { ENROLLMENT_ERROR_MESSAGES } from "../enrollment/enrollment.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create lecture service
@@ -127,12 +126,12 @@ const uploadLectureVideo = async ({ instructorId, lectureId, video }) => {
     let uploadedVideo;
 
     try {
-        uploadedVideo = await uploadVideoMedia({
+        uploadedVideo = await mediaService.uploadVideoMedia({
             localFilePath: video.path,
             folder: CLOUDINARY_FOLDERS.LECTURE_VIDEOS,
         });
 
-        const thumbnailUrl = generateVideoThumbnailUrl({
+        const thumbnailUrl = mediaService.generateVideoThumbnailUrl({
             publicId: uploadedVideo.publicId,
         });
 
@@ -155,7 +154,7 @@ const uploadLectureVideo = async ({ instructorId, lectureId, video }) => {
     } catch (error) {
         if (uploadedVideo?.publicId) {
             try {
-                await destroyMedia({
+                await mediaService.destroyMedia({
                     publicId: uploadedVideo.publicId,
                     resourceType: MEDIA_RESOURCE_TYPES.VIDEO,
                 });
@@ -192,7 +191,7 @@ const removeLectureVideo = async ({ instructorId, lectureId }) => {
         });
     }
 
-    await destroyMedia({
+    await mediaService.destroyMedia({
         publicId: lecture.video.publicId,
         resourceType: MEDIA_RESOURCE_TYPES.VIDEO,
     });

@@ -3,13 +3,7 @@ import sendEmail from "./email.provider.js";
 
 import { EMAIL_SUBJECTS } from "./email.constans.js";
 
-import EmailChangeVerificationEmail from "../../templates/mails/user-mailTemplates/EmailChangeRequestEmail.jsx";
-import EmailChangedSuccessfullyEmail from "../../templates/mails/user-mailTemplates/EmailChangedConfirmEmail.jsx";
-import AccountDeactivationOtpEmail from "../../templates/mails/user-mailTemplates/AccountDeactivationRequestEmail.jsx";
-import AccountDeactivatedEmail from "../../templates/mails/user-mailTemplates/AccountDeactivationConfirmEmail.jsx";
 import CourseEnrollmentEmail from "../../templates/mails/CourseEnrollmentEmail.jsx";
-import InstructorAccessVerificationEmail from "../../templates/mails/user-mailTemplates/InstructorAccessRequestEmail.jsx";
-import InstructorAccessGrantedEmail from "../../templates/mails/user-mailTemplates/InstructorAccessConfirmEmail.jsx";
 
 ///////////////////////////////////////////////////////////////
 // course enrollment confirmation email

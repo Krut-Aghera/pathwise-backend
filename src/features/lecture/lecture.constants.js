@@ -31,6 +31,14 @@ const LECTURE_ERROR_MESSAGES = {
     VIDEO_REQUIRED: "Lecture video is required.",
     VIDEO_NOT_FOUND: "Lecture video not found.",
     VIDEO_UPLOAD_FAILED: "Failed to upload lecture video.",
+    INVALID_LECTURE_REORDER_PAYLOAD: "Invalid lecture reorder payload.",
+
+    DUPLICATE_LECTURE_IDS: "Duplicate lecture IDs are not allowed.",
+
+    DUPLICATE_LECTURE_ORDERS: "Duplicate lecture orders are not allowed.",
+    LECTURE_ORDERS_MUST_BE_SEQUENTIAL:
+        "Lecture orders must start from 1 and be sequential.",
+
     VIDEO_ALREADY_EXISTS:
         "This lecture already has a video. Remove the existing video before uploading a new one.",
     VIDEO_REQUIRED_TO_PUBLISH:

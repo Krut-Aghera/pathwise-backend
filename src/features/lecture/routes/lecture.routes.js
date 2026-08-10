@@ -1,6 +1,6 @@
 import express from "express";
 
-import lecturePrivateRouter from "./lecture.private.routes.js";
+import lectureInstructorRouter from "./lecture.instructor.routes.js";
 import lectureStudentRouter from "./lecture.student.routes.js";
 
 ///////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ const lectureRouter = express.Router();
 // mount private routes
 
 lectureRouter.use("/students", lectureStudentRouter);
-lectureRouter.use(lecturePrivateRouter);
+lectureRouter.use("/instructors", lectureInstructorRouter);
 
 ///////////////////////////////////////////////////////////////
 // export

@@ -10,13 +10,13 @@ import validationEngine from "../../../middlewares/validation.middleware.js";
 ///////////////////////////////////////////////////////////////
 // create router
 
-const lecturePrivateRouter = express.Router();
+const lectureInstructorRouter = express.Router();
 
 ///////////////////////////////////////////////////////////////
 // POST /api/v1/lectures/sections/:sectionId
 // Creates a new lecture in the specified section.
 
-lecturePrivateRouter.post(
+lectureInstructorRouter.post(
     "/sections/:sectionId",
     lectureRatelimiter.createLectureRateLimiter,
     ...instructorAuthMiddleware,
@@ -33,7 +33,7 @@ lecturePrivateRouter.post(
 // PATCH /api/v1/lectures/:lectureId
 // Updates the specified lecture.
 
-lecturePrivateRouter.patch(
+lectureInstructorRouter.patch(
     "/:lectureId",
     lectureRatelimiter.updateLectureRateLimiter,
     ...instructorAuthMiddleware,
@@ -50,7 +50,7 @@ lecturePrivateRouter.patch(
 // DELETE /api/v1/lectures/:lectureId
 // Soft deletes the specified lecture.
 
-lecturePrivateRouter.delete(
+lectureInstructorRouter.delete(
     "/:lectureId",
     lectureRatelimiter.removeLectureRateLimiter,
     ...instructorAuthMiddleware,
@@ -66,7 +66,7 @@ lecturePrivateRouter.delete(
 // PATCH /api/v1/lectures/sections/:sectionId/reorder
 // Reorders all lectures within the specified section.
 
-lecturePrivateRouter.patch(
+lectureInstructorRouter.patch(
     "/sections/:sectionId/reorder",
     lectureRatelimiter.reorderLecturesRateLimiter,
     ...instructorAuthMiddleware,
@@ -82,7 +82,7 @@ lecturePrivateRouter.patch(
 // PATCH /api/v1/lectures/:lectureId/video
 // Uploads or replaces the lecture video.
 
-lecturePrivateRouter.patch(
+lectureInstructorRouter.patch(
     "/:lectureId/video",
     lectureRatelimiter.uploadLectureVideoRateLimiter,
     ...instructorAuthMiddleware,
@@ -99,7 +99,7 @@ lecturePrivateRouter.patch(
 // DELETE /api/v1/lectures/:lectureId/video
 // Removes the video from the specified lecture.
 
-lecturePrivateRouter.delete(
+lectureInstructorRouter.delete(
     "/:lectureId/video",
     lectureRatelimiter.removeLectureVideoRateLimiter,
     ...instructorAuthMiddleware,
@@ -115,7 +115,7 @@ lecturePrivateRouter.delete(
 // PATCH /api/v1/lectures/:lectureId/publish
 // Publishes the specified lecture.
 
-lecturePrivateRouter.patch(
+lectureInstructorRouter.patch(
     "/:lectureId/publish",
     lectureRatelimiter.publishLectureRateLimiter,
     ...instructorAuthMiddleware,
@@ -131,7 +131,7 @@ lecturePrivateRouter.patch(
 // PATCH /api/v1/lectures/:lectureId/draft
 // Saves the specified lecture as a draft.
 
-lecturePrivateRouter.patch(
+lectureInstructorRouter.patch(
     "/:lectureId/draft",
     lectureRatelimiter.saveLectureAsDraftRateLimiter,
     ...instructorAuthMiddleware,
@@ -147,7 +147,7 @@ lecturePrivateRouter.patch(
 // GET /api/v1/lectures/sections/:sectionId
 // Fetches all lectures in the specified section for the authenticated instructor.
 
-lecturePrivateRouter.get(
+lectureInstructorRouter.get(
     "/sections/:sectionId",
     lectureRatelimiter.fetchInstructorLecturesRateLimiter,
     ...instructorAuthMiddleware,
@@ -163,7 +163,7 @@ lecturePrivateRouter.get(
 // GET /api/v1/lectures/:lectureId
 // Fetches the specified lecture for the authenticated instructor.
 
-lecturePrivateRouter.get(
+lectureInstructorRouter.get(
     "/:lectureId",
     lectureRatelimiter.fetchInstructorLectureRateLimiter,
     ...instructorAuthMiddleware,
@@ -178,4 +178,4 @@ lecturePrivateRouter.get(
 ///////////////////////////////////////////////////////////////
 // export
 
-export default lecturePrivateRouter;
+export default lectureInstructorRouter;

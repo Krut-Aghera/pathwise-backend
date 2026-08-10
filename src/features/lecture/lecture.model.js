@@ -60,7 +60,7 @@ const videoSchema = new mongoose.Schema(
 );
 
 /////////////////////////////////////////////////////////////////
-// lecture schema
+// lecture schema model
 
 const lectureSchema = new mongoose.Schema(
     {

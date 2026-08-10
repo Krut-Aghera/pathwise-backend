@@ -1,10 +1,12 @@
 import * as lectureService from "./lecture.service.js";
+
+import ApiResponse from "../../utils/response-handler.utility.js";
+
 import {
     LECTURE_ALLOWED_FIELDS,
     LECTURE_SUCCESS_MESSAGES,
 } from "./lecture.constants.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
-import ApiResponse from "../../utils/response-handler.utility.js";
 
 ///////////////////////////////////////////////////////////////
 // create lecture controller
