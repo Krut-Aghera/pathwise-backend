@@ -40,3 +40,8 @@ export const cloudinaryConfig = Object.freeze({
     CLOUDINARY_API_KEY: requireEnv("CLOUDINARY_API_KEY"),
     CLOUDINARY_API_SECRET: requireEnv("CLOUDINARY_API_SECRET"),
 });
+
+export const payment_envConfig = Object.freeze({
+    CASHFREE_CLIENT_ID: requireEnv("CASHFREE_CLIENT_ID"),
+    CASHFREE_CLIENT_SECRET: requireEnv("CASHFREE_CLIENT_SECRET"),
+});

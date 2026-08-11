@@ -1,0 +1,25 @@
+///////////////////////////////////////////////////////////////
+// payment provider
+
+const PAYMENT_SERVICE_PROVIDER = {
+    CASHFREE: "CASHFREE",
+};
+
+///////////////////////////////////////////////////////////////
+// cashfree api version
+
+const CASHFREE_API_VERSION = "2025-01-01";
+
+///////////////////////////////////////////////////////////////
+// cashfree base url
+
+const CASHFREE_API_BASE_URL = "https://sandbox.cashfree.com/pg";
+
+///////////////////////////////////////////////////////////////
+// exports
+
+export {
+    PAYMENT_SERVICE_PROVIDER,
+    CASHFREE_API_VERSION,
+    CASHFREE_API_BASE_URL,
+};
