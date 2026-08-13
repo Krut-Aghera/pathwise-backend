@@ -9,6 +9,7 @@ const ORDER_SUCCESS_MESSAGES = {
 const ORDER_ERROR_MESSAGES = Object.freeze({
     ORDER_NOT_FOUND: "Order not found.",
     ORDER_ACCESS_DENIED: "You are not authorized to access this order.",
+    ORDER_NOT_PENDING: "Order is not pending.",
     ONLY_PENDING_ORDER_CAN_BE_CANCELLED:
         "Only a pending order can be cancelled.",
     CAN_NOT_PURCHASE: "Course is not available for purchase.",

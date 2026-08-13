@@ -1,7 +1,7 @@
 import express from "express";
 import * as orderControllers from "../order.controllers.js";
 import * as orderValidators from "../order.validators.js";
-import * as orderRateLimiter from "../../../middlewares/ratelimiter/limiters/order.ratelimit.js";
+import * as orderRatelimiter from "../../../middlewares/ratelimiter/limiters/order.ratelimit.js";
 import studentAuthMiddleware from "../../../middlewares/auth/student-auth.middleware.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import { validateMongoIdParam } from "../../../validations/common.validators.js";
@@ -17,7 +17,7 @@ const orderStudentRouter = express.Router();
 
 orderStudentRouter.post(
     "/",
-    orderRateLimiter.createOrderRateLimiter,
+    orderRatelimiter.createOrderRateLimiter,
     ...studentAuthMiddleware,
     orderValidators.createOrderValidator,
     validationEngine,
@@ -30,7 +30,7 @@ orderStudentRouter.post(
 
 orderStudentRouter.patch(
     "/:orderId/cancel",
-    orderRateLimiter.cancelOrderRateLimiter,
+    orderRatelimiter.cancelOrderRateLimiter,
     ...studentAuthMiddleware,
     validateMongoIdParam({
         paramName: "orderId",

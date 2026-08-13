@@ -18,6 +18,7 @@ import courseRouter from "./features/course/routes/course.routes.js";
 import sectionRouter from "./features/section/routes/section.routes.js";
 import lectureRouter from "./features/lecture/routes/lecture.routes.js";
 import orderRouter from "./features/order/routes/order.routes.js";
+import paymentRouter from "./features/payment/routes/payment.routes.js";
 
 const app = express();
 
@@ -63,6 +64,7 @@ app.use("/api/v1/courses", courseRouter);
 app.use("/api/v1/sections", sectionRouter);
 app.use("/api/v1/lectures", lectureRouter);
 app.use("/api/v1/orders", orderRouter);
+app.use("/api/v1/payments", paymentRouter);
 
 ///////////////////////////////////////////////////////////////
 // error middlewares

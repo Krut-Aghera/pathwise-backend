@@ -217,6 +217,11 @@ const PAYMENT_RT = Object.freeze({
         LIMIT: 10,
     },
 
+    FETCH_CURRENT: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 20,
+    },
+
     WEBHOOK: {
         WINDOW_MS: WINDOWS.ONE_MINUTE,
         LIMIT: 100,

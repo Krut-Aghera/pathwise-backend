@@ -1,0 +1,18 @@
+import express from "express";
+
+import paymentStudentRouter from "./payment.student.routes.js";
+
+///////////////////////////////////////////////////////////////
+// create router
+
+const paymentRouter = express.Router();
+
+///////////////////////////////////////////////////////////////
+// mount student private routes
+
+paymentRouter.use("/students", paymentStudentRouter);
+
+///////////////////////////////////////////////////////////////
+// export
+
+export default paymentRouter;

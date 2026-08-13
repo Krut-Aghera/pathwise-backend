@@ -1,4 +1,4 @@
-import cashfreeProvider from "./payment-service.provider.js";
+import paymentProvider from "./payment-service.provider.js";
 
 import * as paymentRepository from "../../features/payment/payment.repository.js";
 
@@ -8,9 +8,9 @@ import {
 } from "../../features/payment/payment.constants.js";
 
 ///////////////////////////////////////////////////////////////
-// payment service class
+// payment gateway class
 
-class PaymentService {
+class PaymentGateway {
     constructor(provider) {
         this.provider = provider;
     }
@@ -23,6 +23,7 @@ class PaymentService {
             amount: order.amount,
             currency: order.currency,
             customerId: student._id.toString(),
+            customerEmail: student.email,
         });
 
         return {
@@ -34,71 +35,61 @@ class PaymentService {
 
     // sync payment attempts for order
 
-    async syncPaymentsForOrder({ order }) {
+    async syncSuccessfulPaymentForOrder({ order }) {
         const payments = await this.provider.getPaymentsForOrder({
             orderId: order._id.toString(),
         });
 
-        for (const paymentData of payments) {
-            const existingPayment =
-                await paymentRepository.findPaymentByProviderPaymentId({
-                    provider: PAYMENT_PROVIDER.CASHFREE,
-                    providerPaymentId: paymentData.cf_payment_id,
-                });
+        const successfulPayment = payments.find(
+            (payment) => payment.payment_status === PAYMENT_STATUS.SUCCESS
+        );
 
-            const paymentPayload = {
-                order: order._id,
-                student: order.student,
-
-                amount: paymentData.payment_amount,
-                currency: paymentData.payment_currency,
-
-                provider: PAYMENT_PROVIDER.CASHFREE,
-                providerOrderId: paymentData.order_id,
-                providerPaymentId: paymentData.cf_payment_id,
-
-                method: paymentData.payment_group,
-
-                status: paymentData.payment_status,
-
-                paidAt:
-                    paymentData.payment_status === PAYMENT_STATUS.SUCCESS
-                        ? paymentData.payment_completion_time ||
-                          paymentData.payment_time ||
-                          null
-                        : null,
-
-                failureReason:
-                    paymentData.payment_status === PAYMENT_STATUS.SUCCESS
-                        ? null
-                        : paymentData.payment_message || null,
-            };
-
-            if (existingPayment) {
-                Object.assign(existingPayment, paymentPayload);
-
-                await paymentRepository.savePayment({
-                    payment: existingPayment,
-                });
-
-                continue;
-            }
-
-            await paymentRepository.createPayment({
-                paymentPayload,
-            });
+        if (!successfulPayment) {
+            return null;
         }
 
-        return payments;
+        const existingPayment =
+            await paymentRepository.findPaymentByProviderPaymentId({
+                provider: PAYMENT_PROVIDER.CASHFREE,
+                providerPaymentId: successfulPayment.cf_payment_id,
+            });
+
+        if (existingPayment) {
+            return existingPayment;
+        }
+
+        const paymentPayload = {
+            order: order._id,
+            student: order.student,
+
+            amount: successfulPayment.payment_amount,
+            currency: successfulPayment.payment_currency,
+            method: successfulPayment.payment_group,
+
+            provider: PAYMENT_PROVIDER.CASHFREE,
+            providerOrderId: successfulPayment.order_id,
+            providerPaymentId: successfulPayment.cf_payment_id,
+
+            status: PAYMENT_STATUS.SUCCESS,
+
+            paidAt:
+                successfulPayment.payment_completion_time ||
+                successfulPayment.payment_time ||
+                null,
+        };
+
+        return paymentRepository.createPayment({
+            paymentPayload,
+        });
     }
 }
 
 ///////////////////////////////////////////////////////////////
 // instance
 
-const paymentService = new PaymentService(cashfreeProvider);
+const PaymentGatewayService = new PaymentGateway(paymentProvider);
 
 ///////////////////////////////////////////////////////////////
 // export
 
-export default paymentService;
+export default PaymentGatewayService;

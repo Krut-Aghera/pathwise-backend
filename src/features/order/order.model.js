@@ -47,6 +47,11 @@ const orderSchema = new mongoose.Schema(
             default: ORDER_STATUS.PENDING,
         },
 
+        providerOrderId: {
+            type: String,
+            default: null,
+        },
+
         expiresAt: {
             type: Date,
         },

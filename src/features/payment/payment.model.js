@@ -41,17 +41,17 @@ const paymentSchema = new mongoose.Schema(
             immutable: true,
         },
 
+        method: {
+            type: String,
+            enum: Object.values(PAYMENT_METHOD),
+            default: null,
+        },
+
         provider: {
             type: String,
             required: true,
             enum: Object.values(PAYMENT_PROVIDER),
             immutable: true,
-        },
-
-        method: {
-            type: String,
-            enum: Object.values(PAYMENT_METHOD),
-            default: null,
         },
 
         providerOrderId: {
@@ -78,26 +78,6 @@ const paymentSchema = new mongoose.Schema(
         paidAt: {
             type: Date,
             default: null,
-        },
-
-        failure: {
-            code: {
-                type: String,
-                default: null,
-                trim: true,
-            },
-
-            reason: {
-                type: String,
-                default: null,
-                trim: true,
-            },
-
-            message: {
-                type: String,
-                default: null,
-                trim: true,
-            },
         },
     },
     {

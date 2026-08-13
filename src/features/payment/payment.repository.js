@@ -8,37 +8,12 @@ const createPayment = ({ paymentPayload }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// save payment
+// find successful payment by order id
 
-const savePayment = ({ payment, validateBeforeSave = false }) => {
-    return payment.save({
-        validateBeforeSave,
-    });
-};
-
-///////////////////////////////////////////////////////////////
-// find payment by id
-
-const findPaymentById = ({ paymentId }) => {
-    return Payment.findById(paymentId);
-};
-
-///////////////////////////////////////////////////////////////
-// find payments by order
-
-const findPaymentsByOrder = ({ orderId }) => {
-    return Payment.find({
-        order: orderId,
-    });
-};
-
-///////////////////////////////////////////////////////////////
-// find payment by provider order id
-
-const findPaymentByProviderOrderId = ({ provider, providerOrderId }) => {
+const findSuccessfulPaymentByOrderId = ({ orderId }) => {
     return Payment.findOne({
-        provider,
-        providerOrderId,
+        order: orderId,
+        status: PAYMENT_STATUS.SUCCESS,
     });
 };
 
@@ -57,9 +32,6 @@ const findPaymentByProviderPaymentId = ({ provider, providerPaymentId }) => {
 
 export {
     createPayment,
-    savePayment,
-    findPaymentById,
-    findPaymentsByOrder,
-    findPaymentByProviderOrderId,
+    findSuccessfulPaymentByOrderId,
     findPaymentByProviderPaymentId,
 };

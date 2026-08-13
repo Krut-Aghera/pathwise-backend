@@ -16,6 +16,20 @@ const enrollmentSchema = new mongoose.Schema(
             immutable: true,
         },
 
+        order: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Order",
+            required: true,
+            immutable: true,
+        },
+
+        payment: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Payment",
+            required: true,
+            immutable: true,
+        },
+
         enrolledAt: {
             type: Date,
             default: Date.now,

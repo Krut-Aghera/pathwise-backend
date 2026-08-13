@@ -24,6 +24,16 @@ const findOrderById = ({ orderId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// find order by order id and student id
+
+const findStudentCurrentOrder = ({ orderId, studentId }) => {
+    return Order.findOne({
+        _id: orderId,
+        student: studentId,
+    });
+};
+
+///////////////////////////////////////////////////////////////
 // exports
 
-export { createOrder, saveOrder, findOrderById };
+export { createOrder, saveOrder, findOrderById, findStudentCurrentOrder };

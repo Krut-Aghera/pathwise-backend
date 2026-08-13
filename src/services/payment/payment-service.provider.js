@@ -1,12 +1,12 @@
 import axios from "axios";
 
-import PaymentProvider from "./payment-service.interface.js";
+import PaymentInterface from "./payment-service.interface.js";
 import cashfreeConfig from "./payment-service.config.js";
 
 ///////////////////////////////////////////////////////////////
 // cashfree provider class
 
-class CashfreeProvider extends PaymentProvider {
+class CashfreeProvider extends PaymentInterface {
     constructor(config) {
         super();
 
@@ -98,9 +98,9 @@ class CashfreeProvider extends PaymentProvider {
 ///////////////////////////////////////////////////////////////
 // instance
 
-const cashfreeProvider = new CashfreeProvider(cashfreeConfig);
+const paymentProvider = new CashfreeProvider(cashfreeConfig);
 
 ///////////////////////////////////////////////////////////////
 // export
 
-export default cashfreeProvider;
+export default paymentProvider;

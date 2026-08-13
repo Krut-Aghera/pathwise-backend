@@ -4,6 +4,7 @@
 const PAYMENT_SUCCESS_MESSAGES = Object.freeze({
     CREATED: "Payment created successfully.",
     VERIFIED: "Payment verified successfully.",
+    PAYMENT_FETCHED: "Payment details fetched successfully.",
 });
 
 ///////////////////////////////////////////////////////////////
@@ -16,12 +17,13 @@ const PAYMENT_ERROR_MESSAGES = Object.freeze({
 
     PAYMENT_NOT_FOUND: "Payment not found.",
     PAYMENT_ALREADY_PROCESSED: "Payment has already been processed.",
-    INVALID_PAYMENT: "Invalid payment.",
-
-    PAYMENT_VERIFICATION_FAILED: "Payment verification failed.",
-    PAYMENT_AMOUNT_MISMATCH: "Payment amount does not match the order amount.",
     PAYMENT_CURRENCY_MISMATCH:
         "Payment currency does not match the order currency.",
+    PAYMENT_AMOUNT_MISMATCH: "Payment amount does not match the order amount.",
+    INVALID_PAYMENT: "Invalid payment.",
+
+    PAYMENT_VERIFICATION_FAILED:
+        "Payment verification failed. Payment not completed",
     PAYMENT_PROVIDER_ERROR: "Payment provider request failed.",
 });
 

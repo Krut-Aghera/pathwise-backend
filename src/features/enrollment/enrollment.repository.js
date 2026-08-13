@@ -1,6 +1,13 @@
 import Enrollment from "./enrollment.model.js";
 
 ///////////////////////////////////////////////////////////////
+// create enrollment
+
+const createEnrollment = ({ enrollmentPayload }) => {
+    return Enrollment.create(enrollmentPayload);
+};
+
+///////////////////////////////////////////////////////////////
 // find enrollment
 
 const findEnrollment = ({ studentId, courseId }) => {
@@ -14,4 +21,4 @@ const findEnrollment = ({ studentId, courseId }) => {
 ///////////////////////////////////////////////////////////////
 // exports
 
-export { findEnrollment };
+export { createEnrollment, findEnrollment };
