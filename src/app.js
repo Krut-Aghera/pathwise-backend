@@ -20,6 +20,7 @@ import lectureRouter from "./features/lecture/routes/lecture.routes.js";
 import orderRouter from "./features/order/routes/order.routes.js";
 import paymentRouter from "./features/payment/routes/payment.routes.js";
 import enrollmentRouter from "./features/enrollment/routes/enrollment.routes.js";
+import wishlistRouter from "./features/wishlist/routes/wishlist.routes.js";
 
 const app = express();
 
@@ -76,6 +77,7 @@ app.use("/api/v1/lectures", lectureRouter);
 app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/payments", paymentRouter);
 app.use("/api/v1/enrollments", enrollmentRouter);
+app.use("/api/v1/wishlist", wishlistRouter);
 
 ///////////////////////////////////////////////////////////////
 // error middlewares

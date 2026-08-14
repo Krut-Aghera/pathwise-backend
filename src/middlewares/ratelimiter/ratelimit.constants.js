@@ -240,10 +240,33 @@ const ENROLLMENT_RT = Object.freeze({
     },
 });
 
+const WISHLIST_RT = Object.freeze({
+    ADD: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 20,
+    },
+
+    REMOVE: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 20,
+    },
+
+    FETCH: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 60,
+    },
+
+    CLEAR: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 10,
+    },
+});
+
 export {
     RATE_LIMITER_OPTIONS,
     RATE_LIMIT,
     ORDER_RT,
     PAYMENT_RT,
     ENROLLMENT_RT,
+    WISHLIST_RT,
 };

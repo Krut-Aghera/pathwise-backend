@@ -1,0 +1,18 @@
+import express from "express";
+
+import wishlistStudentRouter from "./wishlist.student.routes.js";
+
+///////////////////////////////////////////////////////////////
+// create router
+
+const wishlistRouter = express.Router();
+
+///////////////////////////////////////////////////////////////
+// mount student routes
+
+wishlistRouter.use(wishlistStudentRouter);
+
+///////////////////////////////////////////////////////////////
+// export
+
+export default wishlistRouter;
