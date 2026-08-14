@@ -1,11 +1,14 @@
 import * as orderRepository from "../order/order.repository.js";
 
+import PaymentGatewayService from "../../services/payment/payment.layer.js";
+import { completeCheckout } from "../../workflow/checkout/chekout.workflow.js";
+
 import ApiError from "../../utils/error-handler.utility.js";
-import PaymentGatewayService from "../../services/payment/payment-service.service.js";
+import { getStudentOrder, getStudentPendingOrder } from "./payment.utility.js";
 
 import HTTP_STATUS from "../../constants/http.constants.js";
 import { PAYMENT_ERROR_MESSAGES, PAYMENT_STATUS } from "./payment.constants.js";
-import { getStudentPendingOrder } from "./payment.utility.js";
+import { ORDER_ERROR_MESSAGES } from "../order/order.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create payment service
@@ -30,10 +33,25 @@ const createPayment = async ({ orderId, studentId, studentEmail }) => {
 ///////////////////////////////////////////////////////////////
 // verify payment service
 
-const verifyPayment = async ({ order }) => {
-    const payment = await PaymentGatewayService.syncSuccessfulPaymentForOrder({
+const processPaymentVerification = async ({ orderId, studentId }) => {
+    const order = await getStudentOrder({
+        orderId,
+        studentId,
+    });
+
+    return completeCheckout({
         order,
     });
+};
+
+///////////////////////////////////////////////////////////////
+// verify successful payment service
+
+const verifySuccessfulPayment = async ({ order }) => {
+    const payment =
+        await PaymentGatewayService.syncSuccessfulPaymentForOrder({
+            order,
+        });
 
     if (!payment) {
         throw new ApiError({
@@ -77,6 +95,53 @@ const verifyPayment = async ({ order }) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// handle payment webhook
+
+const handleWebhook = async ({ rawBody, signature, timestamp, }) => {
+    const webhook = await PaymentGatewayService.verifyWebhook({
+        rawBody,
+        signature,
+        timestamp,
+    });
+
+    if (webhook.event !== PAYMENT_WEBHOOK_EVENTS.PAYMENT_SUCCESS) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: PAYMENT_ERROR_MESSAGES.UNSUPPORTED_WEBHOOK_EVENT,
+        });
+    }
+
+    if (!webhook.providerOrderId || !webhook.providerPaymentId) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: PAYMENT_ERROR_MESSAGES.INVALID_WEBHOOK,
+        });
+    }
+
+    if (webhook.status !== PAYMENT_STATUS.SUCCESS) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: PAYMENT_ERROR_MESSAGES.INVALID_WEBHOOK,
+        });
+    }
+
+    const order = await orderRepository.findOrderById({
+        orderId: webhook.providerOrderId,
+    });
+
+    if (!order) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: PAYMENT_ERROR_MESSAGES.ORDER_NOT_FOUND,
+        });
+    }
+
+    return completeCheckout({
+        order,
+    });
+};
+
+///////////////////////////////////////////////////////////////
 // exports
 
-export { createPayment, verifyPayment };
+export { createPayment, processPaymentVerification, verifySuccessfulPayment, handleWebhook };

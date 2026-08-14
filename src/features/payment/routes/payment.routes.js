@@ -1,6 +1,7 @@
 import express from "express";
 
 import paymentStudentRouter from "./payment.student.routes.js";
+import paymentWebhookRouter from "./payment.webhook.routes.js";
 
 ///////////////////////////////////////////////////////////////
 // create router
@@ -8,9 +9,14 @@ import paymentStudentRouter from "./payment.student.routes.js";
 const paymentRouter = express.Router();
 
 ///////////////////////////////////////////////////////////////
-// mount student private routes
+// mount payment webhook routes
 
-paymentRouter.use("/students", paymentStudentRouter);
+paymentRouter.use("/webhooks", paymentWebhookRouter);
+
+///////////////////////////////////////////////////////////////
+// mount student payment private routes
+
+paymentRouter.use(paymentStudentRouter);
 
 ///////////////////////////////////////////////////////////////
 // export

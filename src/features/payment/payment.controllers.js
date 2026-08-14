@@ -1,10 +1,11 @@
 import * as paymentService from "./payment.service.js";
-import { completeCheckout } from "../../workflow/checkout/chekout.service.js";
+import { completeCheckout } from "../../workflow/checkout/chekout.workflow.js";
 
 import ApiResponse from "../../utils/response-handler.utility.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
 
 import { PAYMENT_SUCCESS_MESSAGES } from "./payment.constants.js";
+import { PAYMENT_WEBHOOK_HEADERS } from "../../services/payment/payment-service.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create payment controller
@@ -29,10 +30,11 @@ const createPayment = async (req, res) => {
 // verify payment controller
 
 const verifyPayment = async (req, res) => {
-    const { payment, order, enrollment } = await completeCheckout({
-        orderId: req.params.orderId,
-        studentId: req.user._id,
-    });
+    const { payment, order, enrollment } =
+        await paymentService.processPaymentVerification({
+            orderId: req.params.orderId,
+            studentId: req.user._id,
+        });
 
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
@@ -48,6 +50,23 @@ const verifyPayment = async (req, res) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// payment webhook controller
+
+const handleWebhook = async (req, res) => {
+    await paymentService.handleWebhook({
+        rawBody: req.rawBody,
+        signature: req.headers[PAYMENT_WEBHOOK_HEADERS.SIGNATURE],
+        timestamp: req.headers[PAYMENT_WEBHOOK_HEADERS.TIMESTAMP],
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: PAYMENT_SUCCESS_MESSAGES.WEBHOOK_RECEIVED,
+        })
+    );
+};
+///////////////////////////////////////////////////////////////
 // exports
 
-export { createPayment, verifyPayment };
+export { createPayment, verifyPayment, handleWebhook };

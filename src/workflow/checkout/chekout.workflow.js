@@ -3,7 +3,6 @@ import * as paymentRepository from "../../features/payment/payment.repository.js
 import * as orderRepository from "../../features/order/order.repository.js";
 import * as enrollmentRepository from "../../features/enrollment/enrollment.repository.js";
 
-import { getStudentOrder } from "../../features/payment/payment.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
 
 import HTTP_STATUS from "../../constants/http.constants.js";
@@ -11,14 +10,9 @@ import { ORDER_STATUS } from "../../features/order/order.constants.js";
 import { PAYMENT_ERROR_MESSAGES } from "../../features/payment/payment.constants.js";
 
 ///////////////////////////////////////////////////////////////
-// complete checkout flow
+// complete checkout workflow
 
-const completeCheckout = async ({ orderId, studentId }) => {
-    const order = await getStudentOrder({
-        orderId,
-        studentId,
-    });
-
+const completeCheckout = async ({ order }) => {
     let payment;
 
     if (order.status === ORDER_STATUS.COMPLETED) {
@@ -40,7 +34,7 @@ const completeCheckout = async ({ orderId, studentId }) => {
             });
         }
 
-        payment = await paymentService.verifyPayment({
+        payment = await paymentService.verifySuccessfulPayment({
             order,
         });
 
@@ -74,4 +68,9 @@ const completeCheckout = async ({ orderId, studentId }) => {
     };
 };
 
-export { completeCheckout };
+///////////////////////////////////////////////////////////////
+// exports
+
+export {
+    completeCheckout
+}

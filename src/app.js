@@ -51,7 +51,14 @@ if (serverAppConfig?.NODE_ENV === "development") {
 ///////////////////////////////////////////////////////////////
 // express middlewares
 
-app.use(express.json({ limit: "10kb" }));
+app.use(express.json({
+    limit: "10kb",
+    verify: (req, res, buffer) => {
+        if (req.originalUrl === "/api/v1/payments/webhooks/cashfree") {
+            req.rawBody = buffer.toString("utf8");
+        }
+    },
+}));
 app.use(express.urlencoded({ extended: false, limit: "10kb" }));
 app.use(cookieParser());
 

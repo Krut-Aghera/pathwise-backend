@@ -1,12 +1,13 @@
+import crypto from "crypto";
 import axios from "axios";
 
-import PaymentInterface from "./payment-service.interface.js";
+import PaymentContract from "./payment.contract.js";
 import cashfreeConfig from "./payment-service.config.js";
 
 ///////////////////////////////////////////////////////////////
 // cashfree provider class
 
-class CashfreeProvider extends PaymentInterface {
+class CashfreeProvider extends PaymentContract {
     constructor(config) {
         super();
 
@@ -28,6 +29,7 @@ class CashfreeProvider extends PaymentInterface {
     }
 
     // cashfree request
+
     async request({ method, path, body }) {
         const response = await this.httpClient({
             method,
@@ -72,7 +74,7 @@ class CashfreeProvider extends PaymentInterface {
         };
     }
 
-    // cashfree ger payments for orders
+    // cashfree get payments for order
 
     async getPaymentsForOrder({ orderId }) {
         const response = await this.request({
@@ -92,6 +94,46 @@ class CashfreeProvider extends PaymentInterface {
         });
 
         return response;
+    }
+
+    // cashfree verify webhook
+
+    async verifyWebhook({ rawBody, signature, timestamp }) {
+        if (!rawBody || !signature || !timestamp) {
+            throw new Error("Invalid Cashfree webhook request");
+        }
+
+        const signatureData = `${timestamp}${rawBody}`;
+
+        const generatedSignature = crypto
+            .createHmac("sha256", this.clientSecret)
+            .update(signatureData)
+            .digest("base64");
+
+        const expectedSignature = Buffer.from(generatedSignature);
+        const receivedSignature = Buffer.from(signature);
+
+        if (
+            expectedSignature.length !== receivedSignature.length ||
+            !crypto.timingSafeEqual(expectedSignature, receivedSignature)
+        ) {
+            throw new Error("Invalid Cashfree webhook signature");
+        }
+
+        let payload;
+
+        try {
+            payload = JSON.parse(rawBody);
+        } catch {
+            throw new Error("Invalid Cashfree webhook payload");
+        }
+
+        return {
+            event: payload.type,
+            providerOrderId: payload.data?.order?.order_id,
+            providerPaymentId: payload.data?.payment?.cf_payment_id,
+            status: payload.data?.payment?.payment_status,
+        };
     }
 }
 

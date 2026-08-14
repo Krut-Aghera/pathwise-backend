@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////
 // payment provider interface class
 
-class PaymentInterface {
+class PaymentContract {
     // create payment order
 
     async createOrder() {
@@ -19,11 +19,21 @@ class PaymentInterface {
     // get payment by provider payment ID
 
     async getPaymentById() {
-        throw new Error("PaymentInterface.getPaymentById() must be implemented");
+        throw new Error(
+            "PaymentInterface.getPaymentById() must be implemented"
+        );
+    }
+
+    // verify and parse payment webhook
+
+    async verifyWebhook() {
+        throw new Error(
+            "PaymentInterface.verifyWebhook() must be implemented"
+        );
     }
 }
 
 ///////////////////////////////////////////////////////////////
 // export
 
-export default PaymentInterface;
+export default PaymentContract;

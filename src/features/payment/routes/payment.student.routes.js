@@ -11,7 +11,7 @@ import { validateMongoIdParam } from "../../../validations/common.validators.js"
 const paymentStudentRouter = express.Router();
 
 ///////////////////////////////////////////////////////////////
-// POST /api/v1/payments/students/orders/:orderId
+// POST /api/v1/payments/orders/:orderId
 // Creates a payment session for the authenticated student.
 
 paymentStudentRouter.post(
@@ -27,7 +27,7 @@ paymentStudentRouter.post(
 );
 
 ///////////////////////////////////////////////////////////////
-// POST /api/v1/payments/students/orders/:orderId/verify
+// POST /api/v1/payments/orders/:orderId/verify
 // Verifies the payment and completes checkout for the authenticated student.
 
 paymentStudentRouter.post(

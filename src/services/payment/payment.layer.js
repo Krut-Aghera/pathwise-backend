@@ -1,4 +1,4 @@
-import paymentProvider from "./payment-service.provider.js";
+import paymentProvider from "./payment.provider.js";
 
 import * as paymentRepository from "../../features/payment/payment.repository.js";
 
@@ -80,6 +80,16 @@ class PaymentGateway {
 
         return paymentRepository.createPayment({
             paymentPayload,
+        });
+    }
+
+    // verify payment webhook
+
+    async verifyWebhook({ rawBody, signature, timestamp }) {
+        return this.provider.verifyWebhook({
+            rawBody,
+            signature,
+            timestamp,
         });
     }
 }

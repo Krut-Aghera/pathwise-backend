@@ -4,7 +4,7 @@
 const PAYMENT_SUCCESS_MESSAGES = Object.freeze({
     CREATED: "Payment created successfully.",
     VERIFIED: "Payment verified successfully.",
-    PAYMENT_FETCHED: "Payment details fetched successfully.",
+    WEBHOOK_RECEIVED: "Payment webhook received successfully.",
 });
 
 ///////////////////////////////////////////////////////////////
@@ -25,6 +25,9 @@ const PAYMENT_ERROR_MESSAGES = Object.freeze({
     PAYMENT_VERIFICATION_FAILED:
         "Payment verification failed. Payment not completed",
     PAYMENT_PROVIDER_ERROR: "Payment provider request failed.",
+
+    UNSUPPORTED_WEBHOOK_EVENT: "Unsupported payment webhook event.",
+    INVALID_WEBHOOK: "Invalid payment webhook.",
 });
 
 ///////////////////////////////////////////////////////////////
