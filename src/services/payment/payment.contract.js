@@ -27,9 +27,7 @@ class PaymentContract {
     // verify and parse payment webhook
 
     async verifyWebhook() {
-        throw new Error(
-            "PaymentInterface.verifyWebhook() must be implemented"
-        );
+        throw new Error("PaymentInterface.verifyWebhook() must be implemented");
     }
 }
 

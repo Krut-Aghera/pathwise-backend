@@ -19,6 +19,7 @@ import sectionRouter from "./features/section/routes/section.routes.js";
 import lectureRouter from "./features/lecture/routes/lecture.routes.js";
 import orderRouter from "./features/order/routes/order.routes.js";
 import paymentRouter from "./features/payment/routes/payment.routes.js";
+import enrollmentRouter from "./features/enrollment/routes/enrollment.routes.js";
 
 const app = express();
 
@@ -51,14 +52,16 @@ if (serverAppConfig?.NODE_ENV === "development") {
 ///////////////////////////////////////////////////////////////
 // express middlewares
 
-app.use(express.json({
-    limit: "10kb",
-    verify: (req, res, buffer) => {
-        if (req.originalUrl === "/api/v1/payments/webhooks/cashfree") {
-            req.rawBody = buffer.toString("utf8");
-        }
-    },
-}));
+app.use(
+    express.json({
+        limit: "10kb",
+        verify: (req, res, buffer) => {
+            if (req.originalUrl === "/api/v1/payments/webhooks/cashfree") {
+                req.rawBody = buffer.toString("utf8");
+            }
+        },
+    })
+);
 app.use(express.urlencoded({ extended: false, limit: "10kb" }));
 app.use(cookieParser());
 
@@ -72,6 +75,7 @@ app.use("/api/v1/sections", sectionRouter);
 app.use("/api/v1/lectures", lectureRouter);
 app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/payments", paymentRouter);
+app.use("/api/v1/enrollments", enrollmentRouter);
 
 ///////////////////////////////////////////////////////////////
 // error middlewares

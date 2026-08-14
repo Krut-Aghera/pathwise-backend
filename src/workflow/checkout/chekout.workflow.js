@@ -1,7 +1,7 @@
 import * as paymentService from "../../features/payment/payment.service.js";
 import * as paymentRepository from "../../features/payment/payment.repository.js";
 import * as orderRepository from "../../features/order/order.repository.js";
-import * as enrollmentRepository from "../../features/enrollment/enrollment.repository.js";
+import * as enrollmentService from "../../features/enrollment/enrollment.service.js";
 
 import ApiError from "../../utils/error-handler.utility.js";
 
@@ -45,21 +45,14 @@ const completeCheckout = async ({ order }) => {
         });
     }
 
-    let enrollment = await enrollmentRepository.findEnrollment({
-        studentId: order.student,
-        courseId: order.course,
+    const enrollment = await enrollmentService.createEnrollment({
+        enrollmentPayload: {
+            student: order.student,
+            course: order.course,
+            order: order._id,
+            payment: payment._id,
+        },
     });
-
-    if (!enrollment) {
-        enrollment = await enrollmentRepository.createEnrollment({
-            enrollmentPayload: {
-                student: order.student,
-                course: order.course,
-                order: order._id,
-                payment: payment._id,
-            },
-        });
-    }
 
     return {
         payment,
@@ -71,6 +64,4 @@ const completeCheckout = async ({ order }) => {
 ///////////////////////////////////////////////////////////////
 // exports
 
-export {
-    completeCheckout
-}
+export { completeCheckout };

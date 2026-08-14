@@ -48,10 +48,9 @@ const processPaymentVerification = async ({ orderId, studentId }) => {
 // verify successful payment service
 
 const verifySuccessfulPayment = async ({ order }) => {
-    const payment =
-        await PaymentGatewayService.syncSuccessfulPaymentForOrder({
-            order,
-        });
+    const payment = await PaymentGatewayService.syncSuccessfulPaymentForOrder({
+        order,
+    });
 
     if (!payment) {
         throw new ApiError({
@@ -97,7 +96,7 @@ const verifySuccessfulPayment = async ({ order }) => {
 ///////////////////////////////////////////////////////////////
 // handle payment webhook
 
-const handleWebhook = async ({ rawBody, signature, timestamp, }) => {
+const handleWebhook = async ({ rawBody, signature, timestamp }) => {
     const webhook = await PaymentGatewayService.verifyWebhook({
         rawBody,
         signature,
@@ -144,4 +143,9 @@ const handleWebhook = async ({ rawBody, signature, timestamp, }) => {
 ///////////////////////////////////////////////////////////////
 // exports
 
-export { createPayment, processPaymentVerification, verifySuccessfulPayment, handleWebhook };
+export {
+    createPayment,
+    processPaymentVerification,
+    verifySuccessfulPayment,
+    handleWebhook,
+};
