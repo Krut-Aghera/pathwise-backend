@@ -8,12 +8,11 @@ import validateMongoIdParam from "../../../validations/mongo-idParam.validator.j
 
 const userPublicRouter = express.Router();
 
-///////////////////////////////////////////////////////////////
-// GET /api/v1/users/instructor/:userId
+// GET /api/v1/users/instructors/:instructorId
 // Retrieves the public profile of a specific instructor.
 
 userPublicRouter.get(
-    "/instructor/:instructorId",
+    "/instructors-profile/:instructorId",
     validateMongoIdParam({
         paramName: "instructorId",
         fieldName: "Instructor ID",

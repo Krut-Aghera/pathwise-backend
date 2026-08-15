@@ -1,13 +1,9 @@
 import { body } from "express-validator";
-import * as authValidations from "../auth/auth.validators.js";
+
 import REGEX_VALIDATIONS from "../../constants/regex.constants.js";
 
-//
-//
 ///////////////////////////////////////////////////////////////
 // reusable validators
-//
-//
 
 const usernameValidations = body("username")
     .trim()
@@ -44,17 +40,20 @@ const otpValidations = body("otp")
     .withMessage("Verification code must contain only numbers.");
 
 ///////////////////////////////////////////////////////////////
-// username updation validators
+// username update validators
 
-const usernameUpdationValidators = [usernameValidations];
-
-///////////////////////////////////////////////////////////////
-// email updation validators
-
-const emailUpdationValidators = [passwordValidations, newEmailValidations];
+const usernameUpdateValidators = [usernameValidations];
 
 ///////////////////////////////////////////////////////////////
-// acount deactivation request validators
+// email update validators
+
+const emailUpdateValidators = [
+    passwordValidations,
+    newEmailValidations,
+];
+
+///////////////////////////////////////////////////////////////
+// account deactivation request validators
 
 const accountDeactivationRequestValidators = [passwordValidations];
 
@@ -64,11 +63,11 @@ const accountDeactivationRequestValidators = [passwordValidations];
 const accountDeactivationConfirmationValidators = [otpValidations];
 
 ///////////////////////////////////////////////////////////////
-// export
+// exports
 
 export {
-    emailUpdationValidators,
-    usernameUpdationValidators,
+    usernameUpdateValidators,
+    emailUpdateValidators,
     accountDeactivationRequestValidators,
     accountDeactivationConfirmationValidators,
 };

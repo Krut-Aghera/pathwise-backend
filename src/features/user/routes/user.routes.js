@@ -3,22 +3,9 @@ import express from "express";
 import userPrivateRouter from "./user.private.routes.js";
 import userPublicRouter from "./user.public.routes.js";
 
-///////////////////////////////////////////////////////////////
-// create router
-
 const userRouter = express.Router();
 
-///////////////////////////////////////////////////////////////
-// mount private routes
-
 userRouter.use(userPrivateRouter);
-
-///////////////////////////////////////////////////////////////
-// mount public routes
-
 userRouter.use(userPublicRouter);
-
-///////////////////////////////////////////////////////////////
-// export
 
 export default userRouter;

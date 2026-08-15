@@ -1,8 +1,5 @@
 import crypto from "crypto";
 
-import * as userRepository from "./user.repository.js";
-import * as userEmail from "../../services/email/mailers/user.mailers.js";
-
 import logger from "../../utils/pino-logger.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
 import generateSecureOtp from "../../utils/otp-generator.utility.js";
@@ -10,18 +7,22 @@ import {
     generateSecureTokens,
     getExpiry,
 } from "../../utils/token-generator.utility.js";
+
 import {
     createEmailChangeVerificationUrl,
     createInstructorAccessVerificationUrl,
 } from "../../services/email/email.utility.js";
+import * as userEmail from "../../services/email/mailers/user.mailers.js";
 
 import HTTP_STATUS from "../../constants/http.constants.js";
 import { EMAIL_EXPIRY_MINUTES } from "../../services/email/email.constans.js";
+
 import {
     ROLES,
     USER_ERROR_MESSAGES,
     USER_TOKEN_FIELDS,
 } from "./user.constants.js";
+import * as userRepository from "./user.repository.js";
 
 ///////////////////////////////////////////////////////////////
 // update username service

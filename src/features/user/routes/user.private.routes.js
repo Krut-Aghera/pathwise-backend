@@ -14,7 +14,6 @@ import validateCryptoTokenParam from "../../../validations/crypto-tokenParam.val
 
 const userPrivateRouter = express.Router();
 
-///////////////////////////////////////////////////////////////
 // GET /api/v1/users/me
 // Retrieves the authenticated user's profile.
 
@@ -25,7 +24,6 @@ userPrivateRouter.get(
     userControllers.currentUser
 );
 
-///////////////////////////////////////////////////////////////
 // PATCH /api/v1/users/me/username
 // Updates the authenticated user's username.
 
@@ -34,49 +32,46 @@ userPrivateRouter.patch(
     userRatelimiter.updateProfileRateLimiter,
     accessTokenVerification,
     requireActiveAccount,
-    userValidations.usernameUpdationValidators,
+    userValidations.usernameUpdateValidators,
     validationEngine,
     userControllers.updateUsername
 );
 
-///////////////////////////////////////////////////////////////
-// POST /api/v1/users/me/email/request
+// POST /api/v1/users/me/email-change
 // Initiates an email address change request.
 
 userPrivateRouter.post(
-    "/me/email/request",
+    "/me/email-change",
     userRatelimiter.requestEmailChangeRateLimiter,
     accessTokenVerification,
     requireActiveAccount,
     requireVerifiedEmail,
-    userValidations.emailUpdationValidators,
+    userValidations.emailUpdateValidators,
     validationEngine,
     userControllers.requestEmailUpdation
 );
 
-///////////////////////////////////////////////////////////////
-// POST /api/v1/users/me/email/confirm/:token
+// POST /api/v1/users/me/email-change/confirm/:token
 // Confirms and completes the email address change.
 
 userPrivateRouter.post(
-    "/me/email/confirm/:token",
+    "/me/email-change/confirm/:token",
     accessTokenVerification,
     requireActiveAccount,
     requireVerifiedEmail,
     validateCryptoTokenParam({
         paramName: "token",
-        fieldName: "Email updation token",
+        fieldName: "Email change token",
     }),
     validationEngine,
     userControllers.confirmEmailUpdation
 );
 
-///////////////////////////////////////////////////////////////
-// POST /api/v1/users/me/instructor/request
+// POST /api/v1/users/me/instructor-access
 // Initiates an instructor access request.
 
 userPrivateRouter.post(
-    "/me/instructor/request",
+    "/me/instructor-access",
     userRatelimiter.requestInstructorAccessRateLimiter,
     accessTokenVerification,
     requireActiveAccount,
@@ -84,12 +79,11 @@ userPrivateRouter.post(
     userControllers.requestInstructorAccess
 );
 
-///////////////////////////////////////////////////////////////
-// POST /api/v1/users/me/instructor/confirm/:token
+// POST /api/v1/users/me/instructor-access/confirm/:token
 // Confirms and grants instructor access.
 
 userPrivateRouter.post(
-    "/me/instructor/confirm/:token",
+    "/me/instructor-access/confirm/:token",
     accessTokenVerification,
     requireActiveAccount,
     requireVerifiedEmail,
@@ -101,12 +95,11 @@ userPrivateRouter.post(
     userControllers.confirmInstructorAccess
 );
 
-///////////////////////////////////////////////////////////////
-// POST /api/v1/users/me/deactivation/request
+// POST /api/v1/users/me/deactivation
 // Initiates an account deactivation request.
 
 userPrivateRouter.post(
-    "/me/deactivation/request",
+    "/me/deactivation",
     userRatelimiter.requestAccountDeletionRateLimiter,
     accessTokenVerification,
     requireActiveAccount,
@@ -115,9 +108,8 @@ userPrivateRouter.post(
     userControllers.requestAccountDeactivation
 );
 
-///////////////////////////////////////////////////////////////
 // POST /api/v1/users/me/deactivation/confirm
-// Confirms and permanently deactivates the authenticated user's account.
+// Confirms and deactivates the authenticated user's account.
 
 userPrivateRouter.post(
     "/me/deactivation/confirm",

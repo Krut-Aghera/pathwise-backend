@@ -1,15 +1,14 @@
-import * as userServices from "./user.service.js";
-
 import ApiResponse from "../../utils/response-handler.utility.js";
-import ApiError from "../../utils/error-handler.utility.js";
 
 import HTTP_STATUS from "../../constants/http.constants.js";
-import { USER_SUCCESS_MESSAGES } from "./user.constants.js";
 import {
     ACCESS_COOKIE_OPTIONS,
     REFRESH_COOKIE_OPTIONS,
     JWT_TOKEN_TYPE,
 } from "../../constants/cookie.constants.js";
+
+import { USER_SUCCESS_MESSAGES } from "./user.constants.js";
+import * as userServices from "./user.service.js";
 
 ///////////////////////////////////////////////////////////////
 // current user controller
