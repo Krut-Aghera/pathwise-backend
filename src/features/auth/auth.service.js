@@ -1,12 +1,6 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
-import * as authSession from "./auth.session.js";
-import * as userRepository from "../user/user.repository.js";
-import * as authEmail from "../../services/email/mailers/auth.mailer.js";
-
-import User from "../user/user.model.js";
-
 import logger from "../../utils/pino-logger.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
 
@@ -16,15 +10,20 @@ import {
 } from "../../utils/token-generator.utility.js";
 
 import {
-    createPasswordResetUrl,
     getEmailVerificationUrl,
 } from "../../services/email/email.utility.js";
 
 import HTTP_STATUS from "../../constants/http.constants.js";
-import { EMAIL_EXPIRY_MINUTES } from "../../services/email/email.constans.js";
-import { USER_TOKEN_FIELDS } from "../user/user.constants.js";
-import { AUTH_ERROR_MESSAGES } from "./auth.constants.js";
 import { env_jwtVars } from "../../config/env.config.js";
+
+import { EMAIL_EXPIRY_MINUTES } from "../../services/email/email.constans.js";
+
+import * as userRepository from "../user/user.repository.js";
+import { USER_TOKEN_FIELDS } from "../user/user.constants.js";
+
+import * as authSession from "./auth.session.js";
+import * as authEmail from "../../services/email/mailers/auth.mailer.js";
+import { AUTH_ERROR_MESSAGES } from "./auth.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // registration service

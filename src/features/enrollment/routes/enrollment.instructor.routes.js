@@ -1,7 +1,7 @@
 import express from "express";
 import * as enrollmentControllers from "../enrollment.controllers.js";
 import * as enrollmentRatelimiter from "../../../middlewares/ratelimiter/limiters/enrollment.ratelimit.js";
-import instructorAuthMiddleware from "../../../middlewares/auth/instructor-auth.middleware.js";
+import instructorAuthEngine from "../../../middlewares/auth/engines/instructor-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 
@@ -17,7 +17,7 @@ const enrollmentInstructorRouter = express.Router();
 enrollmentInstructorRouter.get(
     "/courses/:courseId",
     enrollmentRatelimiter.fetchCourseEnrollmentsRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",

@@ -2,7 +2,7 @@ import express from "express";
 import * as lectureControllers from "../lecture.controllers.js";
 import * as lectureValidations from "../lecture.validators.js";
 import * as lectureRatelimiter from "../../../middlewares/ratelimiter/limiters/lecture.rate-limiter.js";
-import instructorAuthMiddleware from "../../../middlewares/auth/instructor-auth.middleware.js";
+import instructorAuthEngine from "../../../middlewares/auth/engines/instructor-auth.engine.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 import { videoUpload } from "../../../middlewares/multer/multer.uploaders.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
@@ -19,7 +19,7 @@ const lectureInstructorRouter = express.Router();
 lectureInstructorRouter.post(
     "/sections/:sectionId",
     lectureRatelimiter.createLectureRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "sectionId",
         fieldName: "Section ID",
@@ -36,7 +36,7 @@ lectureInstructorRouter.post(
 lectureInstructorRouter.patch(
     "/:lectureId",
     lectureRatelimiter.updateLectureRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "lectureId",
         fieldName: "Lecture ID",
@@ -53,7 +53,7 @@ lectureInstructorRouter.patch(
 lectureInstructorRouter.delete(
     "/:lectureId",
     lectureRatelimiter.removeLectureRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "lectureId",
         fieldName: "Lecture ID",
@@ -69,7 +69,7 @@ lectureInstructorRouter.delete(
 lectureInstructorRouter.patch(
     "/sections/:sectionId/reorder",
     lectureRatelimiter.reorderLecturesRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "sectionId",
         fieldName: "Section ID",
@@ -85,7 +85,7 @@ lectureInstructorRouter.patch(
 lectureInstructorRouter.patch(
     "/:lectureId/video",
     lectureRatelimiter.uploadLectureVideoRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "lectureId",
         fieldName: "Lecture ID",
@@ -102,7 +102,7 @@ lectureInstructorRouter.patch(
 lectureInstructorRouter.delete(
     "/:lectureId/video",
     lectureRatelimiter.removeLectureVideoRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "lectureId",
         fieldName: "Lecture ID",
@@ -118,7 +118,7 @@ lectureInstructorRouter.delete(
 lectureInstructorRouter.patch(
     "/:lectureId/publish",
     lectureRatelimiter.publishLectureRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "lectureId",
         fieldName: "Lecture ID",
@@ -134,7 +134,7 @@ lectureInstructorRouter.patch(
 lectureInstructorRouter.patch(
     "/:lectureId/draft",
     lectureRatelimiter.saveLectureAsDraftRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "lectureId",
         fieldName: "Lecture ID",
@@ -150,7 +150,7 @@ lectureInstructorRouter.patch(
 lectureInstructorRouter.get(
     "/sections/:sectionId",
     lectureRatelimiter.fetchInstructorLecturesRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "sectionId",
         fieldName: "Section ID",
@@ -166,7 +166,7 @@ lectureInstructorRouter.get(
 lectureInstructorRouter.get(
     "/:lectureId",
     lectureRatelimiter.fetchInstructorLectureRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "lectureId",
         fieldName: "Lecture ID",

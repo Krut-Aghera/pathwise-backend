@@ -1,7 +1,7 @@
 import express from "express";
 import * as paymentControllers from "../payment.controllers.js";
 import * as paymentRatelimiter from "../../../middlewares/ratelimiter/limiters/payment.ratelimit.js";
-import studentAuthMiddleware from "../../../middlewares/auth/student-auth.middleware.js";
+import studentAuthEngine from "../../../middlewares/auth/engines/student-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 
@@ -17,7 +17,7 @@ const paymentStudentRouter = express.Router();
 paymentStudentRouter.post(
     "/orders/:orderId",
     paymentRatelimiter.createPaymentRateLimiter,
-    ...studentAuthMiddleware,
+    ...studentAuthEngine,
     validateMongoIdParam({
         paramName: "orderId",
         fieldName: "Order ID",
@@ -33,7 +33,7 @@ paymentStudentRouter.post(
 paymentStudentRouter.post(
     "/orders/:orderId/verify",
     paymentRatelimiter.verifyPaymentRateLimiter,
-    ...studentAuthMiddleware,
+    ...studentAuthEngine,
     validateMongoIdParam({
         paramName: "orderId",
         fieldName: "Order ID",

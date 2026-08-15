@@ -1,7 +1,7 @@
 import express from "express";
 import * as lectureControllers from "../lecture.controllers.js";
 import * as lectureRatelimiter from "../../../middlewares/ratelimiter/limiters/lecture.rate-limiter.js";
-import studentAuthMiddleware from "../../../middlewares/auth/student-auth.middleware.js";
+import studentAuthEngine from "../../../middlewares/auth/engines/student-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 
@@ -17,7 +17,7 @@ const lectureStudentRouter = express.Router();
 lectureStudentRouter.get(
     "/:lectureId",
     lectureRatelimiter.fetchStudentLectureRateLimiter,
-    ...studentAuthMiddleware,
+    ...studentAuthEngine,
     validateMongoIdParam({
         paramName: "lectureId",
         fieldName: "Lecture ID",

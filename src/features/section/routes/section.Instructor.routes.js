@@ -4,7 +4,7 @@ import * as sectionControllers from "../section.controllers.js";
 import * as sectionValidations from "../section.validators.js";
 import * as sectionRatelimiter from "../../../middlewares/ratelimiter/limiters/section.ratelimit.js";
 
-import instructorAuthMiddleware from "../../../middlewares/auth/instructor-auth.middleware.js";
+import instructorAuthEngine from "../../../middlewares/auth/engines/instructor-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
@@ -22,7 +22,7 @@ const sectionInstructorRouter = express.Router();
 sectionInstructorRouter.get(
     "/course/:courseId",
     sectionRatelimiter.fetchInstructorSectionsRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -38,7 +38,7 @@ sectionInstructorRouter.get(
 sectionInstructorRouter.get(
     "/:sectionId",
     sectionRatelimiter.fetchInstructorSectionRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "sectionId",
         fieldName: "Section ID",
@@ -54,7 +54,7 @@ sectionInstructorRouter.get(
 sectionInstructorRouter.post(
     "/course/:courseId",
     sectionRatelimiter.createSectionRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -71,7 +71,7 @@ sectionInstructorRouter.post(
 sectionInstructorRouter.patch(
     "/courses/:courseId/reorder",
     sectionRatelimiter.reorderSectionsRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -88,7 +88,7 @@ sectionInstructorRouter.patch(
 sectionInstructorRouter.patch(
     "/:sectionId",
     sectionRatelimiter.updateSectionRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "sectionId",
         fieldName: "Section ID",
@@ -105,7 +105,7 @@ sectionInstructorRouter.patch(
 sectionInstructorRouter.patch(
     "/:sectionId/publish",
     sectionRatelimiter.publishSectionRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "sectionId",
         fieldName: "Section ID",
@@ -121,7 +121,7 @@ sectionInstructorRouter.patch(
 sectionInstructorRouter.patch(
     "/:sectionId/draft",
     sectionRatelimiter.saveSectionAsDraftRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "sectionId",
         fieldName: "Section ID",
@@ -137,7 +137,7 @@ sectionInstructorRouter.patch(
 sectionInstructorRouter.delete(
     "/:sectionId",
     sectionRatelimiter.removeSectionRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "sectionId",
         fieldName: "Section ID",

@@ -3,7 +3,7 @@ import * as courseControllers from "../course.controllers.js";
 import * as courseValidations from "../course.validators.js";
 import * as courseRatelimiter from "../../../middlewares/ratelimiter/limiters/course.ratelimit.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
-import instructorAuthMiddleware from "../../../middlewares/auth/instructor-auth.middleware.js";
+import instructorAuthEngine from "../../../middlewares/auth/engines/instructor-auth.engine.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 import { FILE_FIELDS } from "../../../middlewares/multer/multer.constants.js";
 import { imageUpload } from "../../../middlewares/multer/multer.uploaders.js";
@@ -20,7 +20,7 @@ const coursePrivateRouter = express.Router();
 coursePrivateRouter.get(
     "/",
     courseRatelimiter.fetchInstructorCoursesRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     courseValidations.fetchInstructorCoursesValidators,
     validationEngine,
     courseControllers.fetchInstructorCourses
@@ -33,7 +33,7 @@ coursePrivateRouter.get(
 coursePrivateRouter.get(
     "/:courseId",
     courseRatelimiter.fetchInstructorCourseRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -49,7 +49,7 @@ coursePrivateRouter.get(
 coursePrivateRouter.post(
     "/",
     courseRatelimiter.createCourseRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     imageUpload.single(FILE_FIELDS.THUMBNAIL),
     courseValidations.createCourseValidators,
     validationEngine,
@@ -63,7 +63,7 @@ coursePrivateRouter.post(
 coursePrivateRouter.patch(
     "/:courseId/thumbnail",
     courseRatelimiter.updateCourseThumbnailRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -80,7 +80,7 @@ coursePrivateRouter.patch(
 coursePrivateRouter.patch(
     "/:courseId",
     courseRatelimiter.updateCourseRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -97,7 +97,7 @@ coursePrivateRouter.patch(
 coursePrivateRouter.delete(
     "/:courseId",
     courseRatelimiter.removeCourseRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -113,7 +113,7 @@ coursePrivateRouter.delete(
 coursePrivateRouter.patch(
     "/:courseId/publish",
     courseRatelimiter.publishCourseRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -129,7 +129,7 @@ coursePrivateRouter.patch(
 coursePrivateRouter.patch(
     "/:courseId/draft",
     courseRatelimiter.saveCourseAsDraftRateLimiter,
-    ...instructorAuthMiddleware,
+    ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",

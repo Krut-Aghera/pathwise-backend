@@ -1,7 +1,7 @@
 import express from "express";
 import * as enrollmentControllers from "../enrollment.controllers.js";
 import * as enrollmentRatelimiter from "../../../middlewares/ratelimiter/limiters/enrollment.ratelimit.js";
-import adminAuthMiddleware from "../../../middlewares/auth/admin-auth.middleware.js";
+import adminAuthEngine from "../../../middlewares/auth/engines/admin-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 
@@ -17,7 +17,7 @@ const enrollmentAdminRouter = express.Router();
 enrollmentAdminRouter.get(
     "/",
     enrollmentRatelimiter.fetchAllEnrollmentsRateLimiter,
-    ...adminAuthMiddleware,
+    ...adminAuthEngine,
     validationEngine,
     enrollmentControllers.fetchAllEnrollments
 );
@@ -29,7 +29,7 @@ enrollmentAdminRouter.get(
 enrollmentAdminRouter.get(
     "/:enrollmentId",
     enrollmentRatelimiter.fetchCurrentEnrollmentRateLimiter,
-    ...adminAuthMiddleware,
+    ...adminAuthEngine,
     validateMongoIdParam({
         paramName: "enrollmentId",
         fieldName: "Enrollment ID",

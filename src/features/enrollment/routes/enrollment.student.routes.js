@@ -1,7 +1,7 @@
 import express from "express";
 import * as enrollmentControllers from "../enrollment.controllers.js";
 import * as enrollmentRatelimiter from "../../../middlewares/ratelimiter/limiters/enrollment.ratelimit.js";
-import studentAuthMiddleware from "../../../middlewares/auth/student-auth.middleware.js";
+import studentAuthEngine from "../../../middlewares/auth/engines/student-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 
@@ -17,7 +17,7 @@ const enrollmentStudentRouter = express.Router();
 enrollmentStudentRouter.get(
     "/",
     enrollmentRatelimiter.fetchStudentEnrollmentsRateLimiter,
-    ...studentAuthMiddleware,
+    ...studentAuthEngine,
     validationEngine,
     enrollmentControllers.fetchStudentEnrollments
 );
@@ -29,7 +29,7 @@ enrollmentStudentRouter.get(
 enrollmentStudentRouter.get(
     "/courses/:courseId",
     enrollmentRatelimiter.fetchStudentEnrollmentByCourseRateLimiter,
-    ...studentAuthMiddleware,
+    ...studentAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -45,7 +45,7 @@ enrollmentStudentRouter.get(
 enrollmentStudentRouter.get(
     "/:enrollmentId",
     enrollmentRatelimiter.fetchStudentCurrentEnrollmentRateLimiter,
-    ...studentAuthMiddleware,
+    ...studentAuthEngine,
     validateMongoIdParam({
         paramName: "enrollmentId",
         fieldName: "Enrollment ID",

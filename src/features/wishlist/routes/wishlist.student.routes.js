@@ -1,7 +1,7 @@
 import express from "express";
 import * as wishlistControllers from "../wishlist.controllers.js";
 import * as wishlistRatelimiter from "../../../middlewares/ratelimiter/limiters/wishlist.ratelimit.js";
-import studentAuthMiddleware from "../../../middlewares/auth/student-auth.middleware.js";
+import studentAuthEngine from "../../../middlewares/auth/engines/student-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 
@@ -17,7 +17,7 @@ const wishlistStudentRouter = express.Router();
 wishlistStudentRouter.post(
     "/:courseId",
     wishlistRatelimiter.addCourseToWishlistRateLimiter,
-    ...studentAuthMiddleware,
+    ...studentAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -33,7 +33,7 @@ wishlistStudentRouter.post(
 wishlistStudentRouter.delete(
     "/courses/:courseId",
     wishlistRatelimiter.removeCourseFromWishlistRateLimiter,
-    ...studentAuthMiddleware,
+    ...studentAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -49,7 +49,7 @@ wishlistStudentRouter.delete(
 wishlistStudentRouter.get(
     "/",
     wishlistRatelimiter.fetchWishlistRateLimiter,
-    ...studentAuthMiddleware,
+    ...studentAuthEngine,
     validationEngine,
     wishlistControllers.fetchWishlist
 );
@@ -61,7 +61,7 @@ wishlistStudentRouter.get(
 wishlistStudentRouter.patch(
     "/",
     wishlistRatelimiter.clearWishlistRateLimiter,
-    ...studentAuthMiddleware,
+    ...studentAuthEngine,
     validationEngine,
     wishlistControllers.clearWishlist
 );

@@ -3,22 +3,9 @@ import express from "express";
 import authPrivateRouter from "./auth.private.routes.js";
 import authPublicRouter from "./auth.public.routes.js";
 
-///////////////////////////////////////////////////////////////
-// create router
-
 const authRouter = express.Router();
 
-///////////////////////////////////////////////////////////////
-// mount private routes
-
 authRouter.use(authPrivateRouter);
-
-///////////////////////////////////////////////////////////////
-// mount public routes
-
 authRouter.use(authPublicRouter);
-
-///////////////////////////////////////////////////////////////
-// export
 
 export default authRouter;

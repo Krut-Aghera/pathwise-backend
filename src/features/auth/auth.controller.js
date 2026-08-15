@@ -1,16 +1,15 @@
-import * as authService from "./auth.service.js";
-
-import logger from "../../utils/pino-logger.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
 import ApiResponse from "../../utils/response-handler.utility.js";
 
 import HTTP_STATUS from "../../constants/http.constants.js";
-import { AUTH_SUCCESS_MESSAGES } from "./auth.constants.js";
 import {
     ACCESS_COOKIE_OPTIONS,
     REFRESH_COOKIE_OPTIONS,
     JWT_TOKEN_TYPE,
 } from "../../constants/cookie.constants.js";
+
+import { AUTH_SUCCESS_MESSAGES } from "./auth.constants.js";
+import * as authService from "./auth.service.js";
 
 ///////////////////////////////////////////////////////////////
 // registration controller

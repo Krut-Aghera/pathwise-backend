@@ -1,10 +1,11 @@
 import express from "express";
 
-import * as authMiddlewares from "../../../middlewares/auth/auth.middleware.js";
+import requireActiveAccount from "../../../middlewares/auth/states/active-account.require.js";
+import requireVerifiedEmail from "../../../middlewares/auth/states/verify-email.require.js";
 import * as userControllers from "../user.controllers.js";
 import * as userValidations from "../user.validators.js";
 import * as userRatelimiter from "../../../middlewares/ratelimiter/limiters/user.ratelimit.js";
-
+import accessTokenVerification from "../../../middlewares/auth/tokens/access-token.verification.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import validateCryptoTokenParam from "../../../validations/crypto-tokenParam.validator.js";
 
@@ -19,8 +20,8 @@ const userPrivateRouter = express.Router();
 
 userPrivateRouter.get(
     "/me",
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.requireActiveAccount,
+    accessTokenVerification,
+    requireActiveAccount,
     userControllers.currentUser
 );
 
@@ -31,8 +32,8 @@ userPrivateRouter.get(
 userPrivateRouter.patch(
     "/me/username",
     userRatelimiter.updateProfileRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.requireActiveAccount,
+    accessTokenVerification,
+    requireActiveAccount,
     userValidations.usernameUpdationValidators,
     validationEngine,
     userControllers.updateUsername
@@ -45,9 +46,9 @@ userPrivateRouter.patch(
 userPrivateRouter.post(
     "/me/email/request",
     userRatelimiter.requestEmailChangeRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.requireActiveAccount,
-    authMiddlewares.requireVerifiedEmail,
+    accessTokenVerification,
+    requireActiveAccount,
+    requireVerifiedEmail,
     userValidations.emailUpdationValidators,
     validationEngine,
     userControllers.requestEmailUpdation
@@ -59,9 +60,9 @@ userPrivateRouter.post(
 
 userPrivateRouter.post(
     "/me/email/confirm/:token",
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.requireActiveAccount,
-    authMiddlewares.requireVerifiedEmail,
+    accessTokenVerification,
+    requireActiveAccount,
+    requireVerifiedEmail,
     validateCryptoTokenParam({
         paramName: "token",
         fieldName: "Email updation token",
@@ -77,9 +78,9 @@ userPrivateRouter.post(
 userPrivateRouter.post(
     "/me/instructor/request",
     userRatelimiter.requestInstructorAccessRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.requireActiveAccount,
-    authMiddlewares.requireVerifiedEmail,
+    accessTokenVerification,
+    requireActiveAccount,
+    requireVerifiedEmail,
     userControllers.requestInstructorAccess
 );
 
@@ -89,9 +90,9 @@ userPrivateRouter.post(
 
 userPrivateRouter.post(
     "/me/instructor/confirm/:token",
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.requireActiveAccount,
-    authMiddlewares.requireVerifiedEmail,
+    accessTokenVerification,
+    requireActiveAccount,
+    requireVerifiedEmail,
     validateCryptoTokenParam({
         paramName: "token",
         fieldName: "Instructor access token",
@@ -107,8 +108,8 @@ userPrivateRouter.post(
 userPrivateRouter.post(
     "/me/deactivation/request",
     userRatelimiter.requestAccountDeletionRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.requireActiveAccount,
+    accessTokenVerification,
+    requireActiveAccount,
     userValidations.accountDeactivationRequestValidators,
     validationEngine,
     userControllers.requestAccountDeactivation
@@ -120,8 +121,8 @@ userPrivateRouter.post(
 
 userPrivateRouter.post(
     "/me/deactivation/confirm",
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.requireActiveAccount,
+    accessTokenVerification,
+    requireActiveAccount,
     userValidations.accountDeactivationConfirmationValidators,
     validationEngine,
     userControllers.confirmAccountDeactivation

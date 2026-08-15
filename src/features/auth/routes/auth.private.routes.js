@@ -2,9 +2,10 @@ import express from "express";
 
 import * as authControllers from "../auth.controller.js";
 import * as authValidations from "../auth.validators.js";
-import * as authMiddlewares from "../../../middlewares/auth/auth.middleware.js";
-import * as authRatelimiter from "../../../middlewares/ratelimiter/limiters/auth.ratelimit.js";
 
+import accessTokenVerification from "../../../middlewares/auth/tokens/access-token.verification.js";
+import requireActiveAccount from "../../../middlewares/auth/states/active-account.require.js";
+import * as authRateLimiter from "../../../middlewares/ratelimiter/limiters/auth.ratelimit.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 
 import validateCryptoTokenParam from "../../../validations/crypto-tokenParam.validator.js";
@@ -14,37 +15,34 @@ import validateCryptoTokenParam from "../../../validations/crypto-tokenParam.val
 
 const authPrivateRouter = express.Router();
 
-///////////////////////////////////////////////////////////////
-// POST /api/v1/auth/logout
-// Logs out the authenticated user and invalidates their session.
+// POST /api/v1/auth/sessions/current
+// Logs out the authenticated user and invalidates their current session.
 
 authPrivateRouter.post(
-    "/logout",
-    authMiddlewares.tokenVerificationEngine,
+    "/sessions/current",
+    accessTokenVerification,
     authControllers.logout
 );
 
-///////////////////////////////////////////////////////////////
-// POST /api/v1/auth/email/request
+// POST /api/v1/auth/email-verification
 // Sends a new email verification link to the authenticated user's email address.
 
 authPrivateRouter.post(
-    "/email/request",
-    authRatelimiter.requestEmailVerificationRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.requireActiveAccount,
+    "/email-verification",
+    authRateLimiter.requestEmailVerificationRateLimiter,
+    accessTokenVerification,
+    requireActiveAccount,
     authControllers.requestEmailVerification
 );
 
-///////////////////////////////////////////////////////////////
-// POST /api/v1/auth/password/change
+// PATCH /api/v1/auth/password
 // Changes the authenticated user's password.
 
-authPrivateRouter.post(
-    "/password/change",
-    authRatelimiter.changePasswordRateLimiter,
-    authMiddlewares.tokenVerificationEngine,
-    authMiddlewares.requireActiveAccount,
+authPrivateRouter.patch(
+    "/password",
+    authRateLimiter.changePasswordRateLimiter,
+    accessTokenVerification,
+    requireActiveAccount,
     authValidations.changePasswordValidators,
     validationEngine,
     authControllers.changePassword

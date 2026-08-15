@@ -2,10 +2,12 @@ import express from "express";
 
 import * as authControllers from "../auth.controller.js";
 import * as authValidations from "../auth.validators.js";
-import * as authMiddlewares from "../../../middlewares/auth/auth.middleware.js";
-import * as authRatelimiter from "../../../middlewares/ratelimiter/limiters/auth.ratelimit.js";
 
+import requireActiveAccount from "../../../middlewares/auth/states/active-account.require.js";
+import refreshTokenVerification from "../../../middlewares/auth/tokens/refresh-token.verification.js";
+import * as authRateLimiter from "../../../middlewares/ratelimiter/limiters/auth.ratelimit.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
+
 import validateCryptoTokenParam from "../../../validations/crypto-tokenParam.validator.js";
 
 ///////////////////////////////////////////////////////////////
@@ -13,36 +15,33 @@ import validateCryptoTokenParam from "../../../validations/crypto-tokenParam.val
 
 const authPublicRouter = express.Router();
 
-///////////////////////////////////////////////////////////////
-// POST /api/v1/auth/register
+/// POST /api/v1/auth/users
 // Registers a new user account.
 
 authPublicRouter.post(
-    "/register",
-    authRatelimiter.registerRateLimiter,
+    "/users",
+    authRateLimiter.registerRateLimiter,
     authValidations.registerUserValidators,
     validationEngine,
     authControllers.registerUser
 );
 
-///////////////////////////////////////////////////////////////
-// POST /api/v1/auth/login
-// Authenticates a user and issues access and refresh tokens.
+// POST /api/v1/auth/sessions
+// Authenticates a user and creates an authenticated session.
 
 authPublicRouter.post(
-    "/login",
-    authRatelimiter.loginRateLimiter,
+    "/sessions",
+    authRateLimiter.loginRateLimiter,
     authValidations.loginValidators,
     validationEngine,
     authControllers.login
 );
 
-///////////////////////////////////////////////////////////////
-// GET /api/v1/auth/email/confirm/:token
+// POST /api/v1/auth/email-verification/confirm/:token
 // Verifies the user's email address using the verification token.
 
-authPublicRouter.get(
-    "/email/confirm/:token",
+authPublicRouter.post(
+    "/email-verification/confirm/:token",
     validateCryptoTokenParam({
         paramName: "token",
         fieldName: "Email verification token",
@@ -51,39 +50,37 @@ authPublicRouter.get(
     authControllers.confirmEmailVerification
 );
 
-///////////////////////////////////////////////////////////////
-// POST /api/v1/auth/rotate-tokens
-// Rotates the authenticated user's access and refresh tokens.
+// POST /api/v1/auth/tokens/rotate
+// Rotates the user's access and refresh tokens.
 
 authPublicRouter.post(
-    "/rotate-tokens",
-    authMiddlewares.requireActiveAccount,
+    "/tokens/rotate",
+    refreshTokenVerification,
+    requireActiveAccount,
     authControllers.rotateTokens
 );
 
-///////////////////////////////////////////////////////////////
-// POST /api/v1/auth/password/forgot
+// POST /api/v1/auth/password-reset
 // Initiates a password reset request.
 
 authPublicRouter.post(
-    "/password/forgot",
-    authRatelimiter.forgotPasswordRateLimiter,
+    "/password-reset",
+    authRateLimiter.forgotPasswordRateLimiter,
     authValidations.requestPasswordResetValidators,
     validationEngine,
     authControllers.requestPasswordReset
 );
 
-///////////////////////////////////////////////////////////////
-// POST /api/v1/auth/password/reset/:token
+// POST /api/v1/auth/password-reset/confirm
 // Resets the user's password using a valid password reset token.
 
 authPublicRouter.post(
-    "/password/reset/:token",
+    "/password-reset/confirm/:token",
+    authValidations.resetPasswordValidators,
     validateCryptoTokenParam({
         paramName: "token",
         fieldName: "Password reset token",
     }),
-    authValidations.resetPasswordValidators,
     validationEngine,
     authControllers.resetPassword
 );

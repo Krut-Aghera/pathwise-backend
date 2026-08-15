@@ -1,9 +1,9 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
-import * as userRepository from "../user/user.repository.js";
-
 import { env_jwtVars } from "../../config/env.config.js";
+
+import * as userRepository from "../user/user.repository.js";
 
 ///////////////////////////////////////////////////////////////
 // generate auth tokens
