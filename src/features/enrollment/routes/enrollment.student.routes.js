@@ -3,7 +3,7 @@ import * as enrollmentControllers from "../enrollment.controllers.js";
 import * as enrollmentRatelimiter from "../../../middlewares/ratelimiter/limiters/enrollment.ratelimit.js";
 import studentAuthMiddleware from "../../../middlewares/auth/student-auth.middleware.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
-import { validateMongoIdParam } from "../../../validations/common.validators.js";
+import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 
 ///////////////////////////////////////////////////////////////
 // create router

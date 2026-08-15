@@ -3,7 +3,7 @@ import * as paymentControllers from "../payment.controllers.js";
 import * as paymentRatelimiter from "../../../middlewares/ratelimiter/limiters/payment.ratelimit.js";
 import studentAuthMiddleware from "../../../middlewares/auth/student-auth.middleware.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
-import { validateMongoIdParam } from "../../../validations/common.validators.js";
+import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 
 ///////////////////////////////////////////////////////////////
 // create router

@@ -1,7 +1,7 @@
 import express from "express";
 import * as userControllers from "../user.controllers.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
-import { validateMongoIdParam } from "../../../validations/common.validators.js";
+import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 
 ///////////////////////////////////////////////////////////////
 // create router

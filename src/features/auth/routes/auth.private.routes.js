@@ -7,7 +7,7 @@ import * as authRatelimiter from "../../../middlewares/ratelimiter/limiters/auth
 
 import validationEngine from "../../../middlewares/validation.middleware.js";
 
-import { validateCryptoTokenParam } from "../../../validations/common.validators.js";
+import validateCryptoTokenParam from "../../../validations/crypto-tokenParam.validator.js";
 
 ///////////////////////////////////////////////////////////////
 // create router

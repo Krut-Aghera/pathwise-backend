@@ -1,18 +1,6 @@
 import { param } from "express-validator";
 
-export const validateMongoIdParam = ({
-    paramName = "id",
-    fieldName = "ID",
-} = {}) => [
-    param(paramName)
-        .notEmpty()
-        .withMessage(`${fieldName} is required.`)
-        .bail()
-        .isMongoId()
-        .withMessage(`Invalid ${fieldName}.`),
-];
-
-export const validateCryptoTokenParam = ({
+const validateCryptoTokenParam = ({
     paramName = "token",
     fieldName = "Token",
 } = {}) => [
@@ -26,3 +14,5 @@ export const validateCryptoTokenParam = ({
         .isLength({ min: 64, max: 64 })
         .withMessage(`${fieldName} is invalid.`),
 ];
+
+export default validateCryptoTokenParam;

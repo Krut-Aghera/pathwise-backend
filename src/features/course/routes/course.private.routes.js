@@ -4,7 +4,7 @@ import * as courseValidations from "../course.validators.js";
 import * as courseRatelimiter from "../../../middlewares/ratelimiter/limiters/course.ratelimit.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import instructorAuthMiddleware from "../../../middlewares/auth/instructor-auth.middleware.js";
-import { validateMongoIdParam } from "../../../validations/common.validators.js";
+import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 import { FILE_FIELDS } from "../../../middlewares/multer/multer.constants.js";
 import { imageUpload } from "../../../middlewares/multer/multer.uploaders.js";
 

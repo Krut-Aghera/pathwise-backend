@@ -3,7 +3,7 @@ import * as courseControllers from "../course.controllers.js";
 import * as courseValidations from "../course.validators.js";
 import * as courseRatelimiter from "../../../middlewares/ratelimiter/limiters/course.ratelimit.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
-import { validateMongoIdParam } from "../../../validations/common.validators.js";
+import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 
 ///////////////////////////////////////////////////////////////
 // create router

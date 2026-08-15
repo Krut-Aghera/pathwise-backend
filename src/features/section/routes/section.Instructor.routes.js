@@ -7,7 +7,7 @@ import * as sectionRatelimiter from "../../../middlewares/ratelimiter/limiters/s
 import instructorAuthMiddleware from "../../../middlewares/auth/instructor-auth.middleware.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 
-import { validateMongoIdParam } from "../../../validations/common.validators.js";
+import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 import { ROLES } from "../../user/user.constants.js";
 
 ///////////////////////////////////////////////////////////////
