@@ -24,7 +24,7 @@ import HTTP_STATUS from "../../constants/http.constants.js";
 import { EMAIL_EXPIRY_MINUTES } from "../../services/email/email.constans.js";
 import { USER_TOKEN_FIELDS } from "../user/user.constants.js";
 import { AUTH_ERROR_MESSAGES } from "./auth.constants.js";
-import { jwtEnvConfig } from "../../config/env.config.js";
+import { env_jwtVars } from "../../config/env.config.js";
 
 ///////////////////////////////////////////////////////////////
 // registration service
@@ -124,7 +124,7 @@ const confirmEmailVerification = async ({ token }) => {
         await authEmail.sendEmailVerificationConfirmEmail({
             email: user.email,
             username: user.username,
-            // actionUrl: `${serverAppConfig.CLIENT_URL}/dashboard`,
+            // actionUrl: `${env_appVars.CLIENT_URL}/dashboard`,
         });
     } catch (error) {
         logger.warn(
@@ -186,7 +186,7 @@ const logout = async ({ user }) => {
 const rotateTokens = async ({ refreshToken }) => {
     const { userId, userEmail } = jwt.verify(
         refreshToken,
-        jwtEnvConfig.JWT_REFRESH_SECRET
+        env_jwtVars.JWT_REFRESH_SECRET
     );
 
     const user = await userRepository

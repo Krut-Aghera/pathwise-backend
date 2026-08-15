@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import ApiError from "../../utils/error-handler.utility.js";
 import User from "../../features/user/user.model.js";
-import { jwtEnvConfig } from "../../config/env.config.js";
+import { env_jwtVars } from "../../config/env.config.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
 
 ///////////////////////////////////////////////////////////////
@@ -17,7 +17,7 @@ const tokenVerificationEngine = async (req, res, next) => {
         });
     }
 
-    const decoded = jwt.verify(accessToken, jwtEnvConfig.JWT_ACCESS_SECRET, {
+    const decoded = jwt.verify(accessToken, env_jwtVars.JWT_ACCESS_SECRET, {
         algorithms: ["HS256"],
     });
 

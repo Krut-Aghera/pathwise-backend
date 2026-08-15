@@ -1,5 +1,5 @@
 import { render } from "@react-email/render";
-import { serverAppConfig } from "../../config/env.config.js";
+import { env_appVars } from "../../config/env.config.js";
 
 const renderEmail = async (emailTemplate) => {
     if (!emailTemplate) {
@@ -7,7 +7,7 @@ const renderEmail = async (emailTemplate) => {
     }
 
     return await render(emailTemplate, {
-        pretty: serverAppConfig.NODE_ENV !== "production",
+        pretty: env_appVars.NODE_ENV !== "production",
     });
 };
 

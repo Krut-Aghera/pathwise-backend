@@ -1,6 +1,6 @@
 import { Section, Img, Hr } from "react-email";
 import { COLORS, COMPANY, LOGO, SPACING } from "../theme.js";
-import { EMAIL_ENV } from "../../services/email/email.constans.js";
+import { env_emailVars } from "../../config/env.config.js";
 
 const EmailHeader = () => {
     return (
@@ -12,7 +12,7 @@ const EmailHeader = () => {
                 }}
             >
                 <Img
-                    src={EMAIL_ENV.EMAIL_LOGO_URL}
+                    src={env_emailVars.EMAIL_LOGO_URL}
                     alt={COMPANY.name}
                     width={LOGO.width}
                     style={{

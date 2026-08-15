@@ -3,7 +3,7 @@ import cors from "cors";
 import hpp from "hpp";
 import cookieParser from "cookie-parser";
 
-import { serverAppConfig } from "./config/env.config.js";
+import { env_appVars } from "./config/env.config.js";
 import morganLogger from "./config/morgan.config.js";
 
 import { globalRateLimiter } from "./middlewares/ratelimiter/limiters/global.ratelimit.js";
@@ -31,7 +31,7 @@ app.use(helmetMiddleware);
 app.use(hpp());
 app.use(
     cors({
-        origin: serverAppConfig?.CLIENT_URL || "http://localhost:5173",
+        origin: env_appVars?.CLIENT_URL || "http://localhost:5173",
         credentials: true,
         methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "HEAD", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
@@ -46,7 +46,7 @@ app.use(globalRateLimiter);
 ///////////////////////////////////////////////////////////////
 // morgan middleware for logs
 
-if (serverAppConfig?.NODE_ENV === "development") {
+if (env_appVars?.NODE_ENV === "development") {
     app.use(morganLogger);
 }
 

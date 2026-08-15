@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 import logger from "../utils/pino-logger.utility.js";
-import { dbConfig } from "../config/env.config.js";
+import { env_dbVars } from "../config/env.config.js";
 
 class DatabaseConnection {
     constructor() {
@@ -21,14 +21,14 @@ class DatabaseConnection {
             return mongoose.connection;
         }
 
-        if (!dbConfig.MONGO_URI) {
+        if (!env_dbVars.MONGO_URI) {
             logger.fatal("MONGO_URI is missing.");
             process.exit(1);
         }
 
         try {
             const connection = await mongoose.connect(
-                `${dbConfig.MONGO_URI}/${dbConfig?.DB_NAME}`,
+                `${env_dbVars.MONGO_URI}/${env_dbVars?.DB_NAME}`,
                 {
                     // Connection pool configuration.
                     maxPoolSize: 10,

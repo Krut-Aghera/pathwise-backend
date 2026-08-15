@@ -1,28 +1,28 @@
 import { MailtrapClient } from "mailtrap";
 import { Resend } from "resend";
 
-import { serverAppConfig } from "../../config/env.config.js";
-import { EMAIL_ENV } from "./email.constans.js";
+import { env_appVars } from "../../config/env.config.js";
+import { env_emailVars } from "../../config/env.config.js";
 
-export const isProduction = serverAppConfig.NODE_ENV === "production";
+export const isProduction = env_appVars.NODE_ENV === "production";
 
 let emailProvider;
 
 if (isProduction) {
-    if (!EMAIL_ENV.RESEND_API_KEY) {
+    if (!env_emailVars.RESEND_API_KEY) {
         throw new Error("RESEND_API_KEY is required in production.");
     }
 
-    emailProvider = new Resend(EMAIL_ENV.RESEND_API_KEY);
+    emailProvider = new Resend(env_emailVars.RESEND_API_KEY);
 } else {
-    if (!EMAIL_ENV.MAILTRAP_API_TOKEN) {
+    if (!env_emailVars.MAILTRAP_API_TOKEN) {
         throw new Error("MAILTRAP_API_TOKEN is required in development.");
     }
 
     emailProvider = new MailtrapClient({
-        token: EMAIL_ENV.MAILTRAP_API_TOKEN,
+        token: env_emailVars.MAILTRAP_API_TOKEN,
         sandbox: true,
-        testInboxId: EMAIL_ENV.MAILTRAP_SANDBOX_ID,
+        testInboxId: env_emailVars.MAILTRAP_SANDBOX_ID,
     });
 }
 

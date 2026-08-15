@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 import * as userRepository from "../user/user.repository.js";
 
-import { jwtEnvConfig } from "../../config/env.config.js";
+import { env_jwtVars } from "../../config/env.config.js";
 
 ///////////////////////////////////////////////////////////////
 // generate auth tokens
@@ -14,9 +14,9 @@ const generateAuthTokens = (user) => {
             userId: user._id,
             userEmail: user.email,
         },
-        jwtEnvConfig.JWT_ACCESS_SECRET,
+        env_jwtVars.JWT_ACCESS_SECRET,
         {
-            expiresIn: jwtEnvConfig.ACCESS_TOKEN_EXPIRY,
+            expiresIn: env_jwtVars.ACCESS_TOKEN_EXPIRY,
         }
     );
 
@@ -25,9 +25,9 @@ const generateAuthTokens = (user) => {
             userId: user._id,
             userEmail: user.email,
         },
-        jwtEnvConfig.JWT_REFRESH_SECRET,
+        env_jwtVars.JWT_REFRESH_SECRET,
         {
-            expiresIn: jwtEnvConfig.REFRESH_TOKEN_EXPIRY,
+            expiresIn: env_jwtVars.REFRESH_TOKEN_EXPIRY,
         }
     );
 
