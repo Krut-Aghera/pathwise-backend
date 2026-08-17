@@ -7,12 +7,8 @@ import {
     SORT_ORDERS_ARRAY,
 } from "./course.constants.js";
 
-//
-//
 ///////////////////////////////////////////////////////////////
 // reusable validators
-//
-//
 
 const titleValidations = body("title")
     .trim()

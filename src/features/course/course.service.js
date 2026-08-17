@@ -1,8 +1,7 @@
-import * as courseRepository from "./course.repository.js";
-
 import logger from "../../utils/pino-logger.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
 import generateSlug from "../../utils/slug-generator.utility.js";
+
 import {
     getAuthorizedInstructorCourse,
     validateCoursePublishEligibility,
@@ -23,6 +22,8 @@ import {
     CLOUDINARY_FOLDERS,
     MEDIA_RESOURCE_TYPES,
 } from "../../services/media/media.constants.js";
+
+import * as courseRepository from "./course.repository.js";
 
 ///////////////////////////////////////////////////////////////
 // create course service

@@ -1,6 +1,3 @@
-import * as courseService from "./course.service.js";
-
-import logger from "../../utils/pino-logger.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
 import ApiResponse from "../../utils/response-handler.utility.js";
 
@@ -12,6 +9,7 @@ import {
     COURSE_SUCCESS_MESSAGES,
 } from "./course.constants.js";
 
+import * as courseService from "./course.service.js";
 ///////////////////////////////////////////////////////////////
 // create course controller
 
@@ -220,7 +218,7 @@ const fetchCourses = async (req, res) => {
 // fetch current course controller
 
 const fetchCurrentCourse = async (req, res) => {
-    const [course] = await courseService.fetchCurrentCourse({
+    const course = await courseService.fetchCurrentCourse({
         courseId: req.params.courseId,
     });
 

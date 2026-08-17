@@ -1,15 +1,16 @@
 import mongoose from "mongoose";
 
 import {
+    RESOURCE_STATUS,
+    RESOURCE_STATUS_ARRAY,
+} from "../../constants/resource.constants.js";
+
+import {
     COURSE_LANGUAGES,
     COURSE_LANGUAGES_ARRAY,
     COURSE_LEVELS,
     COURSE_LEVELS_ARRAY,
 } from "./course.constants.js";
-import {
-    RESOURCE_STATUS,
-    RESOURCE_STATUS_ARRAY,
-} from "../../constants/resource.constants.js";
 
 ////////////////////////////////////////////////////////////////
 // course schema model

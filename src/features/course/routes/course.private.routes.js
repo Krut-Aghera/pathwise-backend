@@ -1,12 +1,16 @@
 import express from "express";
+
 import * as courseControllers from "../course.controllers.js";
 import * as courseValidations from "../course.validators.js";
+
 import * as courseRatelimiter from "../../../middlewares/ratelimiter/limiters/course.ratelimit.js";
-import validationEngine from "../../../middlewares/validation.middleware.js";
 import instructorAuthEngine from "../../../middlewares/auth/engines/instructor-auth.engine.js";
-import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
+import validationEngine from "../../../middlewares/validation.middleware.js";
+
 import { FILE_FIELDS } from "../../../middlewares/multer/multer.constants.js";
 import { imageUpload } from "../../../middlewares/multer/multer.uploaders.js";
+
+import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 
 ///////////////////////////////////////////////////////////////
 // create router
@@ -99,10 +103,10 @@ coursePrivateRouter.delete(
     courseControllers.removeCourse
 );
 
-// POST /api/v1/courses/:courseId/publish
+// PATCH/api/v1/courses/:courseId/publish
 // Publishes an instructor-owned course.
 
-coursePrivateRouter.post(
+coursePrivateRouter.patch(
     "/:courseId/publish",
     courseRatelimiter.publishCourseRateLimiter,
     ...instructorAuthEngine,
@@ -114,10 +118,10 @@ coursePrivateRouter.post(
     courseControllers.publishCourse
 );
 
-// POST /api/v1/courses/:courseId/draft
+// PATCH /api/v1/courses/:courseId/draft
 // Saves an instructor-owned course as a draft.
 
-coursePrivateRouter.post(
+coursePrivateRouter.patch(
     "/:courseId/draft",
     courseRatelimiter.saveCourseAsDraftRateLimiter,
     ...instructorAuthEngine,

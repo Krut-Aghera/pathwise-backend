@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
-import Course from "./course.model.js";
-import { COURSE_LIST_SELECT_FIELDS, SORT_ORDERS } from "./course.constants.js";
+
 import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
+
+import { COURSE_LIST_SELECT_FIELDS, SORT_ORDERS } from "./course.constants.js";
+import Course from "./course.model.js";
 
 ///////////////////////////////////////////////////////////////
 // create course

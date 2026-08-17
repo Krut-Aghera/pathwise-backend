@@ -4,6 +4,7 @@
 const COURSE_SUCCESS_MESSAGES = Object.freeze({
     COURSES_FETCHED: "Courses fetched successfully.",
     COURSE_FETCHED: "Course fetched successfully.",
+
     INSTRUCTOR_COURSE_FETCHED: "Instructor course fetched successfully.",
     INSTRUCTOR_COURSES_FETCHED: "Instructor courses fetched successfully.",
 
@@ -21,12 +22,10 @@ const COURSE_SUCCESS_MESSAGES = Object.freeze({
 
 const COURSE_ERROR_MESSAGES = Object.freeze({
     COURSE_NOT_FOUND: "Course not found.",
+    COURSE_TITLE_ALREADY_EXISTS: "A course with this title already exists.",
 
     COURSE_ALREADY_DRAFT: "Course is already saved as draft.",
-
     COURSE_NOT_ELIGIBLE_FOR_PUBLISH: "Course is not eligible for publishing.",
-
-    COURSE_TITLE_ALREADY_EXISTS: "A course with this title already exists.",
 
     THUMBNAIL_REQUIRED: "Course thumbnail is required.",
 });
