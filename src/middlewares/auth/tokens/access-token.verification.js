@@ -11,7 +11,7 @@ import ApiError from "../../../utils/error-handler.utility.js";
 ///////////////////////////////////////////////////////////////
 // access token verification middleware
 
-const accessTokenVerification  = async (req, res, next) => {
+const accessTokenVerification = async (req, res, next) => {
     const accessToken = req.cookies.accessToken;
     if (!accessToken) {
         throw new ApiError({
@@ -40,4 +40,4 @@ const accessTokenVerification  = async (req, res, next) => {
 ///////////////////////////////////////////////////////////////
 // export
 
-export default accessTokenVerification
+export default accessTokenVerification;

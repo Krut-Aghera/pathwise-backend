@@ -9,9 +9,7 @@ import {
     getExpiry,
 } from "../../utils/token-generator.utility.js";
 
-import {
-    getEmailVerificationUrl,
-} from "../../services/email/email.utility.js";
+import { getEmailVerificationUrl } from "../../services/email/email.utility.js";
 
 import HTTP_STATUS from "../../constants/http.constants.js";
 import { env_jwtVars } from "../../config/env.config.js";

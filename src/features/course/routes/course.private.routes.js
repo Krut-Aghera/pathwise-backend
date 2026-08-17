@@ -12,13 +12,11 @@ import { imageUpload } from "../../../middlewares/multer/multer.uploaders.js";
 // create router
 
 const coursePrivateRouter = express.Router();
-
-///////////////////////////////////////////////////////////////
-// GET /api/v1/courses/instructor
+// GET /api/v1/courses/mine
 // Retrieves all courses owned by the authenticated instructor.
 
 coursePrivateRouter.get(
-    "/",
+    "/mine",
     courseRatelimiter.fetchInstructorCoursesRateLimiter,
     ...instructorAuthEngine,
     courseValidations.fetchInstructorCoursesValidators,
@@ -26,12 +24,11 @@ coursePrivateRouter.get(
     courseControllers.fetchInstructorCourses
 );
 
-///////////////////////////////////////////////////////////////
-// GET /api/v1/courses/instructor/:courseId
+// GET /api/v1/courses/mine/:courseId
 // Retrieves a specific course owned by the authenticated instructor.
 
 coursePrivateRouter.get(
-    "/:courseId",
+    "/mine/:courseId",
     courseRatelimiter.fetchInstructorCourseRateLimiter,
     ...instructorAuthEngine,
     validateMongoIdParam({
@@ -42,8 +39,7 @@ coursePrivateRouter.get(
     courseControllers.fetchInstructorCourse
 );
 
-///////////////////////////////////////////////////////////////
-// POST /api/v1/courses/instructor
+// POST /api/v1/courses
 // Creates a new course for the authenticated instructor.
 
 coursePrivateRouter.post(
@@ -56,25 +52,7 @@ coursePrivateRouter.post(
     courseControllers.createCourse
 );
 
-///////////////////////////////////////////////////////////////
-// PATCH /api/v1/courses/instructor/:courseId/thumbnail
-// Updates the thumbnail image of an instructor-owned course.
-
-coursePrivateRouter.patch(
-    "/:courseId/thumbnail",
-    courseRatelimiter.updateCourseThumbnailRateLimiter,
-    ...instructorAuthEngine,
-    validateMongoIdParam({
-        paramName: "courseId",
-        fieldName: "Course ID",
-    }),
-    validationEngine,
-    imageUpload.single(FILE_FIELDS.THUMBNAIL),
-    courseControllers.updateThumbnail
-);
-
-///////////////////////////////////////////////////////////////
-// PATCH /api/v1/courses/instructor/:courseId
+// PATCH /api/v1/courses/:courseId
 // Updates the details of an instructor-owned course.
 
 coursePrivateRouter.patch(
@@ -90,8 +68,23 @@ coursePrivateRouter.patch(
     courseControllers.updateCourse
 );
 
-///////////////////////////////////////////////////////////////
-// DELETE /api/v1/courses/instructor/:courseId
+// PATCH /api/v1/courses/:courseId/thumbnail
+// Updates the thumbnail image of an instructor-owned course.
+
+coursePrivateRouter.patch(
+    "/:courseId/thumbnail",
+    courseRatelimiter.updateCourseThumbnailRateLimiter,
+    ...instructorAuthEngine,
+    validateMongoIdParam({
+        paramName: "courseId",
+        fieldName: "Course ID",
+    }),
+    validationEngine,
+    imageUpload.single(FILE_FIELDS.THUMBNAIL),
+    courseControllers.updateThumbnail
+);
+
+// DELETE /api/v1/courses/:courseId
 // Soft deletes an instructor-owned course.
 
 coursePrivateRouter.delete(
@@ -106,11 +99,10 @@ coursePrivateRouter.delete(
     courseControllers.removeCourse
 );
 
-///////////////////////////////////////////////////////////////
-// PATCH /api/v1/courses/instructor/:courseId/publish
+// POST /api/v1/courses/:courseId/publish
 // Publishes an instructor-owned course.
 
-coursePrivateRouter.patch(
+coursePrivateRouter.post(
     "/:courseId/publish",
     courseRatelimiter.publishCourseRateLimiter,
     ...instructorAuthEngine,
@@ -122,11 +114,10 @@ coursePrivateRouter.patch(
     courseControllers.publishCourse
 );
 
-///////////////////////////////////////////////////////////////
-// PATCH /api/v1/courses/instructor/:courseId/draft
+// POST /api/v1/courses/:courseId/draft
 // Saves an instructor-owned course as a draft.
 
-coursePrivateRouter.patch(
+coursePrivateRouter.post(
     "/:courseId/draft",
     courseRatelimiter.saveCourseAsDraftRateLimiter,
     ...instructorAuthEngine,
@@ -137,7 +128,6 @@ coursePrivateRouter.patch(
     validationEngine,
     courseControllers.saveCourseAsDraft
 );
-
 ///////////////////////////////////////////////////////////////
 // export
 

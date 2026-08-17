@@ -47,10 +47,7 @@ const usernameUpdateValidators = [usernameValidations];
 ///////////////////////////////////////////////////////////////
 // email update validators
 
-const emailUpdateValidators = [
-    passwordValidations,
-    newEmailValidations,
-];
+const emailUpdateValidators = [passwordValidations, newEmailValidations];
 
 ///////////////////////////////////////////////////////////////
 // account deactivation request validators

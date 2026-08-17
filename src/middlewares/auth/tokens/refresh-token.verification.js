@@ -21,13 +21,9 @@ const refreshTokenVerification = async (req, _res, next) => {
         });
     }
 
-    const decoded = jwt.verify(
-        refreshToken,
-        env_jwtVars.JWT_REFRESH_SECRET,
-        {
-            algorithms: ["HS256"],
-        }
-    );
+    const decoded = jwt.verify(refreshToken, env_jwtVars.JWT_REFRESH_SECRET, {
+        algorithms: ["HS256"],
+    });
 
     const user = await User.findById(decoded.userId);
 
@@ -44,6 +40,6 @@ const refreshTokenVerification = async (req, _res, next) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// export 
+// export
 
-export default refreshTokenVerification
+export default refreshTokenVerification;

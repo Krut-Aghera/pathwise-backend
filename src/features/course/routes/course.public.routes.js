@@ -10,10 +10,8 @@ import validateMongoIdParam from "../../../validations/mongo-idParam.validator.j
 
 const coursePublicRouter = express.Router();
 
-///////////////////////////////////////////////////////////////
 // GET /api/v1/courses
-// Retrieves publicly available courses with pagination,
-// searching, filtering, and sorting support.
+// Retrieves publicly available courses with pagination, searching, filtering, and sorting support.
 
 coursePublicRouter.get(
     "/",
@@ -23,7 +21,6 @@ coursePublicRouter.get(
     courseControllers.fetchCourses
 );
 
-///////////////////////////////////////////////////////////////
 // GET /api/v1/courses/:courseId
 // Retrieves the public details of a specific course.
 

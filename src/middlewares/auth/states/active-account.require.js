@@ -24,8 +24,7 @@ const requireActiveAccount = (req, res, next) => {
     next();
 };
 
-
 ///////////////////////////////////////////////////////////////
 //  export
 
-export default requireActiveAccount
+export default requireActiveAccount;

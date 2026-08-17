@@ -9,7 +9,7 @@ const studentAuthEngine = Object.freeze([
     accessTokenVerification,
     authorizeRole(ROLES.STUDENT),
     requireActiveAccount,
-    requireVerifiedEmail
+    requireVerifiedEmail,
 ]);
 
 export default studentAuthEngine;

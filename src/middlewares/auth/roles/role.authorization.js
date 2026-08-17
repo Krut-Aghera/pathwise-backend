@@ -1,6 +1,6 @@
 import HTTP_STATUS from "../../../constants/http.constants.js";
 
-import ApiError from "../../../utils/error-handler.utility.js"
+import ApiError from "../../../utils/error-handler.utility.js";
 
 ///////////////////////////////////////////////////////////////
 // role authorization middleware
@@ -29,4 +29,4 @@ const authorizeRole = (...allowedRoles) => {
 ///////////////////////////////////////////////////////////////
 // exports
 
-export default authorizeRole
+export default authorizeRole;

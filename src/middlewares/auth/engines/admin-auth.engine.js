@@ -9,7 +9,7 @@ const adminAuthEngine = Object.freeze([
     accessTokenVerification,
     authorizeRole(ROLES.ADMIN),
     requireActiveAccount,
-    requireVerifiedEmail
+    requireVerifiedEmail,
 ]);
 
 export default adminAuthEngine;

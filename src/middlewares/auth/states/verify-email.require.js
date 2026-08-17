@@ -27,4 +27,4 @@ const requireVerifiedEmail = (req, res, next) => {
 ///////////////////////////////////////////////////////////////
 //  export
 
-export default requireVerifiedEmail
+export default requireVerifiedEmail;
