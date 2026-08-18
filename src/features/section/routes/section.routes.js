@@ -1,18 +1,9 @@
 import express from "express";
 
-import sectionInstructorRouter from "./section.Instructor.routes.js";
-
-///////////////////////////////////////////////////////////////
-// create router
+import sectionInstructorRouter from "./section.instructor.routes.js";
 
 const sectionRouter = express.Router();
 
-///////////////////////////////////////////////////////////////
-// mount instructor routes
-
 sectionRouter.use(sectionInstructorRouter);
-
-///////////////////////////////////////////////////////////////
-// export
 
 export default sectionRouter;

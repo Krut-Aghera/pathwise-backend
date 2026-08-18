@@ -1,12 +1,13 @@
-import * as sectionService from "./section.service.js";
-
 import ApiResponse from "../../utils/response-handler.utility.js";
 
 import HTTP_STATUS from "../../constants/http.constants.js";
+
 import {
     SECTION_SUCCESS_MESSAGES,
     SECTION_UPDATE_FIELDS,
 } from "./section.constants.js";
+
+import * as sectionService from "./section.service.js";
 
 ///////////////////////////////////////////////////////////////
 // create section controller

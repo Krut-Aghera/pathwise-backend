@@ -1,11 +1,8 @@
 import mongoose from "mongoose";
 
-import Section from "./section.model.js";
+import { REORDER_TEMP_OFFSET } from "../../constants/resource.constants.js";
 
-import {
-    REORDER_TEMP_OFFSET,
-    RESOURCE_STATUS,
-} from "../../constants/resource.constants.js";
+import Section from "./section.model.js";
 
 ///////////////////////////////////////////////////////////////
 // create section repository

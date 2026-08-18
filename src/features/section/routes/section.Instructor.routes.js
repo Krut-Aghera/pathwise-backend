@@ -2,20 +2,18 @@ import express from "express";
 
 import * as sectionControllers from "../section.controllers.js";
 import * as sectionValidations from "../section.validators.js";
-import * as sectionRatelimiter from "../../../middlewares/ratelimiter/limiters/section.ratelimit.js";
 
+import * as sectionRatelimiter from "../../../middlewares/ratelimiter/limiters/section.ratelimit.js";
 import instructorAuthEngine from "../../../middlewares/auth/engines/instructor-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
-import { ROLES } from "../../user/user.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create router
 
 const sectionInstructorRouter = express.Router();
 
-///////////////////////////////////////////////////////////////
 // GET /api/v1/sections/course/:courseId
 // Retrieves all sections of an instructor-owned course.
 
@@ -31,7 +29,6 @@ sectionInstructorRouter.get(
     sectionControllers.fetchCourseSections
 );
 
-///////////////////////////////////////////////////////////////
 // GET /api/v1/sections/:sectionId
 // Retrieves a specific instructor-owned section.
 
@@ -47,7 +44,6 @@ sectionInstructorRouter.get(
     sectionControllers.fetchInstructorSection
 );
 
-///////////////////////////////////////////////////////////////
 // POST /api/v1/sections/course/:courseId
 // Creates a new section inside an instructor-owned course.
 
@@ -64,12 +60,11 @@ sectionInstructorRouter.post(
     sectionControllers.createSection
 );
 
-///////////////////////////////////////////////////////////////
 // PATCH /api/v1/sections/course/:courseId/reorder
 // Reorders sections of an instructor-owned course.
 
 sectionInstructorRouter.patch(
-    "/courses/:courseId/reorder",
+    "/course/:courseId/reorder",
     sectionRatelimiter.reorderSectionsRateLimiter,
     ...instructorAuthEngine,
     validateMongoIdParam({
@@ -81,7 +76,6 @@ sectionInstructorRouter.patch(
     sectionControllers.reorderSections
 );
 
-///////////////////////////////////////////////////////////////
 // PATCH /api/v1/sections/:sectionId
 // Updates an instructor-owned section.
 
@@ -98,7 +92,6 @@ sectionInstructorRouter.patch(
     sectionControllers.updateSection
 );
 
-///////////////////////////////////////////////////////////////
 // PATCH /api/v1/sections/:sectionId/publish
 // Publishes an instructor-owned section.
 
@@ -114,7 +107,6 @@ sectionInstructorRouter.patch(
     sectionControllers.publishSection
 );
 
-///////////////////////////////////////////////////////////////
 // PATCH /api/v1/sections/:sectionId/draft
 // Saves an instructor-owned section as draft.
 
@@ -130,7 +122,6 @@ sectionInstructorRouter.patch(
     sectionControllers.saveSectionAsDraft
 );
 
-///////////////////////////////////////////////////////////////
 // DELETE /api/v1/sections/:sectionId
 // Soft deletes an instructor-owned section.
 

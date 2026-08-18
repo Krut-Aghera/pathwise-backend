@@ -1,6 +1,8 @@
-import HTTP_STATUS from "../../constants/http.constants.js";
 import ApiError from "../../utils/error-handler.utility.js";
+
+import HTTP_STATUS from "../../constants/http.constants.js";
 import { SECTION_ERROR_MESSAGES } from "./section.constants.js";
+
 import * as sectionRepository from "./section.repository.js";
 
 //////////////////////////////////////////////////////////////

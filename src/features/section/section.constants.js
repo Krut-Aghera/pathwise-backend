@@ -20,22 +20,17 @@ const SECTION_SUCCESS_MESSAGES = Object.freeze({
 
 const SECTION_ERROR_MESSAGES = Object.freeze({
     SECTION_NOT_FOUND: "Section not found.",
-
-    INVALID_SECTION_REORDER_PAYLOAD: "Invalid section reorder payload.",
-
-    DUPLICATE_SECTION_IDS: "Duplicate section IDs are not allowed.",
-
-    DUPLICATE_SECTION_ORDERS: "Duplicate section orders are not allowed.",
-
-    SECTION_ORDERS_MUST_BE_SEQUENTIAL:
-        "Section orders must start from 1 and be sequential.",
-
+    SECTION_NOT_DRAFT: "Only draft sections can be published.",
     SECTION_ALREADY_DRAFT: "Section is already saved as draft.",
 
-    SECTION_NOT_DRAFT: "Only draft sections can be published.",
-
+    DUPLICATE_SECTION_IDS: "Duplicate section IDs are not allowed.",
     SECTION_MUST_CONTAIN_LECTURE:
         "Section must contain at least one lecture before publishing.",
+
+    INVALID_SECTION_REORDER_PAYLOAD: "Invalid section reorder payload.",
+    DUPLICATE_SECTION_ORDERS: "Duplicate section orders are not allowed.",
+    SECTION_ORDERS_MUST_BE_SEQUENTIAL:
+        "Section orders must start from 1 and be sequential.",
 });
 
 ///////////////////////////////////////////////////////////////

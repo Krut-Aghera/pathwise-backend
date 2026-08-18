@@ -1,19 +1,20 @@
-import * as courseRepository from "../course/course.repository.js";
-import * as sectionRepository from "./section.repository.js";
-import * as lectureRepository from "../lecture/lecture.repository.js";
-
 import ApiError from "../../utils/error-handler.utility.js";
 import { getAuthorizedInstructorCourse } from "../course/course.utility.js";
 
-import HTTP_STATUS from "../../constants/http.constants.js";
-import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
-import { COURSE_ERROR_MESSAGES } from "../course/course.constants.js";
-import { SECTION_ERROR_MESSAGES } from "./section.constants.js";
 import {
     getAuthorizedInstructorSection,
     validateCourseSectionReorder,
     validateSectionReorderPayload,
 } from "./section.utility.js";
+
+import HTTP_STATUS from "../../constants/http.constants.js";
+import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
+import { COURSE_ERROR_MESSAGES } from "../course/course.constants.js";
+import { SECTION_ERROR_MESSAGES } from "./section.constants.js";
+
+import * as courseRepository from "../course/course.repository.js";
+import * as lectureRepository from "../lecture/lecture.repository.js";
+import * as sectionRepository from "./section.repository.js";
 
 ///////////////////////////////////////////////////////////////
 // create section service
