@@ -16,6 +16,7 @@ import validateMongoIdParam from "../../../validations/mongo-idParam.validator.j
 // create router
 
 const coursePrivateRouter = express.Router();
+
 // GET /api/v1/courses/mine
 // Retrieves all courses owned by the authenticated instructor.
 

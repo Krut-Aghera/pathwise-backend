@@ -1,11 +1,7 @@
 import { body } from "express-validator";
 
-//
-//
 ///////////////////////////////////////////////////////////////
 // reusable validators
-//
-//
 
 const titleValidations = body("title")
     .trim()

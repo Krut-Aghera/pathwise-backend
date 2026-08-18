@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
+
 import Lecture from "../lecture/lecture.model.js";
 
 import {
     REORDER_TEMP_OFFSET,
     RESOURCE_STATUS,
 } from "../../constants/resource.constants.js";
+
 import { STUDENT_LECTURE_SELECT_FIELDS } from "./lecture.constants.js";
 
 ///////////////////////////////////////////////////////////////

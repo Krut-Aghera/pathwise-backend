@@ -10,12 +10,11 @@ import validateMongoIdParam from "../../../validations/mongo-idParam.validator.j
 
 const lectureStudentRouter = express.Router();
 
-///////////////////////////////////////////////////////////////
-// GET /api/v1/students/lectures/:lectureId
-// Fetches the specified lecture for the authenticated enrolled student.
+// GET /api/v1/lectures/:lectureId/learn
+// Fetches a lecture for an enrolled student.
 
 lectureStudentRouter.get(
-    "/:lectureId",
+    "/:lectureId/learn",
     lectureRatelimiter.fetchStudentLectureRateLimiter,
     ...studentAuthEngine,
     validateMongoIdParam({

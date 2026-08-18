@@ -1,9 +1,12 @@
 import mongoose from "mongoose";
-import HTTP_STATUS from "../../constants/http.constants.js";
+
 import ApiError from "../../utils/error-handler.utility.js";
-import { LECTURE_ERROR_MESSAGES } from "./lecture.constants.js";
+
 import Lecture from "./lecture.model.js";
 import * as lectureRepository from "./lecture.repository.js";
+
+import { LECTURE_ERROR_MESSAGES } from "./lecture.constants.js";
+import HTTP_STATUS from "../../constants/http.constants.js";
 
 //////////////////////////////////////////////////////////////
 // get authorized instructor lecture

@@ -1,10 +1,6 @@
-import * as lectureRepository from "./lecture.repository.js";
-import * as enrollmentRepository from "../enrollment/enrollment.repository.js";
-
-import * as mediaService from "../../services/media/media.services.js";
-
 import ApiError from "../../utils/error-handler.utility.js";
 import logger from "../../utils/pino-logger.utility.js";
+
 import { getAuthorizedInstructorSection } from "../section/section.utility.js";
 import {
     getAuthorizedInstructorLecture,
@@ -13,14 +9,21 @@ import {
     validateSectionLectureReorder,
 } from "./lecture.utility.js";
 
-import HTTP_STATUS from "../../constants/http.constants.js";
+import * as mediaService from "../../services/media/media.services.js";
+
+import * as lectureRepository from "./lecture.repository.js";
+import * as enrollmentRepository from "../enrollment/enrollment.repository.js";
+
 import { LECTURE_ERROR_MESSAGES } from "./lecture.constants.js";
 import { ENROLLMENT_ERROR_MESSAGES } from "../enrollment/enrollment.constants.js";
-import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
+
 import {
     CLOUDINARY_FOLDERS,
     MEDIA_RESOURCE_TYPES,
 } from "../../services/media/media.constants.js";
+
+import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
+import HTTP_STATUS from "../../constants/http.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create lecture service
