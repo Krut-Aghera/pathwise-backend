@@ -110,10 +110,10 @@ const progressSchema = new mongoose.Schema(
 progressSchema.index(
     {
         student: 1,
-        course: 1
+        course: 1,
     },
     {
-        unique: true
+        unique: true,
     }
 );
 

@@ -20,7 +20,7 @@ import lectureRouter from "./features/lecture/routes/lecture.routes.js";
 import orderRouter from "./features/order/routes/order.routes.js";
 import paymentRouter from "./features/payment/routes/payment.routes.js";
 import enrollmentRouter from "./features/enrollment/routes/enrollment.routes.js";
-import progressRouter from "./features/progress/routes/progress.routes.js"
+import progressRouter from "./features/progress/routes/progress.routes.js";
 import wishlistRouter from "./features/wishlist/routes/wishlist.routes.js";
 
 const app = express();

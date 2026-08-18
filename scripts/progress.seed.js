@@ -1,29 +1,29 @@
-import "../src/config/env.config.js"
+import "../src/config/env.config.js";
 
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
-import User from "../src/features/user/user.model.js"
+import User from "../src/features/user/user.model.js";
 import Course from "../src/features/course/course.model.js";
 import Order from "../src/features/order/order.model.js";
 import Payment from "../src/features/payment/payment.model.js";
 import Enrollment from "../src/features/enrollment/enrollment.model.js";
 
-import { ROLES } from "../src/features/user/user.constants.js"
+import { ROLES } from "../src/features/user/user.constants.js";
 
 import { RESOURCE_STATUS } from "../src/constants/resource.constants.js";
 
 import {
     ORDER_CURRENCY,
-    ORDER_STATUS
+    ORDER_STATUS,
 } from "../src/features/order/order.constants.js";
 
 import {
     PAYMENT_PROVIDER,
-    PAYMENT_STATUS
+    PAYMENT_STATUS,
 } from "../src/features/payment/payment.constants.js";
 
-import dbConnection from "../src/database/db.connection.js"
+import dbConnection from "../src/database/db.connection.js";
 
 ////////////////////////////////////////////////////////////////
 // seed progress test data
@@ -87,8 +87,7 @@ const seedProgressTestData = async () => {
 
                 title: "Progress Testing Course",
 
-                subtitle:
-                    "Development course for testing progress tracking.",
+                subtitle: "Development course for testing progress tracking.",
 
                 slug: "progress-testing-course",
 
@@ -125,8 +124,7 @@ const seedProgressTestData = async () => {
 
                 status: ORDER_STATUS.COMPLETED,
 
-                providerOrderId:
-                    `TEST_ORDER_${Date.now()}`,
+                providerOrderId: `TEST_ORDER_${Date.now()}`,
             });
 
             console.log("Test order created.");
@@ -153,8 +151,7 @@ const seedProgressTestData = async () => {
 
                 providerOrderId: order.providerOrderId,
 
-                providerPaymentId:
-                    `TEST_PAYMENT_${Date.now()}`,
+                providerPaymentId: `TEST_PAYMENT_${Date.now()}`,
 
                 status: PAYMENT_STATUS.SUCCESS,
 

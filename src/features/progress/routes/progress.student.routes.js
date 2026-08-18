@@ -46,7 +46,6 @@ progressStudentRouter.post(
     progressControllers.initializeLectureProgress
 );
 
-
 // PATCH /api/v1/progress/students/courses/:courseId/lectures/:lectureId
 // Updates the video progress of the authenticated student for the specified lecture.
 

@@ -3,6 +3,7 @@
 
 const PROGRESS_SUCCESS_MESSAGES = Object.freeze({
     FETCHED: "Course progress fetched successfully.",
+    INITIALIZED: "Lecture progress initialized successfully.",
     UPDATED: "Lecture progress updated successfully.",
     COMPLETED: "Lecture completed successfully.",
 });
@@ -65,5 +66,5 @@ export {
     PROGRESS_ERROR_MESSAGES,
     PROGRESS_STATUS,
     PROGRESS_CONFIG,
-    LECTURE_PROGRESS_UPDATE_FIELDS
+    LECTURE_PROGRESS_UPDATE_FIELDS,
 };

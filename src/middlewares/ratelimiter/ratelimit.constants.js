@@ -284,7 +284,6 @@ const PROGRESS_RT = Object.freeze({
     },
 });
 
-
 export {
     RATE_LIMITER_OPTIONS,
     RATE_LIMIT,
@@ -292,5 +291,5 @@ export {
     PAYMENT_RT,
     ENROLLMENT_RT,
     WISHLIST_RT,
-    PROGRESS_RT
+    PROGRESS_RT,
 };

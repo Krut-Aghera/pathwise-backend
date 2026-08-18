@@ -3,7 +3,7 @@ import Progress from "./progress.model.js";
 ////////////////////////////////////////////////////////////////
 // find student course progress
 
-const findProgressByStudentAndCourse = ({ studentId, courseId, }) => {
+const findProgressByStudentAndCourse = ({ studentId, courseId }) => {
     return Progress.findOne({
         student: studentId,
         course: courseId,
@@ -13,7 +13,7 @@ const findProgressByStudentAndCourse = ({ studentId, courseId, }) => {
 ////////////////////////////////////////////////////////////////
 // create student course progress
 
-const createProgress = ({ studentId, courseId, }) => {
+const createProgress = ({ studentId, courseId }) => {
     return Progress.create({
         student: studentId,
         course: courseId,
@@ -21,9 +21,26 @@ const createProgress = ({ studentId, courseId, }) => {
 };
 
 ////////////////////////////////////////////////////////////////
+// initialize lecture progress
+
+const initializeLectureProgress = async ({ progressId, lectureProgress }) => {
+    return Progress.findByIdAndUpdate(
+        progressId,
+        {
+            $push: {
+                lectures: lectureProgress,
+            },
+        },
+        {
+            returnDocument: "after",
+        }
+    );
+};
+
+////////////////////////////////////////////////////////////////
 // update lecture progress
 
-const updateLectureProgress = ({ progressId, lectureId, progressPayload, }) => {
+const updateLectureProgress = ({ progressId, lectureId, progressPayload }) => {
     const updateFields = {};
 
     Object.entries(progressPayload).forEach(([key, value]) => {
@@ -81,6 +98,7 @@ const completeLectureProgress = ({
 export {
     findProgressByStudentAndCourse,
     createProgress,
+    initializeLectureProgress,
     updateLectureProgress,
     completeLectureProgress,
 };

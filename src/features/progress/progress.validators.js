@@ -20,6 +20,4 @@ const updateLectureProgressValidator = [
 ////////////////////////////////////////////////////////////////
 // exports
 
-export {
-    updateLectureProgressValidator,
-};
+export { updateLectureProgressValidator };
