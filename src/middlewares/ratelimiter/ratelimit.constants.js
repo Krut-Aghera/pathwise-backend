@@ -262,6 +262,29 @@ const WISHLIST_RT = Object.freeze({
     },
 });
 
+const PROGRESS_RT = Object.freeze({
+    FETCH: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 30,
+    },
+
+    INITIALIZE: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 30,
+    },
+
+    UPDATE: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 30,
+    },
+
+    COMPLETE: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 10,
+    },
+});
+
+
 export {
     RATE_LIMITER_OPTIONS,
     RATE_LIMIT,
@@ -269,4 +292,5 @@ export {
     PAYMENT_RT,
     ENROLLMENT_RT,
     WISHLIST_RT,
+    PROGRESS_RT
 };
