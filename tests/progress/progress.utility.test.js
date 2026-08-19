@@ -98,7 +98,7 @@ describe("hasLectureReachedCompletionThreshold", () => {
             })
             expect(result).toBe(false)
         }),
-        it("should return false when watechedDuration is > duration", () => {
+        it("should return false when watchedDuration is > duration", () => {
             const result = hasLectureReachedCompletionThreshold({
                 watchedDuration: 500,
                 duration: 50
