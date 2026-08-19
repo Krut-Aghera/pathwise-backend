@@ -68,6 +68,16 @@ app.use(express.urlencoded({ extended: false, limit: "10kb" }));
 app.use(cookieParser());
 
 ///////////////////////////////////////////////////////////////
+// health check
+
+app.get("/health", (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "Server is healthy",
+    });
+});
+
+///////////////////////////////////////////////////////////////
 // route middleware
 
 app.use("/api/v1/auth", authRouter);

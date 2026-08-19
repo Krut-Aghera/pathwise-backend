@@ -9,11 +9,11 @@
         "lint:fix": "eslint . --fix",
         "format": "prettier . --write",
         "format:check": "prettier . --check",
+        "test": "cross-env NODE_ENV=test vitest",
         "dev": "concurrently \"node build.mjs --watch\" \"cross-env NODE_ENV=development nodemon dist/server.js\"",
+        "seed:progress": "cross-env NODE_ENV=development node ./scripts/progress.seed.js",
         "build": "node build.mjs",
-        "start": "cross-env NODE_ENV=production node dist/server.js",
-        "test": "vitest",
-        "seed:progress": "cross-env NODE_ENV=development node ./scripts/progress.seed.js"
+        "start": "cross-env NODE_ENV=production node dist/server.js"
     },
     "author": "Krut Aghera",
     "license": "ISC",
