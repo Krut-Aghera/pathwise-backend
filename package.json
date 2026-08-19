@@ -12,7 +12,7 @@
         "dev": "concurrently \"node build.mjs --watch\" \"cross-env NODE_ENV=development nodemon dist/server.js\"",
         "build": "node build.mjs",
         "start": "cross-env NODE_ENV=production node dist/server.js",
-        "test": "echo \"No tests yet\" && exit 0",
+        "test": "vitest",
         "seed:progress": "cross-env NODE_ENV=development node ./scripts/progress.seed.js"
     },
     "author": "Krut Aghera",
@@ -26,7 +26,9 @@
         "eslint-config-prettier": "^10.1.8",
         "globals": "^17.7.0",
         "mailtrap": "^4.6.1",
-        "prettier": "3.9.4"
+        "prettier": "3.9.4",
+        "supertest": "^7.2.2",
+        "vitest": "^4.1.11"
     },
     "dependencies": {
         "@react-email/render": "^2.0.10",
