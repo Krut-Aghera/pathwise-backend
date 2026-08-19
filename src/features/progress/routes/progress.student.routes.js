@@ -71,7 +71,7 @@ progressStudentRouter.patch(
 
 progressStudentRouter.post(
     "/courses/:courseId/lectures/:lectureId/complete",
-    progressRatelimiter.completeLectureRateLimiter,
+    progressRatelimiter.updateLectureCompletionProgressRateLimiter,
     ...studentAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
@@ -82,7 +82,7 @@ progressStudentRouter.post(
         fieldName: "Lecture ID",
     }),
     validationEngine,
-    progressControllers.completeLecture
+    progressControllers.updateLectureCompletionProgress
 );
 
 ///////////////////////////////////////////////////////////////

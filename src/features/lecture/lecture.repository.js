@@ -179,6 +179,17 @@ const findSectionLectures = ({ sectionId }) => {
     }).sort({ order: 1 });
 };
 
+////////////////////////////////////////////////////////////////
+// find published lectures by sections
+
+const findPublishedLecturesBySections = ({ sectionIds }) => {
+    return Lecture.find({
+        section: { $in: sectionIds },
+        isDeleted: false,
+        status: RESOURCE_STATUS.PUBLISHED,
+    }).select("_id section video.duration");
+};
+
 ///////////////////////////////////////////////////////////////
 // exports
 
@@ -192,4 +203,5 @@ export {
     findInstructorLecture,
     findSectionLectures,
     findPublishedLecture,
+    findPublishedLecturesBySections,
 };

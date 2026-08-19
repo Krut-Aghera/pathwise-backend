@@ -29,9 +29,9 @@ export const updateProgressRateLimiter = createRateLimiter({
 });
 
 ///////////////////////////////////////////////////////////////
-// complete lecture limiter
+// update lecture completion progress limiter
 
-export const completeLectureRateLimiter = createRateLimiter({
+export const updateLectureCompletionProgressRateLimiter = createRateLimiter({
     window: PROGRESS_RT.COMPLETE.WINDOW_MS,
     limit: PROGRESS_RT.COMPLETE.LIMIT,
     resource: "lecture completion",

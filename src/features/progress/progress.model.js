@@ -32,16 +32,6 @@ const lectureProgressSchema = new mongoose.Schema(
             required: true,
             default: false,
         },
-
-        lastAccessedAt: {
-            type: Date,
-            default: null,
-        },
-
-        completedAt: {
-            type: Date,
-            default: null,
-        },
     },
     {
         _id: false,
@@ -71,12 +61,6 @@ const progressSchema = new mongoose.Schema(
         },
 
         lastAccessedLecture: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Lecture",
-            default: null,
-        },
-
-        lastCompletedLecture: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Lecture",
             default: null,

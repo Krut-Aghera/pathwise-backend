@@ -1,3 +1,4 @@
+import { PROGRESS_STATUS } from "./progress.constants.js";
 import Progress from "./progress.model.js";
 
 ////////////////////////////////////////////////////////////////
@@ -23,12 +24,44 @@ const createProgress = ({ studentId, courseId }) => {
 ////////////////////////////////////////////////////////////////
 // initialize lecture progress
 
-const initializeLectureProgress = async ({ progressId, lectureProgress }) => {
+const initializeLectureProgress = ({
+    progressId,
+    lectureProgress,
+    isCourseStarting,
+}) => {
+    const updateFields = {
+        status: PROGRESS_STATUS.IN_PROGRESS,
+        lastAccessedLecture: lectureProgress.lecture,
+    };
+
+    if (isCourseStarting) {
+        updateFields.startedAt = Date.now();
+    }
+
     return Progress.findByIdAndUpdate(
         progressId,
         {
             $push: {
                 lectures: lectureProgress,
+            },
+
+            $set: updateFields,
+        },
+        {
+            returnDocument: "after",
+        }
+    );
+};
+
+////////////////////////////////////////////////////////////////
+// update last accessed lecture
+
+const updateLastAccessedLecture = ({ progressId, lectureId }) => {
+    return Progress.findByIdAndUpdate(
+        progressId,
+        {
+            $set: {
+                lastAccessedLecture: lectureId,
             },
         },
         {
@@ -40,14 +73,15 @@ const initializeLectureProgress = async ({ progressId, lectureProgress }) => {
 ////////////////////////////////////////////////////////////////
 // update lecture progress
 
-const updateLectureProgress = ({ progressId, lectureId, progressPayload }) => {
-    const updateFields = {};
+const updateLectureProgress = ({ progressId, lectureId, progressData }) => {
+    const updateFields = Object.fromEntries(
+        Object.entries(progressData).map(([key, value]) => [
+            `lectures.$.${key}`,
+            value,
+        ])
+    );
 
-    Object.entries(progressPayload).forEach(([key, value]) => {
-        updateFields[`lectures.$.${key}`] = value;
-    });
-
-    updateFields["lectures.$.lastAccessedAt"] = new Date();
+    updateFields.lastAccessedLecture = lectureId;
 
     return Progress.findOneAndUpdate(
         {
@@ -66,13 +100,7 @@ const updateLectureProgress = ({ progressId, lectureId, progressPayload }) => {
 ////////////////////////////////////////////////////////////////
 // complete lecture progress
 
-const completeLectureProgress = ({
-    progressId,
-    lectureId,
-    completedAt,
-    lastCompletedLecture,
-    status,
-}) => {
+const completeLectureProgress = ({ progressId, lectureId }) => {
     return Progress.findOneAndUpdate(
         {
             _id: progressId,
@@ -81,9 +109,29 @@ const completeLectureProgress = ({
         {
             $set: {
                 "lectures.$.isCompleted": true,
-                "lectures.$.completedAt": completedAt,
-                lastCompletedLecture,
-                status,
+            },
+        },
+        {
+            returnDocument: "after",
+        }
+    );
+};
+
+////////////////////////////////////////////////////////////////
+// complete course progress
+
+const completeCourseProgress = ({ progressId, completedAt }) => {
+    return Progress.findOneAndUpdate(
+        {
+            _id: progressId,
+            status: {
+                $ne: PROGRESS_STATUS.COMPLETED,
+            },
+        },
+        {
+            $set: {
+                status: PROGRESS_STATUS.COMPLETED,
+                completedAt,
             },
         },
         {
@@ -99,6 +147,8 @@ export {
     findProgressByStudentAndCourse,
     createProgress,
     initializeLectureProgress,
+    updateLastAccessedLecture,
     updateLectureProgress,
     completeLectureProgress,
+    completeCourseProgress,
 };

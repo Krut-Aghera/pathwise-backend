@@ -120,6 +120,17 @@ const findSectionByTitle = ({ courseId, title }) => {
 };
 
 ///////////////////////////////////////////////////////////////
+// find section by course
+
+const findSectionByCourse = ({ courseId }) => {
+    return Section.find({
+        course: courseId,
+        status: RESOURCE_STATUS.PUBLISHED,
+        isDeleted: false,
+    });
+};
+
+///////////////////////////////////////////////////////////////
 // find last section order
 
 const findLastSectionOrder = (courseId) => {
@@ -190,4 +201,5 @@ export {
     findInstructorSection,
     findCourseSections,
     findCourseSectionIds,
+    findSectionByCourse,
 };
