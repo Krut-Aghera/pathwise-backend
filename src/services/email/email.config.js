@@ -5,6 +5,7 @@ import { env_appVars } from "../../config/env.config.js";
 import { env_emailVars } from "../../config/env.config.js";
 
 export const isProduction = env_appVars.NODE_ENV === "production";
+export const isTest = env_appVars.NODE_ENV === "test"
 
 let emailProvider;
 
@@ -14,7 +15,7 @@ if (isProduction) {
     }
 
     emailProvider = new Resend(env_emailVars.RESEND_API_KEY);
-} else {
+} else if (!isTest) {
     if (!env_emailVars.MAILTRAP_API_TOKEN) {
         throw new Error("MAILTRAP_API_TOKEN is required in development.");
     }

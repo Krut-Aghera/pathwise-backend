@@ -1,10 +1,22 @@
-import emailProvider, { isProduction } from "./email.config.js";
+import emailProvider, { isProduction, isTest } from "./email.config.js";
 import logger from "../../utils/pino-logger.utility.js";
 import { env_emailVars } from "../../config/env.config.js";
 
 const sendEmail = async ({ to, subject, html }) => {
     if (!to || !subject || !html) {
         throw new Error("sendEmail requires 'to', 'subject', and 'html'.");
+    }
+
+    if (isTest) {
+        logger.info(
+            {
+                recipient: to,
+                subject,
+            },
+            "Email sending skipped in test environment"
+        );
+
+        return;
     }
 
     const providerName = isProduction ? "Resend" : "Mailtrap";
