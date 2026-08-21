@@ -1,6 +1,7 @@
 import request from "supertest";
 
 import app from "../../src/app.js";
+import User from "../../src/features/user/user.model.js";
 
 const createAuthenticatedStudentAgent = async () => {
     const agent = request.agent(app);
@@ -19,9 +20,15 @@ const createAuthenticatedStudentAgent = async () => {
         );
     }
 
+    const user = await User.findByIdAndUpdate(
+        { _id: response.body.data._id },
+        { isEmailVerified: true },
+        { returnDocument: "after" }
+    );
+
     return {
         agent,
-        user: response.body.data,
+        user
     };
 };
 
