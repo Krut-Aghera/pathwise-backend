@@ -3,16 +3,17 @@ import request from "supertest";
 import app from "../../src/app.js";
 import User from "../../src/features/user/user.model.js";
 
+///////////////////////////////////////////////////////////////
+// create authenticated student agent
+
 const createAuthenticatedStudentAgent = async () => {
     const agent = request.agent(app);
 
-    const response = await agent
-        .post("/api/v1/auth/users")
-        .send({
-            username: `test_student_${Date.now()}`,
-            email: `test_student_${Date.now()}@example.com`,
-            password: "Test@123456",
-        });
+    const response = await agent.post("/api/v1/auth/users").send({
+        username: `test_student_${Date.now()}`,
+        email: `test_student_${Date.now()}@example.com`,
+        password: "Test@123456",
+    });
 
     if (response.status !== 201) {
         throw new Error(
@@ -28,8 +29,11 @@ const createAuthenticatedStudentAgent = async () => {
 
     return {
         agent,
-        user
+        user,
     };
 };
+
+///////////////////////////////////////////////////////////////
+// exports
 
 export { createAuthenticatedStudentAgent };

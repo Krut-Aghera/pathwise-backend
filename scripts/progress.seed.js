@@ -1,7 +1,6 @@
 import "../src/config/env.config.js";
 
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
 
 import User from "../src/features/user/user.model.js";
 import Course from "../src/features/course/course.model.js";

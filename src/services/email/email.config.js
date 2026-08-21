@@ -5,7 +5,7 @@ import { env_appVars } from "../../config/env.config.js";
 import { env_emailVars } from "../../config/env.config.js";
 
 export const isProduction = env_appVars.NODE_ENV === "production";
-export const isTest = env_appVars.NODE_ENV === "test"
+export const isTest = env_appVars.NODE_ENV === "test";
 
 let emailProvider;
 

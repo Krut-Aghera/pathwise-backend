@@ -12,7 +12,7 @@
         "test": "cross-env NODE_ENV=test vitest",
         "test:run": "cross-env NODE_ENV=test vitest run",
         "test:run-api": "cross-env NODE_ENV=test vitest run api.test",
-        "test:run-unit": "cross-env NODE_ENV=test vitest run utility.test",
+        "test:run-unit": "cross-env NODE_ENV=test vitest run unit.test",
         "dev": "concurrently \"node build.mjs --watch\" \"cross-env NODE_ENV=development nodemon dist/server.js\"",
         "seed:progress": "cross-env NODE_ENV=development node ./scripts/progress.seed.js",
         "build": "node build.mjs",

@@ -3,7 +3,10 @@ import * as lectureRepository from "../lecture/lecture.repository.js";
 import * as sectionRepository from "../section/section.repository.js";
 import ApiError from "../../utils/error-handler.utility.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
-import { PROGRESS_ERROR_MESSAGES, PROGRESS_STATUS } from "./progress.constants.js";
+import {
+    PROGRESS_ERROR_MESSAGES,
+    PROGRESS_STATUS,
+} from "./progress.constants.js";
 import {
     buildProgressCalculatedMeta,
     hasLectureReachedCompletionThreshold,
