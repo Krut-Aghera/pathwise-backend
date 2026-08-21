@@ -10,6 +10,11 @@ import {
     PROGRESS_STATUS,
 } from "../../../src/features/progress/progress.constants.js";
 
+import { createTestCourse } from "../../helpers/course.helper.js";
+import { createTestSection } from "../../helpers/section.helper.js";
+import { createTestLecture } from "../../helpers/lecture.helper.js";
+import { makeTestLectureProgressExists } from "../../helpers/progress.helper.js";
+
 import {
     createEnrolledCourseScenario,
     createCourseProgressScenario,
@@ -17,13 +22,16 @@ import {
     createCompletedLectureProgressScenario,
 } from "../../fixtures/progress.fixtures.js";
 
-import { createTestCourse } from "../../helpers/course.helper.js";
-import { createTestSection } from "../../helpers/section.helper.js";
-import { createTestLecture } from "../../helpers/lecture.helper.js";
-import { makeTestLectureProgressExists } from "../../helpers/progress.helper.js";
-
-
-
+import {
+    expectSuccessfulResponse,
+    expectFailedResponse,
+    expectCourseProgressSummary,
+    expectLectureProgressSummary,
+    expectProgressData,
+    expectLectureProgressData,
+    expectLastAccessedLecture,
+    expectCompletedCourse,
+} from "../../assertions/progress.assertions.js";
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,27 +62,22 @@ describe("GET /api/v1/progress/students/courses/:courseId", () => {
             `/api/v1/progress/students/courses/${course._id}`
         );
 
-        expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
+        expectSuccessfulResponse(response);
 
-        expect(response.body.data).toBeDefined();
-        expect(response.body.meta).toBeDefined();
+        expectCourseProgressSummary({
+            response,
+            totalLectures: 1,
+            completedLectures: 0,
+            totalDuration: lecture.video.duration,
+            totalCompletedDuration: 0,
+            progressPercentage: 0,
+        });
 
-        expect(response.body.meta.course.totalLectures).toBe(1);
-        expect(response.body.meta.course.completedLectures).toBe(0);
-        expect(response.body.meta.course.totalDuration).toBe(
-            lecture.video.duration
-        );
-        expect(response.body.meta.course.totalCompletedDuration).toBe(0);
-        expect(response.body.meta.course.progressPercentage).toBe(0);
-
-        expect(response.body.meta.lectures).toHaveLength(1);
-
-        expect(response.body.meta.lectures[0].lectureId.toString()).toBe(
-            lecture._id.toString()
-        );
-
-        expect(response.body.meta.lectures[0].progressPercentage).toBe(0);
+        expectLectureProgressSummary({
+            response,
+            lecture,
+            progressPercentage: 0,
+        });
     });
 
     // This test is to ensure that if the course progress already exists for the student,
@@ -91,29 +94,22 @@ describe("GET /api/v1/progress/students/courses/:courseId", () => {
             `/api/v1/progress/students/courses/${course._id}`
         );
 
-        expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
+        expectSuccessfulResponse(response);
 
-        expect(response.body.data).toBeDefined();
-        expect(response.body.meta).toBeDefined();
+        expectCourseProgressSummary({
+            response,
+            totalLectures: 1,
+            completedLectures: 0,
+            totalDuration: lecture.video.duration,
+            totalCompletedDuration: 0,
+            progressPercentage: 0,
+        });
 
-        expect(response.body.meta.course.totalLectures).toBe(1);
-        expect(response.body.meta.course.completedLectures).toBe(0);
-        expect(response.body.meta.course.totalCompletedDuration).toBe(0);
-        expect(response.body.meta.course.progressPercentage).toBe(0);
-        expect(response.body.meta.course.totalDuration).toBe(
-            lecture.video.duration
-        );
-
-        expect(response.body.meta.lectures).toHaveLength(1);
-
-        expect(response.body.meta.lectures[0].lectureId.toString()).toBe(
-            lecture._id.toString()
-        );
-
-        expect(response.body.meta.lectures[0].progressPercentage).toBe(
-            83.33333333333334
-        );
+        expectLectureProgressSummary({
+            response,
+            lecture,
+            progressPercentage: 83.33333333333334,
+        });
     });
 });
 
@@ -145,45 +141,36 @@ describe("POST /courses/:courseId/lectures/:lectureId", () => {
             `/api/v1/progress/students/courses/${course._id}/lectures/${lecture._id}`
         );
 
-        expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
+        expectSuccessfulResponse(response);
 
-        expect(response.body.data).toBeDefined();
-        expect(response.body.meta).toBeDefined();
+        expectProgressData({
+            response,
+            user,
+            course,
+            status: PROGRESS_STATUS.IN_PROGRESS,
+        });
 
-        expect(response.body.data.course.toString()).toBe(
-            course._id.toString()
-        );
+        expectLectureProgressData({
+            response,
+            lecture,
+            lastPosition: 0,
+            watchedDuration: 0,
+            isCompleted: false,
+        });
 
-        expect(response.body.data.student.toString()).toBe(user._id.toString());
+        expectCourseProgressSummary({
+            response,
+            totalLectures: 1,
+            completedLectures: 0,
+            totalCompletedDuration: 0,
+            progressPercentage: 0,
+        });
 
-        expect(response.body.data.status).toBe(PROGRESS_STATUS.IN_PROGRESS);
-
-        expect(response.body.data.lectures[0].lecture.toString()).toBe(
-            lecture._id.toString()
-        );
-
-        expect(response.body.data.lectures[0].lastPosition).toBe(0);
-
-        expect(response.body.data.lectures[0].watchedDuration).toBe(0);
-
-        expect(response.body.data.lectures[0].isCompleted).toBe(false);
-
-        expect(response.body.meta.course.totalLectures).toBe(1);
-
-        expect(response.body.meta.course.completedLectures).toBe(0);
-
-        expect(response.body.meta.course.totalCompletedDuration).toBe(0);
-
-        expect(response.body.meta.course.progressPercentage).toBe(0);
-
-        expect(response.body.meta.lectures).toHaveLength(1);
-
-        expect(response.body.meta.lectures[0].progressPercentage).toBe(0);
-
-        expect(response.body.meta.lectures[0].lectureId.toString()).toBe(
-            lecture._id.toString()
-        );
+        expectLectureProgressSummary({
+            response,
+            lecture,
+            progressPercentage: 0,
+        });
     });
 
     // This test is to ensure that if the requested course does not have progress for the student,
@@ -203,8 +190,7 @@ describe("POST /courses/:courseId/lectures/:lectureId", () => {
             `/api/v1/progress/students/courses/${anotherCourse._id}/lectures/${lecture._id}`
         );
 
-        expect(response.status).toBe(404);
-        expect(response.body.success).toBe(false);
+        expectFailedResponse(response, 404);
     });
 
     // This test is to ensure that if the requested lecture does not exist,
@@ -219,8 +205,7 @@ describe("POST /courses/:courseId/lectures/:lectureId", () => {
             `/api/v1/progress/students/courses/${course._id}/lectures/${nonExistingLectureId}`
         );
 
-        expect(response.status).toBe(404);
-        expect(response.body.success).toBe(false);
+        expectFailedResponse(response, 404);
     });
 
     // This test is to ensure that if the requested lecture belongs to a different course,
@@ -249,8 +234,7 @@ describe("POST /courses/:courseId/lectures/:lectureId", () => {
             `/api/v1/progress/students/courses/${requestedCourse._id}/lectures/${lecture._id}`
         );
 
-        expect(response.status).toBe(404);
-        expect(response.body.success).toBe(false);
+        expectFailedResponse(response, 404);
     });
 
     // This test is to ensure that if the lecture progress already exists for the student,
@@ -264,28 +248,28 @@ describe("POST /courses/:courseId/lectures/:lectureId", () => {
             `/api/v1/progress/students/courses/${course._id}/lectures/${lecture._id}`
         );
 
-        expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
+        expectSuccessfulResponse(response);
 
-        expect(response.body.data.lastAccessedLecture.toString()).toBe(
-            lecture._id.toString()
-        );
+        expectLastAccessedLecture({
+            response,
+            lecture,
+        });
 
-        expect(response.body.data.lectures[0].lecture.toString()).toBe(
-            lecture._id.toString()
-        );
+        expectLectureProgressData({
+            response,
+            lecture,
+            lastPosition: 100,
+            watchedDuration: 110,
+            isCompleted: false,
+        });
 
-        expect(response.body.data.lectures[0].lastPosition).toBe(100);
-
-        expect(response.body.data.lectures[0].watchedDuration).toBe(110);
-
-        expect(response.body.data.lectures[0].isCompleted).toBe(false);
-
-        expect(response.body.meta.course.totalDuration).toBe(
-            lecture.video.duration
-        );
-
-        expect(response.body.meta.course.progressPercentage).toBe(0);
+        expectCourseProgressSummary({
+            response,
+            totalLectures: 1,
+            completedLectures: 0,
+            totalDuration: lecture.video.duration,
+            progressPercentage: 0,
+        });
     });
 });
 
@@ -319,8 +303,7 @@ describe("PATCH /courses/:courseId/lectures/:lectureId", () => {
                 watchedDuration: 110,
             });
 
-        expect(response.status).toBe(404);
-        expect(response.body.success).toBe(false);
+        expectFailedResponse(response, 404);
     });
 
     // This test is to ensure that if course progress exists but lecture progress has not been initialized,
@@ -338,8 +321,7 @@ describe("PATCH /courses/:courseId/lectures/:lectureId", () => {
                 watchedDuration: 110,
             });
 
-        expect(response.status).toBe(404);
-        expect(response.body.success).toBe(false);
+        expectFailedResponse(response, 404);
     });
 
     // This test is to ensure that if the requested lecture does not exist,
@@ -359,8 +341,7 @@ describe("PATCH /courses/:courseId/lectures/:lectureId", () => {
                 watchedDuration: 110,
             });
 
-        expect(response.status).toBe(404);
-        expect(response.body.success).toBe(false);
+        expectFailedResponse(response, 404);
     });
 
     // This test is to ensure that if the student has course progress for one course but requests a lecture from another course,
@@ -394,8 +375,7 @@ describe("PATCH /courses/:courseId/lectures/:lectureId", () => {
                 watchedDuration: 110,
             });
 
-        expect(response.status).toBe(404);
-        expect(response.body.success).toBe(false);
+        expectFailedResponse(response, 404);
     });
 
     // This test is to ensure that if lecture progress is already initialized,
@@ -414,35 +394,29 @@ describe("PATCH /courses/:courseId/lectures/:lectureId", () => {
                 watchedDuration: 300,
             });
 
-        expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
+        expectSuccessfulResponse(response);
 
-        expect(response.body.data).toBeDefined();
-        expect(response.body.meta).toBeDefined();
+        expectLectureProgressData({
+            response,
+            lecture,
+            lastPosition: 300,
+            watchedDuration: 300,
+            isCompleted: false,
+        });
 
-        const lectureProgress = response.body.data.lectures[0];
+        expectCourseProgressSummary({
+            response,
+            totalLectures: 1,
+            completedLectures: 0,
+            totalCompletedDuration: 0,
+            progressPercentage: 0,
+        });
 
-        expect(lectureProgress.lecture.toString()).toBe(lecture._id.toString());
-
-        expect(lectureProgress.lastPosition).toBe(300);
-        expect(lectureProgress.watchedDuration).toBe(300);
-        expect(lectureProgress.isCompleted).toBe(false);
-
-        expect(response.body.meta.lectures).toHaveLength(1);
-
-        expect(response.body.meta.lectures[0].lectureId.toString()).toBe(
-            lecture._id.toString()
-        );
-
-        expect(response.body.meta.lectures[0].progressPercentage).toBe(50);
-
-        expect(response.body.meta.course.totalLectures).toBe(1);
-
-        expect(response.body.meta.course.completedLectures).toBe(0);
-
-        expect(response.body.meta.course.totalCompletedDuration).toBe(0);
-
-        expect(response.body.meta.course.progressPercentage).toBe(0);
+        expectLectureProgressSummary({
+            response,
+            lecture,
+            progressPercentage: 50,
+        });
     });
 });
 
@@ -471,8 +445,7 @@ describe("POST /courses/:courseId/lectures/:lectureId/complete", () => {
             `/api/v1/progress/students/courses/${course._id}/lectures/${lecture._id}/complete`
         );
 
-        expect(response.status).toBe(404);
-        expect(response.body.success).toBe(false);
+        expectFailedResponse(response, 404);
     });
 
     // This test is to ensure that if course progress exists but lecture progress has not been initialized,
@@ -485,8 +458,7 @@ describe("POST /courses/:courseId/lectures/:lectureId/complete", () => {
             `/api/v1/progress/students/courses/${course._id}/lectures/${lecture._id}/complete`
         );
 
-        expect(response.status).toBe(404);
-        expect(response.body.success).toBe(false);
+        expectFailedResponse(response, 404);
     });
 
     // This test is to ensure that if the requested lecture does not exist,
@@ -507,8 +479,7 @@ describe("POST /courses/:courseId/lectures/:lectureId/complete", () => {
             `/api/v1/progress/students/courses/${course._id}/lectures/${fakeLectureId}/complete`
         );
 
-        expect(response.status).toBe(404);
-        expect(response.body.success).toBe(false);
+        expectFailedResponse(response, 404);
     });
 
     // This test is to ensure that if the requested lecture belongs to a different course,
@@ -544,8 +515,7 @@ describe("POST /courses/:courseId/lectures/:lectureId/complete", () => {
             `/api/v1/progress/students/courses/${requestedCourse._id}/lectures/${lecture._id}/complete`
         );
 
-        expect(response.status).toBe(404);
-        expect(response.body.success).toBe(false);
+        expectFailedResponse(response, 404);
     });
 
     // This test is to ensure that if the lecture has not reached the required completion threshold,
@@ -559,8 +529,7 @@ describe("POST /courses/:courseId/lectures/:lectureId/complete", () => {
             `/api/v1/progress/students/courses/${course._id}/lectures/${lecture._id}/complete`
         );
 
-        expect(response.status).toBe(400);
-        expect(response.body.success).toBe(false);
+        expectFailedResponse(response, 400);
 
         expect(response.body.message).toBe(
             PROGRESS_ERROR_MESSAGES.LECTURE_NOT_COMPLETED
@@ -582,35 +551,28 @@ describe("POST /courses/:courseId/lectures/:lectureId/complete", () => {
             `/api/v1/progress/students/courses/${course._id}/lectures/${lecture._id}/complete`
         );
 
-        expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
+        expectSuccessfulResponse(response);
 
-        expect(response.body.data).toBeDefined();
-        expect(response.body.meta).toBeDefined();
+        expectLectureProgressData({
+            response,
+            lecture,
+            lastPosition: 540,
+            watchedDuration: 540,
+            isCompleted: true,
+        });
 
-        const lectureProgress = response.body.data.lectures[0];
+        expectCourseProgressSummary({
+            response,
+            totalLectures: 1,
+            completedLectures: 1,
+            progressPercentage: 100,
+        });
 
-        expect(lectureProgress.lecture.toString()).toBe(lecture._id.toString());
-
-        expect(lectureProgress.lastPosition).toBe(540);
-
-        expect(lectureProgress.watchedDuration).toBe(540);
-
-        expect(lectureProgress.isCompleted).toBe(true);
-
-        expect(response.body.meta.course.totalLectures).toBe(1);
-
-        expect(response.body.meta.course.completedLectures).toBe(1);
-
-        expect(response.body.meta.course.progressPercentage).toBe(100);
-
-        expect(response.body.meta.lectures).toHaveLength(1);
-
-        expect(response.body.meta.lectures[0].lectureId.toString()).toBe(
-            lecture._id.toString()
-        );
-
-        expect(response.body.meta.lectures[0].progressPercentage).toBe(90);
+        expectLectureProgressSummary({
+            response,
+            lecture,
+            progressPercentage: 90,
+        });
     });
 
     // This test is to ensure that if the lecture is below the completion threshold,
@@ -628,8 +590,7 @@ describe("POST /courses/:courseId/lectures/:lectureId/complete", () => {
             `/api/v1/progress/students/courses/${course._id}/lectures/${lecture._id}/complete`
         );
 
-        expect(response.status).toBe(400);
-        expect(response.body.success).toBe(false);
+        expectFailedResponse(response, 400);
     });
 
     // This test is to ensure that if the lecture has reached exactly the required completion threshold,
@@ -647,19 +608,28 @@ describe("POST /courses/:courseId/lectures/:lectureId/complete", () => {
             `/api/v1/progress/students/courses/${course._id}/lectures/${lecture._id}/complete`
         );
 
-        expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
+        expectSuccessfulResponse(response);
 
-        const lectureProgress = response.body.data.lectures[0];
+        expectLectureProgressData({
+            response,
+            lecture,
+            lastPosition: 540,
+            watchedDuration: 540,
+            isCompleted: true,
+        });
 
-        expect(lectureProgress.watchedDuration).toBe(540);
-        expect(lectureProgress.lastPosition).toBe(540);
-        expect(lectureProgress.isCompleted).toBe(true);
+        expectCourseProgressSummary({
+            response,
+            totalLectures: 1,
+            completedLectures: 1,
+            progressPercentage: 100,
+        });
 
-        expect(response.body.meta.course.completedLectures).toBe(1);
-        expect(response.body.meta.course.progressPercentage).toBe(100);
-
-        expect(response.body.meta.lectures[0].progressPercentage).toBe(90);
+        expectLectureProgressSummary({
+            response,
+            lecture,
+            progressPercentage: 90,
+        });
     });
 
     // This test is to ensure that if the lecture has already been completed,
@@ -673,26 +643,28 @@ describe("POST /courses/:courseId/lectures/:lectureId/complete", () => {
             `/api/v1/progress/students/courses/${course._id}/lectures/${lecture._id}/complete`
         );
 
-        expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
+        expectSuccessfulResponse(response);
 
-        const lectureProgress = response.body.data.lectures[0];
+        expectLectureProgressData({
+            response,
+            lecture,
+            lastPosition: lecture.video.duration,
+            watchedDuration: lecture.video.duration,
+            isCompleted: true,
+        });
 
-        expect(lectureProgress.lecture.toString()).toBe(lecture._id.toString());
+        expectCourseProgressSummary({
+            response,
+            totalLectures: 1,
+            completedLectures: 1,
+            progressPercentage: 100,
+        });
 
-        expect(lectureProgress.lastPosition).toBe(lecture.video.duration);
-
-        expect(lectureProgress.watchedDuration).toBe(lecture.video.duration);
-
-        expect(lectureProgress.isCompleted).toBe(true);
-
-        expect(response.body.meta.course.totalLectures).toBe(1);
-
-        expect(response.body.meta.course.completedLectures).toBe(1);
-
-        expect(response.body.meta.course.progressPercentage).toBe(100);
-
-        expect(response.body.meta.lectures[0].progressPercentage).toBe(100);
+        expectLectureProgressSummary({
+            response,
+            lecture,
+            progressPercentage: 100,
+        });
     });
 
     // This test is to ensure that if the final lecture in the course is completed,
@@ -730,33 +702,19 @@ describe("POST /courses/:courseId/lectures/:lectureId/complete", () => {
             `/api/v1/progress/students/courses/${course._id}/lectures/${secondLecture._id}/complete`
         );
 
-        expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
+        expectSuccessfulResponse(response);
 
-        expect(response.body.data).toBeDefined();
-        expect(response.body.meta).toBeDefined();
+        expectLectureProgressData({
+            response,
+            lecture: secondLecture,
+            lastPosition: secondLecture.video.duration,
+            watchedDuration: secondLecture.video.duration,
+            isCompleted: true,
+        });
 
-        const secondLectureProgress = response.body.data.lectures.find(
-            ({ lecture }) => lecture.toString() === secondLecture._id.toString()
-        );
-
-        expect(secondLectureProgress.isCompleted).toBe(true);
-
-        expect(response.body.meta.course.totalLectures).toBe(2);
-        expect(response.body.meta.course.completedLectures).toBe(2);
-        expect(response.body.meta.course.progressPercentage).toBe(100);
-
-        expect(response.body.meta.lectures).toHaveLength(2);
-
-        expect(
-            response.body.meta.lectures.every(
-                ({ progressPercentage }) => progressPercentage === 100
-            )
-        ).toBe(true);
-
-        expect(response.body.data.status).toBe(PROGRESS_STATUS.COMPLETED);
-
-        expect(response.body.data.completedAt).toBeDefined();
-        expect(response.body.data.completedAt).not.toBeNull();
+        expectCompletedCourse({
+            response,
+            totalLectures: 2,
+        });
     });
 });
