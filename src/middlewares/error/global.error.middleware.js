@@ -3,6 +3,7 @@ import ApiError from "../../utils/error-handler.utility.js";
 import logger from "../../utils/pino-logger.utility.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
 import { DUPLICATE_KEY_MESSAGES } from "./error.constants.js";
+import { AUTH_ERROR_CODES } from "../../features/auth/auth.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // global error middleware
@@ -53,6 +54,7 @@ const globalErrorMiddleware = (err, req, res, next) => {
     if (err.name === "TokenExpiredError") {
         err = new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
+            code: AUTH_ERROR_CODES.ACCESS_TOKEN_EXPIRED,
             message: "Token has expired",
         });
     }
@@ -137,6 +139,7 @@ const globalErrorMiddleware = (err, req, res, next) => {
     return res.status(statusCode).json({
         success: false,
         statusCode,
+        code: isApiError ? err.code : null,
         message,
         errors: isApiError ? err.errors : [],
         timestamp: new Date().toISOString(),

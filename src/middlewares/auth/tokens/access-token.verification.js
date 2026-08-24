@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { env_jwtVars } from "../../../config/env.config.js";
 
 import HTTP_STATUS from "../../../constants/http.constants.js";
+import { AUTH_ERROR_CODES } from "../../../features/auth/auth.constants.js";
 
 import User from "../../../features/user/user.model.js";
 
@@ -16,6 +17,7 @@ const accessTokenVerification = async (req, res, next) => {
     if (!accessToken) {
         throw new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
+            code: AUTH_ERROR_CODES.ACCESS_TOKEN_MISSING,
             message: "Access token not found",
         });
     }

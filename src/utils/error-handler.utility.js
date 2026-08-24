@@ -1,6 +1,7 @@
 class ApiError extends Error {
     constructor({
         statusCode,
+        code,
         message = "Internal Server Error",
         errors = [],
         details = null,
@@ -11,6 +12,7 @@ class ApiError extends Error {
         this.name = this.constructor.name;
         this.success = false;
         this.statusCode = statusCode;
+        this.code = code
         this.errors = errors;
         this.details = details;
         this.isOperational = isOperational;
