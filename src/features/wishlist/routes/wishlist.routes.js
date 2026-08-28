@@ -1,6 +1,6 @@
 import express from "express";
 
-import wishlistStudentRouter from "./wishlist.student.routes.js";
+import wishlistAuthenticatedUser from "./wishlist.authenticatedUser.routes.js";
 
 ///////////////////////////////////////////////////////////////
 // create router
@@ -10,7 +10,7 @@ const wishlistRouter = express.Router();
 ///////////////////////////////////////////////////////////////
 // mount student routes
 
-wishlistRouter.use(wishlistStudentRouter);
+wishlistRouter.use(wishlistAuthenticatedUser);
 
 ///////////////////////////////////////////////////////////////
 // export

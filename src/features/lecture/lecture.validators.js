@@ -22,13 +22,6 @@ const isPreviewFreeValidations = body("isPreviewFree")
     .withMessage("isPreviewFree must be a boolean value")
     .toBoolean();
 
-const orderValidations = body("order")
-    .notEmpty()
-    .withMessage("Order is required")
-    .bail()
-    .isInt({ min: 1 })
-    .withMessage("Order must be a positive integer");
-
 ///////////////////////////////////////////////////////////////
 // create lecture validators
 

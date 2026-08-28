@@ -1,9 +1,9 @@
 import express from "express";
 
-import sectionInstructorRouter from "./section.instructor.routes.js";
+import sectioninstructorRouter from "./section.instructor.routes.js";
 
 const sectionRouter = express.Router();
 
-sectionRouter.use(sectionInstructorRouter);
+sectionRouter.use(sectioninstructorRouter);
 
 export default sectionRouter;

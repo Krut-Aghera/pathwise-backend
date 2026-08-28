@@ -1,5 +1,5 @@
 import ApiError from "../../utils/error-handler.utility.js";
-
+import * as courseRepository from "../course/course.repository.js"
 import HTTP_STATUS from "../../constants/http.constants.js";
 import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 

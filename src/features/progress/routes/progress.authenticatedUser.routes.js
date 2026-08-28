@@ -3,22 +3,22 @@ import express from "express";
 import * as progressControllers from "../progress.controllers.js";
 import * as progressValidators from "../progress.validators.js";
 import * as progressRatelimiter from "../../../middlewares/ratelimiter/limiters/progress.ratelimiters.js";
-import studentAuthEngine from "../../../middlewares/auth/engines/student-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
+import { userAuthEngine } from "../../../middlewares/auth/auth.middleware.engines.js";
 
 ///////////////////////////////////////////////////////////////
 // create router
 
-const progressStudentRouter = express.Router();
+const progressAuthenticatedUser = express.Router();
 
 // GET /api/v1/progress/students/courses/:courseId
 // Fetches the progress of the authenticated student for the specified course.
 
-progressStudentRouter.get(
+progressAuthenticatedUser.get(
     "/courses/:courseId",
     progressRatelimiter.fetchProgressRateLimiter,
-    ...studentAuthEngine,
+    ...userAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -30,10 +30,10 @@ progressStudentRouter.get(
 // POST /api/v1/progress/students/courses/:courseId/lectures/:lectureId
 // Initializes progress for the specified lecture.
 
-progressStudentRouter.post(
+progressAuthenticatedUser.post(
     "/courses/:courseId/lectures/:lectureId",
     progressRatelimiter.initializeLectureProgressRateLimiter,
-    ...studentAuthEngine,
+    ...userAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -49,10 +49,10 @@ progressStudentRouter.post(
 // PATCH /api/v1/progress/students/courses/:courseId/lectures/:lectureId
 // Updates the video progress of the authenticated student for the specified lecture.
 
-progressStudentRouter.patch(
+progressAuthenticatedUser.patch(
     "/courses/:courseId/lectures/:lectureId",
     progressRatelimiter.updateProgressRateLimiter,
-    ...studentAuthEngine,
+    ...userAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -69,10 +69,10 @@ progressStudentRouter.patch(
 // POST /api/v1/progress/students/courses/:courseId/lectures/:lectureId/complete
 // Marks the specified lecture as completed for the authenticated student.
 
-progressStudentRouter.post(
+progressAuthenticatedUser.post(
     "/courses/:courseId/lectures/:lectureId/complete",
     progressRatelimiter.updateLectureCompletionProgressRateLimiter,
-    ...studentAuthEngine,
+    ...userAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -88,4 +88,4 @@ progressStudentRouter.post(
 ///////////////////////////////////////////////////////////////
 // export
 
-export default progressStudentRouter;
+export default progressAuthenticatedUser;

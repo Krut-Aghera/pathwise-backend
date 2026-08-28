@@ -4,9 +4,11 @@ export const TEMP_IMAGE_UPLOAD_DIR = path.resolve("temp/images");
 export const TEMP_VIDEO_UPLOAD_DIR = path.resolve("temp/videos");
 
 export const ALLOWED_IMAGE_MIME_TYPES = [
+    "image/jpg",
     "image/jpeg",
     "image/png",
     "image/webp",
+    "image/avif",
 ];
 
 export const ALLOWED_VIDEO_MIME_TYPES = [

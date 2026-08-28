@@ -1,23 +1,23 @@
 import express from "express";
 import * as enrollmentControllers from "../enrollment.controllers.js";
 import * as enrollmentRatelimiter from "../../../middlewares/ratelimiter/limiters/enrollment.ratelimit.js";
-import studentAuthEngine from "../../../middlewares/auth/engines/student-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
+import { userAuthEngine } from "../../../middlewares/auth/auth.middleware.engines.js";
 
 ///////////////////////////////////////////////////////////////
 // create router
 
-const enrollmentStudentRouter = express.Router();
+const enrollmentAuthenticatedUserRouter = express.Router();
 
 ///////////////////////////////////////////////////////////////
 // GET /api/v1/enrollments
 // Fetches all enrollments for the authenticated student.
 
-enrollmentStudentRouter.get(
+enrollmentAuthenticatedUserRouter.get(
     "/",
     enrollmentRatelimiter.fetchStudentEnrollmentsRateLimiter,
-    ...studentAuthEngine,
+    ...userAuthEngine,
     validationEngine,
     enrollmentControllers.fetchStudentEnrollments
 );
@@ -26,10 +26,10 @@ enrollmentStudentRouter.get(
 // GET /api/v1/enrollments/courses/:courseId
 // Fetches the authenticated student's enrollment for the specified course.
 
-enrollmentStudentRouter.get(
+enrollmentAuthenticatedUserRouter.get(
     "/courses/:courseId",
     enrollmentRatelimiter.fetchStudentEnrollmentByCourseRateLimiter,
-    ...studentAuthEngine,
+    ...userAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -42,10 +42,10 @@ enrollmentStudentRouter.get(
 // GET /api/v1/enrollments/:enrollmentId
 // Fetches the specified enrollment for the authenticated student.
 
-enrollmentStudentRouter.get(
+enrollmentAuthenticatedUserRouter.get(
     "/:enrollmentId",
     enrollmentRatelimiter.fetchStudentCurrentEnrollmentRateLimiter,
-    ...studentAuthEngine,
+    ...userAuthEngine,
     validateMongoIdParam({
         paramName: "enrollmentId",
         fieldName: "Enrollment ID",
@@ -57,4 +57,4 @@ enrollmentStudentRouter.get(
 ///////////////////////////////////////////////////////////////
 // export
 
-export default enrollmentStudentRouter;
+export default enrollmentAuthenticatedUserRouter;

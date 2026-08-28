@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto, { hash } from "crypto";
 import jwt from "jsonwebtoken";
 
 import logger from "../../utils/pino-logger.utility.js";
@@ -45,11 +45,21 @@ const registerUser = async ({ username, email, password }) => {
     const { user, accessToken, refreshToken } =
         await authSession.createSession(createdUser);
 
-    await authEmail.sendRegistrationEmail({
-        email: user.email,
-        username: user.username,
-        // TODO : add user dashboard link
-    });
+    try {
+        await authEmail.sendRegistrationEmail({
+            email: user.email,
+            username: user.username,
+            // TODO : add user dashboard link
+        });
+    } catch (error) {
+        logger.warn(
+            {
+                err: error,
+                userId: user._id,
+            },
+            "Failed to send email verification mail"
+        );
+    }
 
     return { user, accessToken, refreshToken };
 };
@@ -218,7 +228,6 @@ const rotateTokens = async ({ refreshToken }) => {
 const requestPasswordReset = async ({ email }) => {
     const user = await userRepository
         .findUserByEmail(email)
-        .select("+resetPasswordToken +resetPasswordExpiry");
 
     if (!user || !user.isActive) {
         return;
@@ -246,7 +255,11 @@ const requestPasswordReset = async ({ email }) => {
 
         await userRepository.saveUser(user);
 
-        throw error;
+        throw new ApiError({
+            statusCode: HTTP_STATUS.SERVICE_UNAVAILABLE,
+            message: "Email service is unavailable",
+        })
+
     }
 };
 

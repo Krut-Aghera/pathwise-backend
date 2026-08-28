@@ -1,9 +1,9 @@
 import express from "express";
 import * as enrollmentControllers from "../enrollment.controllers.js";
 import * as enrollmentRatelimiter from "../../../middlewares/ratelimiter/limiters/enrollment.ratelimit.js";
-import adminAuthEngine from "../../../middlewares/auth/engines/admin-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
+import { adminAuthEngine } from "../../../middlewares/auth/auth.middleware.engines.js";
 
 ///////////////////////////////////////////////////////////////
 // create router

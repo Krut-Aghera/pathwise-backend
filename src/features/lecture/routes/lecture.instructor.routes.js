@@ -2,10 +2,10 @@ import express from "express";
 import * as lectureControllers from "../lecture.controllers.js";
 import * as lectureValidations from "../lecture.validators.js";
 import * as lectureRatelimiter from "../../../middlewares/ratelimiter/limiters/lecture.rate-limiter.js";
-import instructorAuthEngine from "../../../middlewares/auth/engines/instructor-auth.engine.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 import { videoUpload } from "../../../middlewares/multer/multer.uploaders.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
+import { instructorAuthEngine } from "../../../middlewares/auth/auth.middleware.engines.js";
 
 ///////////////////////////////////////////////////////////////
 // create router

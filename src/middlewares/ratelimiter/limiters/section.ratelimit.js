@@ -55,20 +55,20 @@ export const saveSectionAsDraftRateLimiter = createRateLimiter({
     resource: "section draft update",
 });
 
-///////////////////////////////////////////////////////////////
-// fetch instructor section limiter
+// ///////////////////////////////////////////////////////////////
+// // fetch instructor section limiter
 
-export const fetchInstructorSectionRateLimiter = createRateLimiter({
-    window: RATE_LIMIT.API.WINDOW_MS,
-    limit: RATE_LIMIT.API.LIMIT,
-    resource: "section retrieval",
-});
+// export const fetchInstructorSectionRateLimiter = createRateLimiter({
+//     window: RATE_LIMIT.API.WINDOW_MS,
+//     limit: RATE_LIMIT.API.LIMIT,
+//     resource: "section retrieval",
+// });
 
-///////////////////////////////////////////////////////////////
-// fetch instructor sections limiter
+// ///////////////////////////////////////////////////////////////
+// // fetch instructor sections limiter
 
-export const fetchInstructorSectionsRateLimiter = createRateLimiter({
-    window: RATE_LIMIT.API.WINDOW_MS,
-    limit: RATE_LIMIT.API.LIMIT,
-    resource: "sections retrieval",
-});
+// export const fetchInstructorSectionsRateLimiter = createRateLimiter({
+//     window: RATE_LIMIT.API.WINDOW_MS,
+//     limit: RATE_LIMIT.API.LIMIT,
+//     resource: "sections retrieval",
+// });

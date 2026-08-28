@@ -7,8 +7,27 @@ import {
     SORT_ORDERS_ARRAY,
 } from "./course.constants.js";
 
+
 ///////////////////////////////////////////////////////////////
-// reusable validators
+// Reusable sanitizers
+
+const parseArrayField = (value) => {
+
+    if (typeof value !== "string") {
+        return value
+    }
+
+    try {
+        return JSON.parse(value)
+    } catch {
+        return value
+    }
+}
+
+
+
+///////////////////////////////////////////////////////////////
+// Reusable validators
 
 const titleValidations = body("title")
     .trim()
@@ -16,29 +35,38 @@ const titleValidations = body("title")
     .withMessage("Title is required")
     .bail()
     .isLength({ min: 5, max: 120 })
-    .withMessage("Title must be between 5 and 120 characters");
+    .withMessage("Title must be between 5 and 120 characters")
+
 
 const subtitleValidations = body("subtitle")
     .trim()
     .notEmpty()
     .withMessage("Subtitle is required")
+    .bail()
     .isLength({ max: 180 })
-    .withMessage("Subtitle cannot exceed 180 characters");
+    .withMessage("Subtitle cannot exceed 180 characters")
+
 
 const descriptionValidations = body("description")
     .trim()
     .notEmpty()
     .withMessage("Description is required")
     .bail()
-    .isLength({ max: 10000 })
-    .withMessage("Description must be between 20 and 10000 characters");
+    .isLength({ min: 20, max: 10000 })
+    .withMessage(
+        "Description must be between 20 and 10000 characters"
+    )
+
 
 const priceValidations = body("price")
     .notEmpty()
     .withMessage("Price is required")
     .bail()
     .isFloat({ min: 0 })
-    .withMessage("Price must be greater than or equal to 0");
+    .withMessage(
+        "Price must be greater than or equal to 0"
+    )
+
 
 const languageValidations = body("language")
     .notEmpty()
@@ -47,51 +75,97 @@ const languageValidations = body("language")
     .isIn(COURSE_LANGUAGES_ARRAY)
     .withMessage(
         `Language must be one of: ${COURSE_LANGUAGES_ARRAY.join(", ")}`
-    );
+    )
+
 
 const levelValidations = body("level")
     .notEmpty()
     .withMessage("Level is required")
     .bail()
     .isIn(COURSE_LEVELS_ARRAY)
-    .withMessage(`Level must be one of: ${COURSE_LEVELS_ARRAY.join(", ")}`);
+    .withMessage(
+        `Level must be one of: ${COURSE_LEVELS_ARRAY.join(", ")}`
+    )
+
+
+
+///////////////////////////////////////////////////////////////
+// Learning outcomes
 
 const learningOutcomesValidations = body("learningOutcomes")
-    .isArray({ max: 20 })
-    .withMessage("Learning outcomes must be an array with at most 20 items");
+    .customSanitizer(parseArrayField)
+    .isArray({ min: 1, max: 10 })
+    .withMessage(
+        "Learning outcomes must be an array with between 1 and 10 items"
+    )
+    .bail()
+
 
 const learningOutcomeItemsValidations = body("learningOutcomes.*")
     .trim()
     .notEmpty()
-    .withMessage("Learning outcome cannot be empty")
+    .withMessage(
+        "Learning outcome cannot be empty"
+    )
     .bail()
     .isLength({ max: 200 })
-    .withMessage("Learning outcome cannot exceed 200 characters");
+    .withMessage(
+        "Learning outcome cannot exceed 200 characters"
+    )
+
+
+
+///////////////////////////////////////////////////////////////
+// Target audience
 
 const targetAudienceValidations = body("targetAudience")
-    .isArray({ max: 20 })
-    .withMessage("Target audience must be an array with at most 20 items");
+    .customSanitizer(parseArrayField)
+    .isArray({ min: 1, max: 10 })
+    .withMessage(
+        "Target audience must be an array with between 1 and 10 items"
+    )
+    .bail()
+
 
 const targetAudienceItemsValidations = body("targetAudience.*")
     .trim()
     .notEmpty()
-    .withMessage("Target audience item cannot be empty")
+    .withMessage(
+        "Target audience item cannot be empty"
+    )
     .bail()
     .isLength({ max: 200 })
-    .withMessage("Target audience item cannot exceed 200 characters");
+    .withMessage(
+        "Target audience item cannot exceed 200 characters"
+    )
+
+
+
+///////////////////////////////////////////////////////////////
+// Requirements
 
 const requirementsValidations = body("requirements")
-    .isArray({ max: 20 })
-    .withMessage("Target audience must be an array with at most 20 items");
+    .customSanitizer(parseArrayField)
+    .isArray({ min: 1, max: 10 })
+    .withMessage(
+        "Requirements must be an array with between 1 and 10 items"
+    )
+    .bail()
+
 
 const requirementItemsValidations = body("requirements.*")
     .trim()
     .notEmpty()
-    .withMessage("Target audience item cannot be empty")
+    .withMessage(
+        "Requirement cannot be empty"
+    )
     .bail()
     .isLength({ max: 200 })
-    .withMessage("Target audience item cannot exceed 200 characters");
+    .withMessage(
+        "Requirement cannot exceed 200 characters"
+    )
 
+    
 //
 //
 ///////////////////////////////////////////////////////////////

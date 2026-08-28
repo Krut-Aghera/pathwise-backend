@@ -10,8 +10,7 @@ const AUTH_SUCCESS_MESSAGES = Object.freeze({
     LOGOUT: "Logged out successfully.",
     TOKENS_REFRESHED: "Access token refreshed successfully.",
     
-    PASSWORD_RESET_REQUESTED:
-    "If an account with that email exists, a password reset link has been sent.",
+    PASSWORD_RESET_REQUESTED: "Password reset link has been sent to provided email address",
     PASSWORD_RESET: "Password reset successfully.",
     PASSWORD_CHANGED: "Password changed successfully.",
 });

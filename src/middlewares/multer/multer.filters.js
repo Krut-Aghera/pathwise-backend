@@ -29,7 +29,7 @@ const createMimeTypeFilter = (allowedMimeTypes, message) => {
 
 const imageFileFilter = createMimeTypeFilter(
     ALLOWED_IMAGE_MIME_TYPES,
-    "Only JPG, JPEG, PNG and WEBP image files are allowed."
+    "Only JPG, JPEG, AVIF, PNG and WEBP image files are allowed."
 );
 
 ///////////////////////////////////////////////////////////////

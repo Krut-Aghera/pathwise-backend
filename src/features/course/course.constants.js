@@ -84,8 +84,8 @@ const SORT_ORDERS_ARRAY = Object.values(SORT_ORDERS);
 // course details constants
 
 const COURSE_LANGUAGES = Object.freeze({
-    ENGLISH: "english",
-    HINDI: "hindi",
+    ENGLISH: "English", 
+    HINDI: "Hindi",
 });
 
 const COURSE_LEVELS = Object.freeze({

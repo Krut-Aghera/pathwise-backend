@@ -1,7 +1,7 @@
 import express from "express";
 
 import enrollmentInstructorRouter from "./enrollment.instructor.routes.js";
-import enrollmentStudentRouter from "./enrollment.student.routes.js";
+import enrollmentAuthenticatedUserRouter from "./enrollment.authenticatedUser.routes.js";
 import enrollmentAdminRouter from "./enrollment.admin.routes.js";
 
 ///////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ const enrollmentRouter = express.Router();
 ///////////////////////////////////////////////////////////////
 // mount student routes
 
-enrollmentRouter.use(enrollmentStudentRouter);
+enrollmentRouter.use(enrollmentAuthenticatedUserRouter);
 
 ///////////////////////////////////////////////////////////////
 // mount instructor routes

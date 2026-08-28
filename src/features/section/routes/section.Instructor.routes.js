@@ -4,10 +4,10 @@ import * as sectionControllers from "../section.controllers.js";
 import * as sectionValidations from "../section.validators.js";
 
 import * as sectionRatelimiter from "../../../middlewares/ratelimiter/limiters/section.ratelimit.js";
-import instructorAuthEngine from "../../../middlewares/auth/engines/instructor-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
+import { instructorAuthEngine } from "../../../middlewares/auth/auth.middleware.engines.js";
 
 ///////////////////////////////////////////////////////////////
 // create router
@@ -19,7 +19,7 @@ const sectionInstructorRouter = express.Router();
 
 sectionInstructorRouter.get(
     "/course/:courseId",
-    sectionRatelimiter.fetchInstructorSectionsRateLimiter,
+    // sectionRatelimiter.fetchInstructorSectionsRateLimiter,
     ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
@@ -34,7 +34,7 @@ sectionInstructorRouter.get(
 
 sectionInstructorRouter.get(
     "/:sectionId",
-    sectionRatelimiter.fetchInstructorSectionRateLimiter,
+    // sectionRatelimiter.fetchInstructorSectionRateLimiter,
     ...instructorAuthEngine,
     validateMongoIdParam({
         paramName: "sectionId",

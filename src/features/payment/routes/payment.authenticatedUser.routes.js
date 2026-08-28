@@ -1,23 +1,23 @@
 import express from "express";
 import * as paymentControllers from "../payment.controllers.js";
 import * as paymentRatelimiter from "../../../middlewares/ratelimiter/limiters/payment.ratelimit.js";
-import studentAuthEngine from "../../../middlewares/auth/engines/student-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
+import { userAuthEngine } from "../../../middlewares/auth/auth.middleware.engines.js";
 
 ///////////////////////////////////////////////////////////////
 // create router
 
-const paymentStudentRouter = express.Router();
+const paymentAuthenticatedUser = express.Router();
 
 ///////////////////////////////////////////////////////////////
 // POST /api/v1/payments/orders/:orderId
 // Creates a payment session for the authenticated student.
 
-paymentStudentRouter.post(
+paymentAuthenticatedUser.post(
     "/orders/:orderId",
     paymentRatelimiter.createPaymentRateLimiter,
-    ...studentAuthEngine,
+    ...userAuthEngine,
     validateMongoIdParam({
         paramName: "orderId",
         fieldName: "Order ID",
@@ -30,10 +30,10 @@ paymentStudentRouter.post(
 // POST /api/v1/payments/orders/:orderId/verify
 // Verifies the payment and completes checkout for the authenticated student.
 
-paymentStudentRouter.post(
+paymentAuthenticatedUser.post(
     "/orders/:orderId/verify",
     paymentRatelimiter.verifyPaymentRateLimiter,
-    ...studentAuthEngine,
+    ...userAuthEngine,
     validateMongoIdParam({
         paramName: "orderId",
         fieldName: "Order ID",
@@ -45,4 +45,4 @@ paymentStudentRouter.post(
 ///////////////////////////////////////////////////////////////
 // export
 
-export default paymentStudentRouter;
+export default paymentAuthenticatedUser;

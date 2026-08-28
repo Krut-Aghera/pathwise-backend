@@ -4,13 +4,13 @@ import * as courseControllers from "../course.controllers.js";
 import * as courseValidations from "../course.validators.js";
 
 import * as courseRatelimiter from "../../../middlewares/ratelimiter/limiters/course.ratelimit.js";
-import instructorAuthEngine from "../../../middlewares/auth/engines/instructor-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 
 import { FILE_FIELDS } from "../../../middlewares/multer/multer.constants.js";
 import { imageUpload } from "../../../middlewares/multer/multer.uploaders.js";
 
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
+import { instructorAuthEngine } from "../../../middlewares/auth/auth.middleware.engines.js";
 
 ///////////////////////////////////////////////////////////////
 // create router

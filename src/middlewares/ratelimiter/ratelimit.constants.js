@@ -68,7 +68,7 @@ const RATE_LIMIT = Object.freeze({
 
         UPDATE: {
             WINDOW_MS: WINDOWS.THIRTY_MINUTES,
-            LIMIT: 15,
+            LIMIT: 30,
         },
 
         DELETE: {

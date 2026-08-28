@@ -1,23 +1,23 @@
 import express from "express";
 import * as wishlistControllers from "../wishlist.controllers.js";
 import * as wishlistRatelimiter from "../../../middlewares/ratelimiter/limiters/wishlist.ratelimit.js";
-import studentAuthEngine from "../../../middlewares/auth/engines/student-auth.engine.js";
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
+import { userAuthEngine } from "../../../middlewares/auth/auth.middleware.engines.js";
 
 ///////////////////////////////////////////////////////////////
 // create router
 
-const wishlistStudentRouter = express.Router();
+const wishlistAuthenticatedUser = express.Router();
 
 ///////////////////////////////////////////////////////////////
 // POST /api/v1/wishlist/:courseId
 // Adds the specified course to the authenticated student's wishlist.
 
-wishlistStudentRouter.post(
+wishlistAuthenticatedUser.post(
     "/:courseId",
     wishlistRatelimiter.addCourseToWishlistRateLimiter,
-    ...studentAuthEngine,
+    ...userAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -30,10 +30,10 @@ wishlistStudentRouter.post(
 // DELETE /api/v1/wishlist//courses/:courseId
 // Removes the specified course from the authenticated student's wishlist.
 
-wishlistStudentRouter.delete(
+wishlistAuthenticatedUser.delete(
     "/courses/:courseId",
     wishlistRatelimiter.removeCourseFromWishlistRateLimiter,
-    ...studentAuthEngine,
+    ...userAuthEngine,
     validateMongoIdParam({
         paramName: "courseId",
         fieldName: "Course ID",
@@ -46,10 +46,10 @@ wishlistStudentRouter.delete(
 // GET /api/v1/wishlist
 // Fetches the authenticated student's wishlist.
 
-wishlistStudentRouter.get(
+wishlistAuthenticatedUser.get(
     "/",
     wishlistRatelimiter.fetchWishlistRateLimiter,
-    ...studentAuthEngine,
+    ...userAuthEngine,
     validationEngine,
     wishlistControllers.fetchWishlist
 );
@@ -58,10 +58,10 @@ wishlistStudentRouter.get(
 // PATCH /api/v1/wishlist
 // Clears the authenticated student's wishlist.
 
-wishlistStudentRouter.patch(
+wishlistAuthenticatedUser.patch(
     "/",
     wishlistRatelimiter.clearWishlistRateLimiter,
-    ...studentAuthEngine,
+    ...userAuthEngine,
     validationEngine,
     wishlistControllers.clearWishlist
 );
@@ -69,4 +69,4 @@ wishlistStudentRouter.patch(
 ///////////////////////////////////////////////////////////////
 // export
 
-export default wishlistStudentRouter;
+export default wishlistAuthenticatedUser;

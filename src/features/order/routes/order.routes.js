@@ -1,6 +1,6 @@
 import express from "express";
 
-import orderStudentRouter from "./order.student.routes.js";
+import orderAuthenticatedUser from "./order.authenticatedUser.routes.js";
 
 ///////////////////////////////////////////////////////////////
 // create router
@@ -10,7 +10,7 @@ const orderRouter = express.Router();
 ///////////////////////////////////////////////////////////////
 // mount student private routes
 
-orderRouter.use("/students", orderStudentRouter);
+orderRouter.use("/students", orderAuthenticatedUser);
 
 ///////////////////////////////////////////////////////////////
 // export

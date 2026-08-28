@@ -194,7 +194,7 @@ const updateThumbnail = async ({
 const removeCourse = async ({ courseId, instructorId }) => {
     await getAuthorizedInstructorCourse({ courseId, instructorId });
 
-    courseRepository.softDeleteCourse({ courseId });
+    await courseRepository.softDeleteCourse({ courseId });
 };
 
 ///////////////////////////////////////////////////////////////
@@ -224,7 +224,7 @@ const publishCourse = async ({ courseId, instructorId }) => {
         });
     }
 
-    return courseRepository.toggleCourseStatus({
+    return await courseRepository.toggleCourseStatus({
         courseId,
         status: RESOURCE_STATUS.PUBLISHED,
     });
@@ -246,7 +246,7 @@ const saveCourseAsDraft = async ({ courseId, instructorId }) => {
         });
     }
 
-    return courseRepository.toggleCourseStatus({
+    return await courseRepository.toggleCourseStatus({
         courseId,
         status: RESOURCE_STATUS.DRAFT,
     });
@@ -255,27 +255,27 @@ const saveCourseAsDraft = async ({ courseId, instructorId }) => {
 ///////////////////////////////////////////////////////////////
 // fetch instructor courses service
 
-const fetchInstructorCourses = ({ instructorId, page, limit }) => {
+const fetchInstructorCourses = async  ({ instructorId, page, limit }) => {
     const options = {
         instructor: instructorId,
         page: Number(page) || COURSE_QUERY_DEFAULTS.PAGE,
         limit: Number(limit) || COURSE_QUERY_DEFAULTS.LIMIT,
     };
 
-    return courseRepository.findInstructorCourses({ options });
+    return await courseRepository.findInstructorCourses({ options });
 };
 
 ///////////////////////////////////////////////////////////////
 // fetch instructor current course service
 
 const fetchInstructorCourse = async ({ courseId, instructorId }) => {
-    return getAuthorizedInstructorCourse({ courseId, instructorId });
+    return await getAuthorizedInstructorCourse({ courseId, instructorId });
 };
 
 ///////////////////////////////////////////////////////////////
 // fetch courses service
 
-const fetchCourses = ({ queryData }) => {
+const fetchCourses = async ({ queryData }) => {
     const { page, limit, search, sortBy, sortOrder, level, language } =
         queryData;
 
@@ -307,7 +307,7 @@ const fetchCourses = ({ queryData }) => {
         options.search = search;
     }
 
-    return courseRepository.findCourses({ options });
+    return await courseRepository.findCourses({ options });
 };
 
 ///////////////////////////////////////////////////////////////

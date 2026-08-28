@@ -1,6 +1,6 @@
 import express from "express";
 
-import paymentStudentRouter from "./payment.student.routes.js";
+import paymentAuthenticatedUser from "./payment.authenticatedUser.routes.js";
 import paymentWebhookRouter from "./payment.webhook.routes.js";
 
 ///////////////////////////////////////////////////////////////
@@ -16,7 +16,7 @@ paymentRouter.use("/webhooks", paymentWebhookRouter);
 ///////////////////////////////////////////////////////////////
 // mount student payment private routes
 
-paymentRouter.use(paymentStudentRouter);
+paymentRouter.use(paymentAuthenticatedUser);
 
 ///////////////////////////////////////////////////////////////
 // export
