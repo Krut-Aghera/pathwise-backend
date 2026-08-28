@@ -12,12 +12,12 @@ import { instructorAuthEngine } from "../../../middlewares/auth/auth.middleware.
 ///////////////////////////////////////////////////////////////
 // create router
 
-const sectionInstructorRouter = express.Router();
+const sectioninstructorRouter = express.Router();
 
 // GET /api/v1/sections/course/:courseId
 // Retrieves all sections of an instructor-owned course.
 
-sectionInstructorRouter.get(
+sectioninstructorRouter.get(
     "/course/:courseId",
     // sectionRatelimiter.fetchInstructorSectionsRateLimiter,
     ...instructorAuthEngine,
@@ -32,7 +32,7 @@ sectionInstructorRouter.get(
 // GET /api/v1/sections/:sectionId
 // Retrieves a specific instructor-owned section.
 
-sectionInstructorRouter.get(
+sectioninstructorRouter.get(
     "/:sectionId",
     // sectionRatelimiter.fetchInstructorSectionRateLimiter,
     ...instructorAuthEngine,
@@ -47,7 +47,7 @@ sectionInstructorRouter.get(
 // POST /api/v1/sections/course/:courseId
 // Creates a new section inside an instructor-owned course.
 
-sectionInstructorRouter.post(
+sectioninstructorRouter.post(
     "/course/:courseId",
     sectionRatelimiter.createSectionRateLimiter,
     ...instructorAuthEngine,
@@ -63,7 +63,7 @@ sectionInstructorRouter.post(
 // PATCH /api/v1/sections/course/:courseId/reorder
 // Reorders sections of an instructor-owned course.
 
-sectionInstructorRouter.patch(
+sectioninstructorRouter.patch(
     "/course/:courseId/reorder",
     sectionRatelimiter.reorderSectionsRateLimiter,
     ...instructorAuthEngine,
@@ -79,7 +79,7 @@ sectionInstructorRouter.patch(
 // PATCH /api/v1/sections/:sectionId
 // Updates an instructor-owned section.
 
-sectionInstructorRouter.patch(
+sectioninstructorRouter.patch(
     "/:sectionId",
     sectionRatelimiter.updateSectionRateLimiter,
     ...instructorAuthEngine,
@@ -95,7 +95,7 @@ sectionInstructorRouter.patch(
 // PATCH /api/v1/sections/:sectionId/publish
 // Publishes an instructor-owned section.
 
-sectionInstructorRouter.patch(
+sectioninstructorRouter.patch(
     "/:sectionId/publish",
     sectionRatelimiter.publishSectionRateLimiter,
     ...instructorAuthEngine,
@@ -110,7 +110,7 @@ sectionInstructorRouter.patch(
 // PATCH /api/v1/sections/:sectionId/draft
 // Saves an instructor-owned section as draft.
 
-sectionInstructorRouter.patch(
+sectioninstructorRouter.patch(
     "/:sectionId/draft",
     sectionRatelimiter.saveSectionAsDraftRateLimiter,
     ...instructorAuthEngine,
@@ -125,7 +125,7 @@ sectionInstructorRouter.patch(
 // DELETE /api/v1/sections/:sectionId
 // Soft deletes an instructor-owned section.
 
-sectionInstructorRouter.delete(
+sectioninstructorRouter.delete(
     "/:sectionId",
     sectionRatelimiter.removeSectionRateLimiter,
     ...instructorAuthEngine,
@@ -140,4 +140,4 @@ sectionInstructorRouter.delete(
 ///////////////////////////////////////////////////////////////
 // exports
 
-export default sectionInstructorRouter;
+export default sectioninstructorRouter;

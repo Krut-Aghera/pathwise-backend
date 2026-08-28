@@ -1,3 +1,5 @@
+import { env_appVars } from "../../config/env.config.js";
+
 const RATE_LIMITER_OPTIONS = Object.freeze({
     standardHeaders: true,
     legacyHeaders: false,
@@ -24,17 +26,17 @@ const RATE_LIMIT = Object.freeze({
     AUTH: Object.freeze({
         LOGIN: {
             WINDOW_MS: WINDOWS.ONE_MINUTE,
-            LIMIT: 5,
+            LIMIT: env_appVars.NODE_ENV === "test" ? 100 : 5,
         },
 
         REGISTER: {
             WINDOW_MS: WINDOWS.ONE_HOUR,
-            LIMIT: 5,
+            LIMIT: env_appVars.NODE_ENV === "test" ? 100 : 5,
         },
 
         PASSWORD: {
             WINDOW_MS: WINDOWS.ONE_HOUR,
-            LIMIT: 10,
+            LIMIT: env_appVars.NODE_ENV === "test" ? 100 : 10,
         },
     }),
 

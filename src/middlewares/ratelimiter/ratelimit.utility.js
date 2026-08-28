@@ -19,14 +19,14 @@ const rateLimitResponse = (req, res, message) => {
 ///////////////////////////////////////////////////////////////
 // create rate limiter
 
-const createRateLimiter = ({ window, limit, resource, skip }) => {
+const createRateLimiter = ({ window, limit, resource }) => {
     return rateLimit({
         windowMs: window,
         limit,
 
         ...RATE_LIMITER_OPTIONS,
 
-        skip,
+        skip: () => process.env.NODE_ENV === "test",
 
         handler: (req, res) => {
             return rateLimitResponse(
