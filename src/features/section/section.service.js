@@ -1,5 +1,8 @@
 import ApiError from "../../utils/error-handler.utility.js";
-import { getAuthorizedInstructorCourse } from "../course/course.utility.js";
+import {
+    getAuthorizedInstructorCourse,
+    reconcileCoursePublication,
+} from "../course/course.utility.js";
 
 import {
     getAuthorizedInstructorSection,
@@ -9,12 +12,10 @@ import {
 
 import HTTP_STATUS from "../../constants/http.constants.js";
 import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
-import { COURSE_ERROR_MESSAGES } from "../course/course.constants.js";
 import { SECTION_ERROR_MESSAGES } from "./section.constants.js";
 
-import * as courseRepository from "../course/course.repository.js";
-import * as lectureRepository from "../lecture/lecture.repository.js";
 import * as sectionRepository from "./section.repository.js";
+import { hasPublishedLecture } from "../lecture/lecture.utility.js";
 
 ///////////////////////////////////////////////////////////////
 // create section service
@@ -51,12 +52,18 @@ const updateSection = async ({ sectionId, instructorId, sectionData }) => {
 // remove section service
 
 const removeSection = async ({ sectionId, instructorId }) => {
-    await getAuthorizedInstructorSection({
+    const section = await getAuthorizedInstructorSection({
         sectionId,
         instructorId,
     });
 
-    return sectionRepository.removeSection({ sectionId });
+    await sectionRepository.removeSection({
+        sectionId,
+    });
+
+    await reconcileCoursePublication({
+        courseId: section.course._id,
+    });
 };
 
 ///////////////////////////////////////////////////////////////
@@ -98,20 +105,21 @@ const publishSection = async ({ sectionId, instructorId }) => {
         });
     }
 
-    const lectureCount = await lectureRepository.countSectionLectures({
+    const hasAnyPublishedLecture = await hasPublishedLecture({
         sectionId,
     });
 
-    if (lectureCount === 0) {
+    if (!hasAnyPublishedLecture) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: SECTION_ERROR_MESSAGES.SECTION_MUST_CONTAIN_LECTURE,
+            message: SECTION_ERROR_MESSAGES.SECTION_NOT_ELIGIBLE_FOR_PUBLISH,
         });
     }
 
-    return sectionRepository.toggleSectionStatus({
+    return sectionRepository.updateSectionStatus({
         sectionId,
-        status: RESOURCE_STATUS.PUBLISHED,
+        currentStatus: RESOURCE_STATUS.DRAFT,
+        nextStatus: RESOURCE_STATUS.PUBLISHED,
     });
 };
 
@@ -131,17 +139,24 @@ const saveSectionAsDraft = async ({ sectionId, instructorId }) => {
         });
     }
 
-    return sectionRepository.toggleSectionStatus({
+    const updatedSection = await sectionRepository.updateSectionStatus({
         sectionId,
-        status: RESOURCE_STATUS.DRAFT,
+        currentStatus: RESOURCE_STATUS.PUBLISHED,
+        nextStatus: RESOURCE_STATUS.DRAFT,
     });
+
+    await reconcileCoursePublication({
+        courseId: section.course._id,
+    });
+
+    return updatedSection;
 };
 
 ///////////////////////////////////////////////////////////////
 // fetch instructor section service
 
 const fetchInstructorSection = async ({ sectionId, instructorId }) => {
-    return await getAuthorizedInstructorSection({ sectionId, instructorId });
+    return getAuthorizedInstructorSection({ sectionId, instructorId });
 };
 
 ///////////////////////////////////////////////////////////////

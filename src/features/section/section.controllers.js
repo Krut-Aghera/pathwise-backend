@@ -137,7 +137,7 @@ const fetchInstructorSection = async (req, res) => {
     return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
-            message: SECTION_SUCCESS_MESSAGES.SECTIONS_FETCHED,
+            message: SECTION_SUCCESS_MESSAGES.SECTION_FETCHED,
             data: section,
         })
     );

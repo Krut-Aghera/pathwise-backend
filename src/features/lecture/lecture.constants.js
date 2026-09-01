@@ -40,10 +40,10 @@ const LECTURE_ERROR_MESSAGES = {
 
     VIDEO_ALREADY_EXISTS:
         "This lecture already has a video. Remove the existing video before uploading a new one.",
-    VIDEO_REQUIRED_TO_PUBLISH:
-        "A lecture must have a video before it can be published.",
-    CAN_NOT_PUBLISH: "Only draft lectures can be published.",
-    CAN_NOT_SAVE_AS_DRAFT: "Lecture is already in draft.",
+    LECTURE_NOT_ELIGIBLE_FOR_PUBLISH:
+        "Lecture must have an uploaded video before it can be published.",
+    LECTURE_NOT_DRAFT: "Only a draft lecture can be published.",
+    LECTURE_ALREADY_DRAFT: "Lecture is already in draft.",
 };
 
 ///////////////////////////////////////////////////////////////

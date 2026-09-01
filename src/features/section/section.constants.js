@@ -20,12 +20,13 @@ const SECTION_SUCCESS_MESSAGES = Object.freeze({
 
 const SECTION_ERROR_MESSAGES = Object.freeze({
     SECTION_NOT_FOUND: "Section not found.",
-    SECTION_NOT_DRAFT: "Only draft sections can be published.",
     SECTION_ALREADY_DRAFT: "Section is already saved as draft.",
 
     DUPLICATE_SECTION_IDS: "Duplicate section IDs are not allowed.",
-    SECTION_MUST_CONTAIN_LECTURE:
-        "Section must contain at least one lecture before publishing.",
+    SECTION_NOT_DRAFT: "Only a draft section can be published.",
+
+    SECTION_NOT_ELIGIBLE_FOR_PUBLISH:
+        "Section must have at least one published lecture before it can be published.",
 
     INVALID_SECTION_REORDER_PAYLOAD: "Invalid section reorder payload.",
     DUPLICATE_SECTION_ORDERS: "Duplicate section orders are not allowed.",

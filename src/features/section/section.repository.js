@@ -26,21 +26,111 @@ const saveSection = ({ section, validateBeforeSave = false }) => {
 ///////////////////////////////////////////////////////////////
 // remove section
 
-const removeSection = ({ sectionId }) => {
-    return Section.findByIdAndUpdate(
-        {
+const removeSection = async ({ sectionId }) => {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        // Find section
+
+        const section = await Section.findOne({
             _id: sectionId,
             isDeleted: false,
-        },
-        {
-            $set: {
-                isDeleted: true,
-            },
-        },
-        {
-            returnDocument: "after",
+        })
+            .select("_id course order")
+            .session(session)
+            .lean();
+
+        if (!section) {
+            await session.abortTransaction();
+
+            return null;
         }
-    );
+
+        // Soft delete section
+
+        await Section.updateOne(
+            {
+                _id: sectionId,
+                isDeleted: false,
+            },
+            {
+                $set: {
+                    isDeleted: true,
+                    status: RESOURCE_STATUS.DRAFT,
+                },
+            },
+            {
+                session,
+            }
+        );
+
+        // Find remaining sections
+
+        const remainingSections = await Section.find({
+            course: section.course,
+            isDeleted: false,
+        })
+            .select("_id order")
+            .sort({
+                order: 1,
+            })
+            .session(session)
+            .lean();
+
+        // Phase 1: Move remaining sections to temporary orders
+
+        await Section.bulkWrite(
+            remainingSections.map(({ _id, order }) => ({
+                updateOne: {
+                    filter: {
+                        _id,
+                    },
+                    update: {
+                        $set: {
+                            order: order + REORDER_TEMP_OFFSET,
+                        },
+                    },
+                },
+            })),
+            {
+                session,
+            }
+        );
+
+        // Phase 2: Assign normalized orders
+
+        await Section.bulkWrite(
+            remainingSections.map(({ _id }, index) => ({
+                updateOne: {
+                    filter: {
+                        _id,
+                    },
+                    update: {
+                        $set: {
+                            order: index + 1,
+                        },
+                    },
+                },
+            })),
+            {
+                session,
+            }
+        );
+
+        // Commit
+
+        await session.commitTransaction();
+
+        return section;
+    } catch (error) {
+        await session.abortTransaction();
+
+        throw error;
+    } finally {
+        await session.endSession();
+    }
 };
 
 ///////////////////////////////////////////////////////////////
@@ -92,17 +182,18 @@ const reorderSections = async ({ sections }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// toggle section status
+// update section status
 
-const toggleSectionStatus = ({ sectionId, status }) => {
-    return Section.findByIdAndUpdate(
+const updateSectionStatus = ({ sectionId, currentStatus, nextStatus }) => {
+    return Section.findOneAndUpdate(
         {
             _id: sectionId,
+            status: currentStatus,
             isDeleted: false,
         },
         {
             $set: {
-                status,
+                status: nextStatus,
             },
         },
         {
@@ -112,21 +203,21 @@ const toggleSectionStatus = ({ sectionId, status }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// find section by title inside course
+// find section by course
 
-const findSectionByTitle = ({ courseId, title }) => {
-    return Section.findOne({
+const findSectionByCourse = ({ courseId }) => {
+    return Section.find({
         course: courseId,
-        title,
+        status: RESOURCE_STATUS.PUBLISHED,
         isDeleted: false,
     });
 };
 
 ///////////////////////////////////////////////////////////////
-// find section by course
+// check if course has a published section
 
-const findSectionByCourse = ({ courseId }) => {
-    return Section.find({
+const existsPublishedSectionByCourse = ({ courseId }) => {
+    return Section.exists({
         course: courseId,
         status: RESOURCE_STATUS.PUBLISHED,
         isDeleted: false,
@@ -198,11 +289,11 @@ export {
     saveSection,
     removeSection,
     reorderSections,
-    toggleSectionStatus,
-    findSectionByTitle,
+    updateSectionStatus,
     findLastSectionOrder,
     findInstructorSection,
     findCourseSections,
+    existsPublishedSectionByCourse,
     findCourseSectionIds,
     findSectionByCourse,
 };

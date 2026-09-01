@@ -25,7 +25,9 @@ const COURSE_ERROR_MESSAGES = Object.freeze({
     COURSE_TITLE_ALREADY_EXISTS: "A course with this title already exists.",
 
     COURSE_ALREADY_DRAFT: "Course is already saved as draft.",
-    COURSE_NOT_ELIGIBLE_FOR_PUBLISH: "Course is not eligible for publishing.",
+    COURSE_NOT_DRAFT: "Only a draft course can be published.",
+    COURSE_NOT_ELIGIBLE_FOR_PUBLISH:
+        "Course must have at least one published section before it can be published.",
 
     THUMBNAIL_REQUIRED: "Course thumbnail is required.",
 });
@@ -84,7 +86,7 @@ const SORT_ORDERS_ARRAY = Object.values(SORT_ORDERS);
 // course details constants
 
 const COURSE_LANGUAGES = Object.freeze({
-    ENGLISH: "English", 
+    ENGLISH: "English",
     HINDI: "Hindi",
 });
 

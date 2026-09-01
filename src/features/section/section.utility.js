@@ -4,6 +4,8 @@ import HTTP_STATUS from "../../constants/http.constants.js";
 import { SECTION_ERROR_MESSAGES } from "./section.constants.js";
 
 import * as sectionRepository from "./section.repository.js";
+import * as lectureRepository from "../lecture/lecture.repository.js";
+import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 
 //////////////////////////////////////////////////////////////
 // get authorized instructor section
@@ -22,6 +24,47 @@ const getAuthorizedInstructorSection = async ({ sectionId, instructorId }) => {
     }
 
     return section;
+};
+
+///////////////////////////////////////////////////////////////
+// check if course has a published section
+
+const hasPublishedSection = async ({ courseId }) => {
+    return Boolean(
+        await sectionRepository.existsPublishedSectionByCourse({
+            courseId,
+        })
+    );
+};
+
+///////////////////////////////////////////////////////////////
+// reconcile section publication
+//
+// A published section must have at least one
+// published, non-deleted lecture.
+//
+// If no published lecture remains, the section is
+// automatically moved from PUBLISHED to DRAFT.
+//
+// Returns:
+// - updated section when status changes
+// - null when section remains published
+
+const reconcileSectionPublication = async ({ sectionId }) => {
+    const hasPublishedLecture =
+        await lectureRepository.existsPublishedLectureBySection({
+            sectionId,
+        });
+
+    if (hasPublishedLecture) {
+        return null;
+    }
+
+    return sectionRepository.updateSectionStatus({
+        sectionId,
+        currentStatus: RESOURCE_STATUS.PUBLISHED,
+        nextStatus: RESOURCE_STATUS.DRAFT,
+    });
 };
 
 ///////////////////////////////////////////////////////////////
@@ -95,6 +138,8 @@ const validateCourseSectionReorder = ({ sections, courseSections }) => {
 
 export {
     getAuthorizedInstructorSection,
+    hasPublishedSection,
+    reconcileSectionPublication,
     validateSectionReorderPayload,
     validateCourseSectionReorder,
 };

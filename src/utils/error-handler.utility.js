@@ -12,7 +12,7 @@ class ApiError extends Error {
         this.name = this.constructor.name;
         this.success = false;
         this.statusCode = statusCode;
-        this.code = code
+        this.code = code;
         this.errors = errors;
         this.details = details;
         this.isOperational = isOperational;

@@ -4,6 +4,7 @@ import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 
 import { COURSE_LIST_SELECT_FIELDS, SORT_ORDERS } from "./course.constants.js";
 import Course from "./course.model.js";
+import escapeRegex from "../../utils/escape-regex.utility.js";
 
 ///////////////////////////////////////////////////////////////
 // create course
@@ -25,7 +26,7 @@ const saveCourse = ({ course, validateBeforeSave = false }) => {
 // soft delete course
 
 const softDeleteCourse = ({ courseId }) => {
-    return Course.findByIdAndUpdate(
+    return Course.findOneAndUpdate(
         {
             _id: courseId,
             isDeleted: false,
@@ -43,17 +44,45 @@ const softDeleteCourse = ({ courseId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// toggle course status
+// update course status
 
-const toggleCourseStatus = ({ courseId, status }) => {
-    return Course.findByIdAndUpdate(
+const updateCourseStatus = ({
+    courseId,
+    instructorId,
+    currentStatus,
+    nextStatus,
+}) => {
+    return Course.findOneAndUpdate(
         {
             _id: courseId,
+            instructor: instructorId,
+            status: currentStatus,
             isDeleted: false,
         },
         {
             $set: {
-                status,
+                status: nextStatus,
+            },
+        },
+        {
+            returnDocument: "after",
+        }
+    );
+};
+
+///////////////////////////////////////////////////////////////
+// update published course to draft
+
+const updatePublishedCourseToDraft = ({ courseId }) => {
+    return Course.findOneAndUpdate(
+        {
+            _id: courseId,
+            status: RESOURCE_STATUS.PUBLISHED,
+            isDeleted: false,
+        },
+        {
+            $set: {
+                status: RESOURCE_STATUS.DRAFT,
             },
         },
         {
@@ -526,129 +555,18 @@ const aggregateCurrentCourseData = ({ courseId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// aggregate course publish validation data
-
-const aggregateCoursePublishValidationData = async ({
-    courseId,
-    instructorId,
-}) => {
-    return Course.aggregate([
-        // Find the course and verify it belongs to the instructor
-        {
-            $match: {
-                _id: new mongoose.Types.ObjectId(courseId),
-                instructor: new mongoose.Types.ObjectId(instructorId),
-                isDeleted: false,
-            },
-        },
-
-        // Keep only the fields required for publish validation
-        {
-            $project: {
-                _id: 1,
-                status: 1,
-            },
-        },
-
-        // Fetch all sections of this course
-        {
-            $lookup: {
-                from: "sections",
-
-                // Store current course id for use inside the lookup pipeline
-                let: {
-                    courseId: "$_id",
-                },
-
-                pipeline: [
-                    // Find sections that belong to this course
-                    {
-                        $match: {
-                            $expr: {
-                                $eq: ["$course", "$$courseId"],
-                            },
-                        },
-                    },
-
-                    // Return sections in the correct order
-                    {
-                        $sort: {
-                            order: 1,
-                        },
-                    },
-
-                    // Keep only required section fields
-                    {
-                        $project: {
-                            _id: 1,
-                            title: 1,
-                        },
-                    },
-
-                    // Fetch lectures for each section
-                    {
-                        $lookup: {
-                            from: "lectures",
-
-                            // Store current section id for use inside the lookup pipeline
-                            let: {
-                                sectionId: "$_id",
-                            },
-
-                            pipeline: [
-                                // Find lectures that belong to this section
-                                {
-                                    $match: {
-                                        $expr: {
-                                            $eq: ["$section", "$$sectionId"],
-                                        },
-                                    },
-                                },
-
-                                // Return lectures in the correct order
-                                {
-                                    $sort: {
-                                        order: 1,
-                                    },
-                                },
-
-                                // Keep only fields needed for publish validation
-                                {
-                                    $project: {
-                                        title: 1,
-                                        video: 1,
-                                        duration: 1,
-                                        uploadStatus: 1,
-                                    },
-                                },
-                            ],
-
-                            // Attach lectures to the current section
-                            as: "lectures",
-                        },
-                    },
-                ],
-
-                // Attach sections to the course
-                as: "sections",
-            },
-        },
-    ]);
-};
-
-///////////////////////////////////////////////////////////////
 // exports
 
 export {
     createCourse,
     saveCourse,
     softDeleteCourse,
-    toggleCourseStatus,
+    updateCourseStatus,
+    updatePublishedCourseToDraft,
     findCourses,
     findPublishedCourse,
     findCourseBySlug,
     findInstructorCourses,
     findInstructorCourseById,
     aggregateCurrentCourseData,
-    aggregateCoursePublishValidationData,
 };

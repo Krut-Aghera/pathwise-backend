@@ -226,8 +226,7 @@ const rotateTokens = async ({ refreshToken }) => {
 // request password reset service
 
 const requestPasswordReset = async ({ email }) => {
-    const user = await userRepository
-        .findUserByEmail(email)
+    const user = await userRepository.findUserByEmail(email);
 
     if (!user || !user.isActive) {
         return;
@@ -258,8 +257,7 @@ const requestPasswordReset = async ({ email }) => {
         throw new ApiError({
             statusCode: HTTP_STATUS.SERVICE_UNAVAILABLE,
             message: "Email service is unavailable",
-        })
-
+        });
     }
 };
 

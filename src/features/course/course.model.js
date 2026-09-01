@@ -44,7 +44,6 @@ const courseSchema = new mongoose.Schema(
             required: [true, "Slug is required"],
             trim: true,
             lowercase: true,
-            unique: true,
         },
 
         description: {
@@ -153,6 +152,18 @@ const courseSchema = new mongoose.Schema(
 
 ///////////////////////////////////////////////////////////////
 // compound indexes
+
+// unique slug for active courses only
+
+courseSchema.index(
+    { slug: 1 },
+    {
+        unique: true,
+        partialFilterExpression: {
+            isDeleted: false,
+        },
+    }
+);
 
 // Instructor course listing
 courseSchema.index({

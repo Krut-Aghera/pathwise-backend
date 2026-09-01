@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import Lecture from "../lecture/lecture.model.js";
+import Lecture from "./lecture.model.js";
 
 import {
     REORDER_TEMP_OFFSET,
@@ -22,16 +22,6 @@ const createLecture = ({ lecturePayload }) => {
 const saveLecture = ({ lecture, validateBeforeSave = false }) => {
     return lecture.save({
         validateBeforeSave,
-    });
-};
-
-///////////////////////////////////////////////////////////////
-// count section lectures repository
-
-const countSectionLectures = ({ sectionId }) => {
-    return Lecture.countDocuments({
-        section: sectionId,
-        isDeleted: false,
     });
 };
 
@@ -88,6 +78,80 @@ const reorderLectures = async ({ lectures }) => {
     } finally {
         await session.endSession();
     }
+};
+
+///////////////////////////////////////////////////////////////
+// check if section has a published lecture
+
+const existsPublishedLectureBySection = ({ sectionId }) => {
+    return Lecture.exists({
+        section: sectionId,
+        status: RESOURCE_STATUS.PUBLISHED,
+        isDeleted: false,
+    });
+};
+
+///////////////////////////////////////////////////////////////
+// update lecture status
+
+const updateLectureStatus = ({ lectureId, currentStatus, nextStatus }) => {
+    return Lecture.findOneAndUpdate(
+        {
+            _id: lectureId,
+            status: currentStatus,
+            isDeleted: false,
+        },
+        {
+            $set: {
+                status: nextStatus,
+            },
+        },
+        {
+            returnDocument: "after",
+        }
+    );
+};
+
+///////////////////////////////////////////////////////////////
+// remove video from lecture and make lecture draft
+
+const removeLectureVideoAndDraft = ({ lectureId }) => {
+    return Lecture.findOneAndUpdate(
+        {
+            _id: lectureId,
+            isDeleted: false,
+        },
+        {
+            $set: {
+                video: null,
+                status: RESOURCE_STATUS.DRAFT,
+            },
+        },
+        {
+            returnDocument: "after",
+        }
+    );
+};
+
+///////////////////////////////////////////////////////////////
+// soft delete lecture
+
+const softDeleteLecture = ({ lectureId }) => {
+    return Lecture.findOneAndUpdate(
+        {
+            _id: lectureId,
+            isDeleted: false,
+        },
+        {
+            $set: {
+                isDeleted: true,
+                status: RESOURCE_STATUS.DRAFT,
+            },
+        },
+        {
+            returnDocument: "after",
+        }
+    );
 };
 
 ///////////////////////////////////////////////////////////////
@@ -196,8 +260,11 @@ const findPublishedLecturesBySections = ({ sectionIds }) => {
 export {
     createLecture,
     saveLecture,
-    countSectionLectures,
     reorderLectures,
+    existsPublishedLectureBySection,
+    updateLectureStatus,
+    softDeleteLecture,
+    removeLectureVideoAndDraft,
     findSectionLectureIds,
     findLastLectureOrder,
     findInstructorLecture,

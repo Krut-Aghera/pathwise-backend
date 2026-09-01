@@ -2,10 +2,7 @@ import logger from "../../utils/pino-logger.utility.js";
 import ApiError from "../../utils/error-handler.utility.js";
 import generateSlug from "../../utils/slug-generator.utility.js";
 
-import {
-    getAuthorizedInstructorCourse,
-    validateCoursePublishEligibility,
-} from "./course.utility.js";
+import { getAuthorizedInstructorCourse } from "./course.utility.js";
 
 import {
     destroyMedia,
@@ -24,6 +21,7 @@ import {
 } from "../../services/media/media.constants.js";
 
 import * as courseRepository from "./course.repository.js";
+import { hasPublishedSection } from "../section/section.utility.js";
 
 ///////////////////////////////////////////////////////////////
 // create course service
@@ -201,32 +199,34 @@ const removeCourse = async ({ courseId, instructorId }) => {
 // publish course service
 
 const publishCourse = async ({ courseId, instructorId }) => {
-    const [course] =
-        await courseRepository.aggregateCoursePublishValidationData({
-            courseId,
-            instructorId,
-        });
+    const course = await getAuthorizedInstructorCourse({
+        courseId,
+        instructorId,
+    });
 
-    if (!course) {
+    if (course.status !== RESOURCE_STATUS.DRAFT) {
         throw new ApiError({
-            statusCode: HTTP_STATUS.NOT_FOUND,
-            message: COURSE_ERROR_MESSAGES.COURSE_NOT_FOUND,
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: COURSE_ERROR_MESSAGES.COURSE_NOT_DRAFT,
         });
     }
 
-    const { isValid, errors } = validateCoursePublishEligibility(course);
+    const hasAnyPublishedSection = await hasPublishedSection({
+        courseId,
+    });
 
-    if (!isValid && errors.length > 0) {
+    if (!hasAnyPublishedSection) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
             message: COURSE_ERROR_MESSAGES.COURSE_NOT_ELIGIBLE_FOR_PUBLISH,
-            errors,
         });
     }
 
-    return await courseRepository.toggleCourseStatus({
+    return await courseRepository.updateCourseStatus({
         courseId,
-        status: RESOURCE_STATUS.PUBLISHED,
+        instructorId,
+        currentStatus: RESOURCE_STATUS.DRAFT,
+        nextStatus: RESOURCE_STATUS.PUBLISHED,
     });
 };
 
@@ -246,16 +246,18 @@ const saveCourseAsDraft = async ({ courseId, instructorId }) => {
         });
     }
 
-    return await courseRepository.toggleCourseStatus({
+    return await courseRepository.updateCourseStatus({
         courseId,
-        status: RESOURCE_STATUS.DRAFT,
+        instructorId,
+        currentStatus: RESOURCE_STATUS.PUBLISHED,
+        nextStatus: RESOURCE_STATUS.DRAFT,
     });
 };
 
 ///////////////////////////////////////////////////////////////
 // fetch instructor courses service
 
-const fetchInstructorCourses = async  ({ instructorId, page, limit }) => {
+const fetchInstructorCourses = async ({ instructorId, page, limit }) => {
     const options = {
         instructor: instructorId,
         page: Number(page) || COURSE_QUERY_DEFAULTS.PAGE,

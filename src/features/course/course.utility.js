@@ -1,7 +1,7 @@
 import ApiError from "../../utils/error-handler.utility.js";
-import * as courseRepository from "../course/course.repository.js"
+import * as courseRepository from "../course/course.repository.js";
+import * as sectionRepository from "../section/section.repository.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
-import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 
 import { COURSE_ERROR_MESSAGES } from "./course.constants.js";
 
@@ -25,52 +25,34 @@ const getAuthorizedInstructorCourse = async ({ courseId, instructorId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// validate eligibilty for course publish
+// reconcile course publication
+//
+// A published course must have at least one
+// published, non-deleted section.
+//
+// If no published section remains, the course is
+// automatically moved from PUBLISHED to DRAFT.
+//
+// Returns:
+// - updated course when status changes
+// - null when course remains published
 
-const validateCoursePublishEligibility = (course) => {
-    const errors = [];
+const reconcileCoursePublication = async ({ courseId }) => {
+    const hasPublishedSection =
+        await sectionRepository.existsPublishedSectionByCourse({
+            courseId,
+        });
 
-    if (course.status !== RESOURCE_STATUS.DRAFT) {
-        errors.push("Only draft courses can be published.");
+    if (hasPublishedSection) {
+        return null;
     }
 
-    if (!course.sections.length) {
-        errors.push("Course must contain at least one section.");
-    }
-
-    for (const currentSection of course.sections) {
-        if (!currentSection.lectures.length) {
-            errors.push(`Section "${currentSection.title}" has no lectures.`);
-
-            continue;
-        }
-
-        for (const currentLecture of currentSection.lectures) {
-            if (
-                !currentLecture.video ||
-                !currentLecture.video.url ||
-                !currentLecture.video.publicId
-            ) {
-                errors.push(
-                    `Lecture "${currentLecture.title}" has no uploaded video.`
-                );
-            }
-
-            if (currentLecture.status !== RESOURCE_STATUS.PUBLISHED) {
-                errors.push(
-                    `Lecture "${currentLecture.title}" is not published yet.`
-                );
-            }
-        }
-    }
-
-    return {
-        isValid: errors.length === 0,
-        errors,
-    };
+    return courseRepository.updatePublishedCourseToDraft({
+        courseId,
+    });
 };
 
 ///////////////////////////////////////////////////////////////
 // exports
 
-export { getAuthorizedInstructorCourse, validateCoursePublishEligibility };
+export { getAuthorizedInstructorCourse, reconcileCoursePublication };

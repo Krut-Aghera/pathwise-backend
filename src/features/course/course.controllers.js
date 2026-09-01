@@ -178,7 +178,7 @@ const fetchInstructorCourses = async (req, res) => {
         limit,
     });
 
-    res.status(HTTP_STATUS.OK).json(
+    return res.status(HTTP_STATUS.OK).json(
         new ApiResponse({
             statusCode: HTTP_STATUS.OK,
             message: COURSE_SUCCESS_MESSAGES.INSTRUCTOR_COURSES_FETCHED,

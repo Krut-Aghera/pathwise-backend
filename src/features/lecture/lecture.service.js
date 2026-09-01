@@ -1,7 +1,10 @@
 import ApiError from "../../utils/error-handler.utility.js";
 import logger from "../../utils/pino-logger.utility.js";
 
-import { getAuthorizedInstructorSection } from "../section/section.utility.js";
+import {
+    getAuthorizedInstructorSection,
+    reconcileSectionPublication,
+} from "../section/section.utility.js";
 import {
     getAuthorizedInstructorLecture,
     getPublishedStudentLecture,
@@ -24,6 +27,7 @@ import {
 
 import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
+import { reconcileCoursePublication } from "../course/course.utility.js";
 
 ///////////////////////////////////////////////////////////////
 // create lecture service
@@ -56,7 +60,6 @@ const updateLecture = async ({ instructorId, lectureId, lectureData }) => {
     const lecture = await getAuthorizedInstructorLecture({
         lectureId,
         instructorId,
-        includeSection: true,
     });
 
     Object.assign(lecture, lectureData);
@@ -76,11 +79,19 @@ const removeLecture = async ({ instructorId, lectureId }) => {
         instructorId,
     });
 
-    lecture.isDeleted = true;
-
-    return lectureRepository.saveLecture({
-        lecture,
+    await lectureRepository.softDeleteLecture({
+        lectureId,
     });
+
+    const updatedSection = await reconcileSectionPublication({
+        sectionId: lecture.section._id,
+    });
+
+    if (updatedSection) {
+        await reconcileCoursePublication({
+            courseId: lecture.section.course._id,
+        });
+    }
 };
 
 ///////////////////////////////////////////////////////////////
@@ -199,18 +210,26 @@ const removeLectureVideo = async ({ instructorId, lectureId }) => {
         resourceType: MEDIA_RESOURCE_TYPES.VIDEO,
     });
 
-    lecture.video = null;
+    const updatedLecture = await lectureRepository.removeLectureVideoAndDraft({
+        lectureId,
+    });
 
-    lecture.status = RESOURCE_STATUS.DRAFT;
+    const updatedSection = await reconcileSectionPublication({
+        sectionId: lecture.section._id,
+    });
 
-    await lectureRepository.saveLecture({ lecture });
+    if (updatedSection) {
+        await reconcileCoursePublication({
+            courseId: lecture.section.course._id,
+        });
+    }
 
     logger.info("Lecture video removed successfully.", {
         lectureId: lecture._id,
         instructorId,
     });
 
-    return lecture;
+    return updatedLecture;
 };
 
 ///////////////////////////////////////////////////////////////
@@ -222,6 +241,13 @@ const publishLecture = async ({ instructorId, lectureId }) => {
         lectureId,
     });
 
+    if (lecture.status !== RESOURCE_STATUS.DRAFT) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: LECTURE_ERROR_MESSAGES.LECTURE_NOT_DRAFT,
+        });
+    }
+
     if (
         !lecture.video?.url ||
         !lecture.video?.publicId ||
@@ -229,20 +255,15 @@ const publishLecture = async ({ instructorId, lectureId }) => {
     ) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: LECTURE_ERROR_MESSAGES.VIDEO_REQUIRED_TO_PUBLISH,
+            message: LECTURE_ERROR_MESSAGES.LECTURE_NOT_ELIGIBLE_FOR_PUBLISH,
         });
     }
 
-    if (lecture.status !== RESOURCE_STATUS.DRAFT) {
-        throw new ApiError({
-            statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: LECTURE_ERROR_MESSAGES.CAN_NOT_PUBLISH,
-        });
-    }
-
-    lecture.status = RESOURCE_STATUS.PUBLISHED;
-
-    return lectureRepository.saveLecture({ lecture });
+    return lectureRepository.updateLectureStatus({
+        lectureId,
+        currentStatus: RESOURCE_STATUS.DRAFT,
+        nextStatus: RESOURCE_STATUS.PUBLISHED,
+    });
 };
 
 ///////////////////////////////////////////////////////////////
@@ -257,20 +278,34 @@ const saveLectureAsDraft = async ({ instructorId, lectureId }) => {
     if (lecture.status === RESOURCE_STATUS.DRAFT) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: LECTURE_ERROR_MESSAGES.CAN_NOT_SAVE_AS_DRAFT,
+            message: LECTURE_ERROR_MESSAGES.LECTURE_ALREADY_DRAFT,
         });
     }
 
-    lecture.status = RESOURCE_STATUS.DRAFT;
+    const updatedLecture = await lectureRepository.updateLectureStatus({
+        lectureId,
+        currentStatus: RESOURCE_STATUS.PUBLISHED,
+        nextStatus: RESOURCE_STATUS.DRAFT,
+    });
 
-    return lectureRepository.saveLecture({ lecture });
+    const updatedSection = await reconcileSectionPublication({
+        sectionId: lecture.section._id,
+    });
+
+    if (updatedSection) {
+        await reconcileCoursePublication({
+            courseId: lecture.section.course._id,
+        });
+    }
+
+    return updatedLecture;
 };
 
 ///////////////////////////////////////////////////////////////
 // fetch instructor lecture service
 
 const fetchInstructorLecture = async ({ instructorId, lectureId }) => {
-    return await getAuthorizedInstructorLecture({ instructorId, lectureId });
+    return getAuthorizedInstructorLecture({ instructorId, lectureId });
 };
 
 ///////////////////////////////////////////////////////////////

@@ -90,12 +90,16 @@ sectionSchema.index({
 sectionSchema.index(
     {
         course: 1,
-        order: 1,
+        title: 1,
     },
     {
         unique: true,
         partialFilterExpression: {
             isDeleted: false,
+        },
+        collation: {
+            locale: "en",
+            strength: 2,
         },
     }
 );

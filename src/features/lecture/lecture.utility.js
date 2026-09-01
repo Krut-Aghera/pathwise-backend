@@ -1,8 +1,5 @@
-import mongoose from "mongoose";
-
 import ApiError from "../../utils/error-handler.utility.js";
 
-import Lecture from "./lecture.model.js";
 import * as lectureRepository from "./lecture.repository.js";
 
 import { LECTURE_ERROR_MESSAGES } from "./lecture.constants.js";
@@ -25,6 +22,17 @@ const getAuthorizedInstructorLecture = async ({ lectureId, instructorId }) => {
     }
 
     return lecture;
+};
+
+///////////////////////////////////////////////////////////////
+// check if section has a published lecture
+
+const hasPublishedLecture = async ({ sectionId }) => {
+    return Boolean(
+        await lectureRepository.existsPublishedLectureBySection({
+            sectionId,
+        })
+    );
 };
 
 //////////////////////////////////////////////////////////////
@@ -116,6 +124,7 @@ const validateSectionLectureReorder = ({ lectures, sectionLectures }) => {
 
 export {
     getAuthorizedInstructorLecture,
+    hasPublishedLecture,
     getPublishedStudentLecture,
     validateLectureReorderPayload,
     validateSectionLectureReorder,
