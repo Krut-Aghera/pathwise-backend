@@ -68,7 +68,7 @@ const COURSE_QUERY_DEFAULTS = Object.freeze({
 });
 
 const COURSE_LIST_SELECT_FIELDS =
-    "title subtitle thumbnail price level language instructor slug createdAt";
+    "title subtitle thumbnail price level status language instructor slug createdAt";
 
 ///////////////////////////////////////////////////////////////
 // course sorting constants

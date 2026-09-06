@@ -79,7 +79,7 @@ const removeLecture = async ({ instructorId, lectureId }) => {
         instructorId,
     });
 
-    await lectureRepository.softDeleteLecture({
+    await lectureRepository.removeLecture({
         lectureId,
     });
 

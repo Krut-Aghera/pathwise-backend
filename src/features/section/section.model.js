@@ -55,7 +55,7 @@ const sectionSchema = new mongoose.Schema(
 );
 
 ///////////////////////////////////////////////////////////////
-// indexes
+// compound indexes
 
 // Fetch all sections of a course
 // Used by:
@@ -80,12 +80,13 @@ sectionSchema.index({
     order: 1,
 });
 
-// Prevent duplicate section order inside same course
+// Prevent duplicate section titles inside the same course.
 //
-// Example:
-// Course A
-// Section 1 -> order 1
-// Another section -> order 1 ❌
+// Case-insensitive:
+// "Introduction" and "introduction" are considered duplicates.
+//
+// Soft-deleted sections are ignored, allowing the title
+// to be reused after deletion.
 
 sectionSchema.index(
     {
@@ -100,29 +101,6 @@ sectionSchema.index(
         collation: {
             locale: "en",
             strength: 2,
-        },
-    }
-);
-
-// Prevent duplicate section title inside same course
-//
-// Example:
-// Course A
-// Introduction
-// Introduction ❌
-//
-// Course B
-// Introduction ✅
-
-sectionSchema.index(
-    {
-        course: 1,
-        title: 1,
-    },
-    {
-        unique: true,
-        partialFilterExpression: {
-            isDeleted: false,
         },
     }
 );

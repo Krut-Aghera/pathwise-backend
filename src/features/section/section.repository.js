@@ -252,7 +252,7 @@ const findInstructorSection = ({ sectionId, instructorId }) => {
             instructor: instructorId,
             isDeleted: false,
         },
-        select: "_id instructor",
+        select: "_id instructor title",
     });
 };
 

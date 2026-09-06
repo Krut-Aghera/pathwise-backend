@@ -134,24 +134,113 @@ const removeLectureVideoAndDraft = ({ lectureId }) => {
 };
 
 ///////////////////////////////////////////////////////////////
-// soft delete lecture
+// remove lecture
 
-const softDeleteLecture = ({ lectureId }) => {
-    return Lecture.findOneAndUpdate(
-        {
+const removeLecture = async ({ lectureId }) => {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        // Find lecture
+
+        const lecture = await Lecture.findOne({
             _id: lectureId,
             isDeleted: false,
-        },
-        {
-            $set: {
-                isDeleted: true,
-                status: RESOURCE_STATUS.DRAFT,
-            },
-        },
-        {
-            returnDocument: "after",
+        })
+            .select("_id section order")
+            .session(session)
+            .lean();
+
+        if (!lecture) {
+            await session.abortTransaction();
+
+            return null;
         }
-    );
+
+        // Soft delete lecture
+
+        await Lecture.updateOne(
+            {
+                _id: lectureId,
+                isDeleted: false,
+            },
+            {
+                $set: {
+                    isDeleted: true,
+                    status: RESOURCE_STATUS.DRAFT,
+                },
+            },
+            {
+                session,
+            }
+        );
+
+        // Find remaining lectures
+
+        const remainingLectures = await Lecture.find({
+            section: lecture.section,
+            isDeleted: false,
+        })
+            .select("_id order")
+            .sort({
+                order: 1,
+            })
+            .session(session)
+            .lean();
+
+        // Phase 1: Move remaining lectures to temporary orders
+
+        await Lecture.bulkWrite(
+            remainingLectures.map(({ _id, order }) => ({
+                updateOne: {
+                    filter: {
+                        _id,
+                    },
+                    update: {
+                        $set: {
+                            order: order + REORDER_TEMP_OFFSET,
+                        },
+                    },
+                },
+            })),
+            {
+                session,
+            }
+        );
+
+        // Phase 2: Assign normalized orders
+
+        await Lecture.bulkWrite(
+            remainingLectures.map(({ _id }, index) => ({
+                updateOne: {
+                    filter: {
+                        _id,
+                    },
+                    update: {
+                        $set: {
+                            order: index + 1,
+                        },
+                    },
+                },
+            })),
+            {
+                session,
+            }
+        );
+
+        // Commit
+
+        await session.commitTransaction();
+
+        return lecture;
+    } catch (error) {
+        await session.abortTransaction();
+
+        throw error;
+    } finally {
+        await session.endSession();
+    }
 };
 
 ///////////////////////////////////////////////////////////////
@@ -193,14 +282,14 @@ const findInstructorLecture = ({ lectureId, instructorId }) => {
         match: {
             isDeleted: false,
         },
-        select: "_id course",
+        select: "_id course title",
         populate: {
             path: "course",
             match: {
                 instructor: instructorId,
                 isDeleted: false,
             },
-            select: "_id instructor",
+            select: "_id instructor title",
         },
     });
 };
@@ -263,7 +352,7 @@ export {
     reorderLectures,
     existsPublishedLectureBySection,
     updateLectureStatus,
-    softDeleteLecture,
+    removeLecture,
     removeLectureVideoAndDraft,
     findSectionLectureIds,
     findLastLectureOrder,

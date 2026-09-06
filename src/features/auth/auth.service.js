@@ -195,7 +195,6 @@ const rotateTokens = async ({ refreshToken }) => {
         refreshToken,
         env_jwtVars.JWT_REFRESH_SECRET
     );
-
     const user = await userRepository
         .findUserById(userId)
         .select("+refreshToken");
@@ -212,6 +211,8 @@ const rotateTokens = async ({ refreshToken }) => {
         .update(refreshToken)
         .digest("hex");
 
+    // console.log("hashedRefreshToken", hashedRefreshToken);
+    // console.log("user.refreshToken", user.refreshToken);
     if (user.refreshToken !== hashedRefreshToken) {
         throw new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
