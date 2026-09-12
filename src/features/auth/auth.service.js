@@ -9,7 +9,10 @@ import {
     getExpiry,
 } from "../../utils/token-generator.utility.js";
 
-import { getEmailVerificationUrl } from "../../services/email/email.utility.js";
+import {
+    getEmailVerificationUrl,
+    createPasswordResetUrl,
+} from "../../services/email/email.utility.js";
 
 import HTTP_STATUS from "../../constants/http.constants.js";
 import { env_jwtVars } from "../../config/env.config.js";
@@ -125,25 +128,7 @@ const confirmEmailVerification = async ({ token }) => {
     user.emailVerificationToken = null;
     user.emailVerificationExpiry = null;
 
-    await userRepository.saveUser(user);
-
-    try {
-        await authEmail.sendEmailVerificationConfirmEmail({
-            email: user.email,
-            username: user.username,
-            // actionUrl: `${env_appVars.CLIENT_URL}/dashboard`,
-        });
-    } catch (error) {
-        logger.warn(
-            {
-                err: error,
-                userId: user._id,
-            },
-            "Failed to send email verification confirmation"
-        );
-    }
-
-    return user;
+    return await userRepository.saveUser(user);
 };
 
 ///////////////////////////////////////////////////////////////
@@ -211,8 +196,6 @@ const rotateTokens = async ({ refreshToken }) => {
         .update(refreshToken)
         .digest("hex");
 
-    // console.log("hashedRefreshToken", hashedRefreshToken);
-    // console.log("user.refreshToken", user.refreshToken);
     if (user.refreshToken !== hashedRefreshToken) {
         throw new ApiError({
             statusCode: HTTP_STATUS.UNAUTHORIZED,
@@ -246,8 +229,7 @@ const requestPasswordReset = async ({ email }) => {
         await authEmail.sendPasswordResetRequestEmail({
             email: user.email,
             username: user.username,
-            // actionUrl: createPasswordResetUrl(token),
-            actionUrl: `http://localhost:8000/api/v1/auth/reset-password/${token}`,
+            actionUrl: createPasswordResetUrl(token),
         });
     } catch (error) {
         user.resetPasswordToken = null;
@@ -294,23 +276,7 @@ const resetPassword = async ({ token, newPassword }) => {
     user.resetPasswordExpiry = null;
     user.refreshToken = null;
 
-    await userRepository.saveUser(user, true);
-
-    try {
-        await authEmail.sendPasswordResetConfirmEmail({
-            email: user.email,
-            username: user.username,
-            //TODO add login page action url
-        });
-    } catch (error) {
-        logger.warn(
-            {
-                err: error,
-                userId: user._id,
-            },
-            "Failed to send password reset success email."
-        );
-    }
+    return await userRepository.saveUser(user, true);
 };
 
 ///////////////////////////////////////////////////////////////
@@ -347,23 +313,7 @@ const changePassword = async ({ userId, currentPassword, newPassword }) => {
     user.password = newPassword;
     user.refreshToken = null;
 
-    await userRepository.saveUser(user, true);
-
-    try {
-        await sendPasswordResetSuccessEmail({
-            email: user.email,
-            username: user.username,
-            //TODO add login page action url
-        });
-    } catch (error) {
-        logger.warn(
-            {
-                err: error,
-                userId: user._id,
-            },
-            "Failed to send password change success email."
-        );
-    }
+    return await userRepository.saveUser(user, true);
 };
 
 ///////////////////////////////////////////////////////////////

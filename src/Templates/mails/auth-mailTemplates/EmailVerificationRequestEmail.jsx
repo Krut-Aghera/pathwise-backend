@@ -1,12 +1,6 @@
 import { Heading, Section, Text } from "react-email";
 
-import {
-    COLORS,
-    COMPANY,
-    INFO_BOX_TYPES,
-    SPACING,
-    TYPOGRAPHY,
-} from "../../theme.js";
+import { COLORS, COMPANY, INFO_BOX_TYPES, TYPOGRAPHY } from "../../theme.js";
 
 import BaseEmail from "../../layouts/BaseEmail.jsx";
 import EmailHeader from "../../components/EmailHeader.jsx";

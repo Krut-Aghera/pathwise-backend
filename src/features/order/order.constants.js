@@ -13,6 +13,7 @@ const ORDER_ERROR_MESSAGES = Object.freeze({
     ONLY_PENDING_ORDER_CAN_BE_CANCELLED:
         "Only a pending order can be cancelled.",
     CAN_NOT_PURCHASE: "Course is not available for purchase.",
+    ORDER_EXPIRED: "Order expired without payment",
 });
 
 ///////////////////////////////////////////////////////////////
@@ -23,6 +24,7 @@ const ORDER_STATUS = Object.freeze({
     COMPLETED: "COMPLETED",
     FAILED: "FAILED",
     CANCELLED: "CANCELLED",
+    EXPIRED: "EXPIRED",
 });
 
 const ORDER_STATUS_ARRAY = Object.values(ORDER_STATUS);

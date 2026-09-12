@@ -9,9 +9,13 @@ import User from "../../src/features/user/user.model.js";
 const createAuthenticatedStudentAgent = async () => {
     const agent = request.agent(app);
 
+    const uniqueId = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
     const response = await agent.post("/api/v1/auth/users").send({
-        username: `test_student_${Date.now()}`,
-        email: `test_student_${Date.now()}@example.com`,
+        username: `Test Student ${String.fromCharCode(
+            65 + Math.floor(Math.random() * 26)
+        )}`,
+        email: `test_student_${uniqueId}@example.com`,
         password: "Test@123456",
     });
 

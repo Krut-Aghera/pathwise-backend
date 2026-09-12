@@ -146,7 +146,7 @@ const seedProgressTestData = async () => {
 
                 currency: order.currency,
 
-                provider: PAYMENT_PROVIDER.CASHFREE,
+                provider: PAYMENT_PROVIDER.RAZORPAY,
 
                 providerOrderId: order.providerOrderId,
 

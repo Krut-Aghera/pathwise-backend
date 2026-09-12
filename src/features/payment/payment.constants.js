@@ -16,7 +16,8 @@ const PAYMENT_ERROR_MESSAGES = Object.freeze({
     INVALID_ORDER_OWNER: "You are not authorized to make this payment.",
 
     PAYMENT_NOT_FOUND: "Payment not found.",
-    PAYMENT_ALREADY_PROCESSED: "Payment has already been processed.",
+    PAYMENT_ALREADY_INITIATED:
+        "Payment has already been initialized for this order. Please retry the checkout.",
     PAYMENT_CURRENCY_MISMATCH:
         "Payment currency does not match the order currency.",
     PAYMENT_AMOUNT_MISMATCH: "Payment amount does not match the order amount.",
@@ -47,29 +48,18 @@ const PAYMENT_STATUS = {
 // payment provider
 
 const PAYMENT_PROVIDER = {
-    CASHFREE: "CASHFREE",
+    RAZORPAY: "RAZORPAY",
 };
 
 ///////////////////////////////////////////////////////////////
 // payment method
 
 const PAYMENT_METHOD = {
-    PREPAID_CARD: "prepaid_card",
-    UPI_PPI_OFFLINE: "upi_ppi_offline",
-    CASH: "cash",
-    UPI_CREDIT_CARD: "upi_credit_card",
-    PAYPAL: "paypal",
-    NET_BANKING: "net_banking",
-    CARDLESS_EMI: "cardless_emi",
-    CREDIT_CARD: "credit_card",
-    BANK_TRANSFER: "bank_transfer",
-    PAY_LATER: "pay_later",
-    DEBIT_CARD_EMI: "debit_card_emi",
-    DEBIT_CARD: "debit_card",
-    WALLET: "wallet",
-    UPI_PPI: "upi_ppi",
+    CARD: "card",
     UPI: "upi",
-    CREDIT_CARD_EMI: "credit_card_emi",
+    NETBANKING: "netbanking",
+    WALLET: "wallet",
+    EMI: "emi",
 };
 
 ///////////////////////////////////////////////////////////////

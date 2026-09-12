@@ -15,43 +15,68 @@ class PaymentGateway {
         this.provider = provider;
     }
 
-    // create payment order
+    // ---------- create payment order  ---------- //
 
-    async createPaymentOrder({ order, student }) {
-        const cashfreeOrder = await this.provider.createOrder({
+    async createPaymentOrder({ order }) {
+        const razorpayOrder = await this.provider.createOrder({
             orderId: order._id.toString(),
             amount: order.amount,
             currency: order.currency,
-            customerId: student._id.toString(),
-            customerEmail: student.email,
         });
 
         return {
-            providerOrderId: cashfreeOrder.providerOrderId,
-            paymentSessionId: cashfreeOrder.paymentSessionId,
-            status: cashfreeOrder.status,
+            providerOrderId: razorpayOrder.providerOrderId,
+            amount: razorpayOrder.amount,
+            currency: razorpayOrder.currency,
+            status: razorpayOrder.status,
         };
     }
 
-    // sync payment attempts for order
+    // ---------- verify payment signature  ---------- //
 
-    async syncSuccessfulPaymentForOrder({ order }) {
-        const payments = await this.provider.getPaymentsForOrder({
-            orderId: order._id.toString(),
+    async verifyPaymentSignature({
+        providerOrderId,
+        providerPaymentId,
+        signature,
+    }) {
+        return this.provider.verifyPaymentSignature({
+            orderId: providerOrderId,
+            paymentId: providerPaymentId,
+            signature,
+        });
+    }
+
+    // ---------- get payment by ID  ---------- //
+
+    async getPaymentById({ providerPaymentId }) {
+        return this.provider.getPaymentById({
+            paymentId: providerPaymentId,
+        });
+    }
+
+    // ---------- sync successful payment for order  ---------- //
+
+    async syncSuccessfulPaymentForOrder({ order, providerPaymentId }) {
+        const razorpayPayment = await this.provider.getPaymentById({
+            paymentId: providerPaymentId,
         });
 
-        const successfulPayment = payments.find(
-            (payment) => payment.payment_status === PAYMENT_STATUS.SUCCESS
-        );
+        if (!razorpayPayment) {
+            return null;
+        }
 
-        if (!successfulPayment) {
+        if (razorpayPayment.status !== "captured") {
+            return null;
+        }
+
+        if (razorpayPayment.order_id !== order.providerOrderId) {
             return null;
         }
 
         const existingPayment =
             await paymentRepository.findPaymentByProviderPaymentId({
-                provider: PAYMENT_PROVIDER.CASHFREE,
-                providerPaymentId: successfulPayment.cf_payment_id,
+                provider: PAYMENT_PROVIDER.RAZORPAY,
+                providerPaymentId: razorpayPayment.id,
             });
 
         if (existingPayment) {
@@ -62,20 +87,20 @@ class PaymentGateway {
             order: order._id,
             student: order.student,
 
-            amount: successfulPayment.payment_amount,
-            currency: successfulPayment.payment_currency,
-            method: successfulPayment.payment_group,
+            amount: razorpayPayment.amount / 100,
+            currency: razorpayPayment.currency,
 
-            provider: PAYMENT_PROVIDER.CASHFREE,
-            providerOrderId: successfulPayment.order_id,
-            providerPaymentId: successfulPayment.cf_payment_id,
+            method: razorpayPayment.method || null,
+
+            provider: PAYMENT_PROVIDER.RAZORPAY,
+            providerOrderId: razorpayPayment.order_id,
+            providerPaymentId: razorpayPayment.id,
 
             status: PAYMENT_STATUS.SUCCESS,
 
-            paidAt:
-                successfulPayment.payment_completion_time ||
-                successfulPayment.payment_time ||
-                null,
+            paidAt: razorpayPayment.created_at
+                ? new Date(razorpayPayment.created_at * 1000)
+                : null,
         };
 
         return paymentRepository.createPayment({
@@ -83,13 +108,12 @@ class PaymentGateway {
         });
     }
 
-    // verify payment webhook
+    // --------- verify webhook  ---------- //
 
-    async verifyWebhook({ rawBody, signature, timestamp }) {
+    async verifyWebhook({ rawBody, signature }) {
         return this.provider.verifyWebhook({
             rawBody,
             signature,
-            timestamp,
         });
     }
 }

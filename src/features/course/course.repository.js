@@ -337,13 +337,18 @@ const aggregateCurrentCourseData = ({ courseId }) => {
                                 {
                                     $project: {
                                         title: 1,
-                                        subtitle: 1,
                                         description: 1,
-                                        duration: 1,
-                                        thumbnail: 1,
-                                        level: 1,
-                                        isPreview: 1,
+                                        duration: "$video.duration",
+                                        isPreviewFree: 1,
                                         order: 1,
+
+                                        video: {
+                                            $cond: {
+                                                if: "$isPreviewFree",
+                                                then: "$video",
+                                                else: "$$REMOVE",
+                                            },
+                                        },
                                     },
                                 },
 

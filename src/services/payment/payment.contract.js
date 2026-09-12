@@ -24,6 +24,14 @@ class PaymentContract {
         );
     }
 
+    // verify checkout payment signature
+
+    async verifyPaymentSignature() {
+        throw new Error(
+            "PaymentInterface.verifyPaymentSignature() must be implemented"
+        );
+    }
+
     // verify and parse payment webhook
 
     async verifyWebhook() {

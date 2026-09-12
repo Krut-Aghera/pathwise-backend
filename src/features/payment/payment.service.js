@@ -8,24 +8,34 @@ import { getStudentOrder, getStudentPendingOrder } from "./payment.utility.js";
 
 import HTTP_STATUS from "../../constants/http.constants.js";
 import { PAYMENT_ERROR_MESSAGES, PAYMENT_STATUS } from "./payment.constants.js";
-import { ORDER_ERROR_MESSAGES } from "../order/order.constants.js";
+
+import { PAYMENT_WEBHOOK_EVENTS } from "../../services/payment/payment-service.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // create payment service
 
-const createPayment = async ({ orderId, studentId, studentEmail }) => {
-    const order = await getStudentPendingOrder({ orderId, studentId });
+const createPayment = async ({ orderId, studentId }) => {
+    const order = await getStudentPendingOrder({
+        orderId,
+        studentId,
+    });
+
+    if (order.providerOrderId) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.CONFLICT,
+            message: PAYMENT_ERROR_MESSAGES.PAYMENT_ALREADY_INITIATED,
+        });
+    }
 
     const providerOrder = await PaymentGatewayService.createPaymentOrder({
         order,
-        student: {
-            _id: studentId,
-            email: studentEmail,
-        },
     });
 
     order.providerOrderId = providerOrder.providerOrderId;
-    await orderRepository.saveOrder({ order });
+
+    await orderRepository.saveOrder({
+        order,
+    });
 
     return providerOrder;
 };
@@ -33,23 +43,58 @@ const createPayment = async ({ orderId, studentId, studentEmail }) => {
 ///////////////////////////////////////////////////////////////
 // verify payment service
 
-const processPaymentVerification = async ({ orderId, studentId }) => {
+const processPaymentVerification = async ({
+    orderId,
+    studentId,
+    razorpayPaymentId,
+    razorpayOrderId,
+    razorpaySignature,
+}) => {
     const order = await getStudentOrder({
         orderId,
         studentId,
     });
 
+    if (!order.providerOrderId) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: PAYMENT_ERROR_MESSAGES.PAYMENT_VERIFICATION_FAILED,
+        });
+    }
+
+    if (razorpayOrderId !== order.providerOrderId) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: PAYMENT_ERROR_MESSAGES.INVALID_PAYMENT,
+        });
+    }
+
+    try {
+        await PaymentGatewayService.verifyPaymentSignature({
+            providerOrderId: order.providerOrderId,
+            providerPaymentId: razorpayPaymentId,
+            signature: razorpaySignature,
+        });
+    } catch {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: PAYMENT_ERROR_MESSAGES.PAYMENT_VERIFICATION_FAILED,
+        });
+    }
+
     return completeCheckout({
         order,
+        providerPaymentId: razorpayPaymentId,
     });
 };
 
 ///////////////////////////////////////////////////////////////
 // verify successful payment service
 
-const verifySuccessfulPayment = async ({ order }) => {
+const verifySuccessfulPayment = async ({ order, providerPaymentId }) => {
     const payment = await PaymentGatewayService.syncSuccessfulPaymentForOrder({
         order,
+        providerPaymentId,
     });
 
     if (!payment) {
@@ -96,11 +141,10 @@ const verifySuccessfulPayment = async ({ order }) => {
 ///////////////////////////////////////////////////////////////
 // handle payment webhook
 
-const handleWebhook = async ({ rawBody, signature, timestamp }) => {
+const handleWebhook = async ({ rawBody, signature }) => {
     const webhook = await PaymentGatewayService.verifyWebhook({
         rawBody,
         signature,
-        timestamp,
     });
 
     if (webhook.event !== PAYMENT_WEBHOOK_EVENTS.PAYMENT_SUCCESS) {
@@ -117,15 +161,8 @@ const handleWebhook = async ({ rawBody, signature, timestamp }) => {
         });
     }
 
-    if (webhook.status !== PAYMENT_STATUS.SUCCESS) {
-        throw new ApiError({
-            statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: PAYMENT_ERROR_MESSAGES.INVALID_WEBHOOK,
-        });
-    }
-
-    const order = await orderRepository.findOrderById({
-        orderId: webhook.providerOrderId,
+    const order = await orderRepository.findOrderByProviderOrderId({
+        providerOrderId: webhook.providerOrderId,
     });
 
     if (!order) {
@@ -137,6 +174,7 @@ const handleWebhook = async ({ rawBody, signature, timestamp }) => {
 
     return completeCheckout({
         order,
+        providerPaymentId: webhook.providerPaymentId,
     });
 };
 

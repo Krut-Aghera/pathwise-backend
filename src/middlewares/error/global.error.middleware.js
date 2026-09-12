@@ -126,7 +126,7 @@ const globalErrorMiddleware = (err, req, res, next) => {
 
     logger.error(
         {
-            err,
+            error: err || err.message || "Unknown error",
             request: {
                 method: req.method,
                 url: req.originalUrl,

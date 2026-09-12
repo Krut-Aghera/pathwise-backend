@@ -49,7 +49,7 @@ const createOrder = async ({ studentId, orderData }) => {
         expiresAt: getExpiry(15),
     };
 
-    return orderRepository.createOrder({ orderPayload });
+    return await orderRepository.createOrder({ orderPayload });
 };
 
 ///////////////////////////////////////////////////////////////

@@ -1,5 +1,4 @@
 import * as paymentService from "./payment.service.js";
-import { completeCheckout } from "../../workflow/checkout/chekout.workflow.js";
 
 import ApiResponse from "../../utils/response-handler.utility.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
@@ -14,7 +13,6 @@ const createPayment = async (req, res) => {
     const providerOrder = await paymentService.createPayment({
         orderId: req.params.orderId,
         studentId: req.user._id,
-        studentEmail: req.user.email,
     });
 
     return res.status(HTTP_STATUS.CREATED).json(
@@ -30,10 +28,16 @@ const createPayment = async (req, res) => {
 // verify payment controller
 
 const verifyPayment = async (req, res) => {
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
+        req.body;
+
     const { payment, order, enrollment } =
         await paymentService.processPaymentVerification({
             orderId: req.params.orderId,
             studentId: req.user._id,
+            razorpayPaymentId: razorpay_payment_id,
+            razorpayOrderId: razorpay_order_id,
+            razorpaySignature: razorpay_signature,
         });
 
     return res.status(HTTP_STATUS.OK).json(
@@ -56,7 +60,6 @@ const handleWebhook = async (req, res) => {
     await paymentService.handleWebhook({
         rawBody: req.rawBody,
         signature: req.headers[PAYMENT_WEBHOOK_HEADERS.SIGNATURE],
-        timestamp: req.headers[PAYMENT_WEBHOOK_HEADERS.TIMESTAMP],
     });
 
     return res.status(HTTP_STATUS.OK).json(
@@ -66,6 +69,7 @@ const handleWebhook = async (req, res) => {
         })
     );
 };
+
 ///////////////////////////////////////////////////////////////
 // exports
 

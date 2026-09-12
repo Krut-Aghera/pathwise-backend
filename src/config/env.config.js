@@ -72,8 +72,9 @@ const env_cloudVars = Object.freeze({
 // Payment Configuration
 
 const env_paymentVars = Object.freeze({
-    CASHFREE_CLIENT_ID: requireEnv("CASHFREE_CLIENT_ID"),
-    CASHFREE_CLIENT_SECRET: requireEnv("CASHFREE_CLIENT_SECRET"),
+    RAZORPAY_API_KEY: requireEnv("RAZORPAY_API_KEY"),
+    RAZORPAY_API_SECRET: requireEnv("RAZORPAY_API_SECRET"),
+    RAZORPAY_WEBHOOK_SECRET: requireEnv("RAZORPAY_WEBHOOK_SECRET"),
 });
 
 ////////////////////////////////////////////////////////////////////////////////

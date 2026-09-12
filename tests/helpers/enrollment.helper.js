@@ -8,13 +8,14 @@ const createTestEnrollment = async ({
     courseId,
     orderId,
     paymentId,
+    isDeleted = false,
 }) => {
     return await Enrollment.create({
         student: studentId,
         course: courseId,
         order: orderId,
         payment: paymentId,
-        isDeleted: false,
+        isDeleted,
     });
 };
 

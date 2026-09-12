@@ -1,4 +1,5 @@
 import express from "express";
+
 import * as paymentControllers from "../payment.controllers.js";
 import * as paymentRatelimiter from "../../../middlewares/ratelimiter/limiters/payment.ratelimit.js";
 
@@ -8,11 +9,11 @@ import * as paymentRatelimiter from "../../../middlewares/ratelimiter/limiters/p
 const paymentWebhookRouter = express.Router();
 
 ///////////////////////////////////////////////////////////////
-// POST /api/v1/payments/webhooks/cashfree
-// Handles Cashfree payment webhooks.
+// POST /api/v1/payments/webhooks/razorpay
+// Handles Razorpay payment webhooks.
 
 paymentWebhookRouter.post(
-    "/cashfree",
+    "/razorpay",
     paymentRatelimiter.paymentWebhookRateLimiter,
     paymentControllers.handleWebhook
 );

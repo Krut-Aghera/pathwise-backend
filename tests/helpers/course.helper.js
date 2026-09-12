@@ -9,7 +9,9 @@ const createTestCourse = async ({ instructorId }) => {
         instructor: instructorId,
         title: `Test Course ${Date.now()}`,
         subtitle: "Test course subtitle",
-        slug: `test-course-${Date.now()}`,
+        slug: `test-course-${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2, 8)}`,
         description: "Test course description.",
         price: 999,
         status: RESOURCE_STATUS.PUBLISHED,

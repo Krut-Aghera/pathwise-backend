@@ -1,9 +1,13 @@
 import express from "express";
+
 import * as paymentControllers from "../payment.controllers.js";
 import * as paymentRatelimiter from "../../../middlewares/ratelimiter/limiters/payment.ratelimit.js";
+
 import validationEngine from "../../../middlewares/validation.middleware.js";
 import validateMongoIdParam from "../../../validations/mongo-idParam.validator.js";
 import { userAuthEngine } from "../../../middlewares/auth/auth.middleware.engines.js";
+
+import * as paymentValidators from "../payment.validators.js";
 
 ///////////////////////////////////////////////////////////////
 // create router
@@ -28,7 +32,7 @@ paymentAuthenticatedUser.post(
 
 ///////////////////////////////////////////////////////////////
 // POST /api/v1/payments/orders/:orderId/verify
-// Verifies the payment and completes checkout for the authenticated student.
+// Verifies the Razorpay payment and completes checkout.
 
 paymentAuthenticatedUser.post(
     "/orders/:orderId/verify",
@@ -38,6 +42,7 @@ paymentAuthenticatedUser.post(
         paramName: "orderId",
         fieldName: "Order ID",
     }),
+    paymentValidators.verifyPaymentValidator,
     validationEngine,
     paymentControllers.verifyPayment
 );

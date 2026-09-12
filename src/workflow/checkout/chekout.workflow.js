@@ -1,10 +1,9 @@
-import * as paymentService from "../../features/payment/payment.service.js";
-import * as paymentRepository from "../../features/payment/payment.repository.js";
 import * as orderRepository from "../../features/order/order.repository.js";
+import * as paymentRepository from "../../features/payment/payment.repository.js";
+import * as paymentService from "../../features/payment/payment.service.js";
 import * as enrollmentService from "../../features/enrollment/enrollment.service.js";
 
 import ApiError from "../../utils/error-handler.utility.js";
-
 import HTTP_STATUS from "../../constants/http.constants.js";
 import { ORDER_STATUS } from "../../features/order/order.constants.js";
 import { PAYMENT_ERROR_MESSAGES } from "../../features/payment/payment.constants.js";
@@ -12,8 +11,12 @@ import { PAYMENT_ERROR_MESSAGES } from "../../features/payment/payment.constants
 ///////////////////////////////////////////////////////////////
 // complete checkout workflow
 
-const completeCheckout = async ({ order }) => {
+const completeCheckout = async ({ order, providerPaymentId }) => {
     let payment;
+
+    // ---------------------------------------------------------
+    // Already completed
+    // ---------------------------------------------------------
 
     if (order.status === ORDER_STATUS.COMPLETED) {
         payment = await paymentRepository.findSuccessfulPaymentByOrderId({
@@ -26,7 +29,12 @@ const completeCheckout = async ({ order }) => {
                 message: PAYMENT_ERROR_MESSAGES.PAYMENT_VERIFICATION_FAILED,
             });
         }
-    } else {
+    }
+
+    // ---------------------------------------------------------
+    // Pending order
+    // ---------------------------------------------------------
+    else {
         if (order.status !== ORDER_STATUS.PENDING) {
             throw new ApiError({
                 statusCode: HTTP_STATUS.BAD_REQUEST,
@@ -34,8 +42,16 @@ const completeCheckout = async ({ order }) => {
             });
         }
 
+        if (!providerPaymentId) {
+            throw new ApiError({
+                statusCode: HTTP_STATUS.BAD_REQUEST,
+                message: PAYMENT_ERROR_MESSAGES.PAYMENT_VERIFICATION_FAILED,
+            });
+        }
+
         payment = await paymentService.verifySuccessfulPayment({
             order,
+            providerPaymentId,
         });
 
         order.status = ORDER_STATUS.COMPLETED;
@@ -44,6 +60,10 @@ const completeCheckout = async ({ order }) => {
             order,
         });
     }
+
+    // ---------------------------------------------------------
+    // Enrollment
+    // ---------------------------------------------------------
 
     const enrollment = await enrollmentService.createEnrollment({
         enrollmentPayload: {
@@ -60,8 +80,5 @@ const completeCheckout = async ({ order }) => {
         enrollment,
     };
 };
-
-///////////////////////////////////////////////////////////////
-// exports
 
 export { completeCheckout };

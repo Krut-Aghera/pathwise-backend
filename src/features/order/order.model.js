@@ -82,6 +82,11 @@ orderSchema.index({
     expiresAt: 1,
 });
 
+// provider order id index for payment verification
+orderSchema.index({
+    providerOrderId: 1,
+});
+
 const Order = mongoose.model("Order", orderSchema);
 
 export default Order;

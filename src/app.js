@@ -58,7 +58,7 @@ app.use(
     express.json({
         limit: "10kb",
         verify: (req, res, buffer) => {
-            if (req.originalUrl === "/api/v1/payments/webhooks/cashfree") {
+            if (req.originalUrl === "/api/v1/payments/webhooks/razorpay") {
                 req.rawBody = buffer.toString("utf8");
             }
         },

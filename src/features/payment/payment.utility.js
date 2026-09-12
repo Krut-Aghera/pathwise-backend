@@ -1,9 +1,11 @@
 import * as orderRepository from "../order/order.repository.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
+
 import {
     ORDER_ERROR_MESSAGES,
     ORDER_STATUS,
 } from "../order/order.constants.js";
+import ApiError from "../../utils/error-handler.utility.js";
 
 ///////////////////////////////////////////////////////////////
 // get student pending order or throw error if not found
@@ -25,6 +27,17 @@ const getStudentPendingOrder = async ({ orderId, studentId }) => {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
             message: ORDER_ERROR_MESSAGES.ORDER_NOT_PENDING,
+        });
+    }
+
+    if (order.expiresAt && order.expiresAt.getTime() <= Date.now()) {
+        order.status = ORDER_STATUS.EXPIRED;
+
+        await orderRepository.saveOrder({ order });
+
+        throw new ApiError({
+            statusCode: HTTP_STATUS.CONFLICT,
+            message: ORDER_ERROR_MESSAGES.ORDER_EXPIRED,
         });
     }
 

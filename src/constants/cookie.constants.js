@@ -1,5 +1,3 @@
-import { env_jwtVars } from "../config/env.config";
-
 const isProduction = process.env.NODE_ENV === "production";
 
 export const JWT_TOKEN_TYPE = Object.freeze({

@@ -164,7 +164,7 @@ const fetchCoursesValidators = [
 
     query("language")
         .optional()
-        .isIn(COURSE_LANGUAGES)
+        .isIn(COURSE_LANGUAGES_ARRAY)
         .withMessage("Invalid course language."),
 ];
 

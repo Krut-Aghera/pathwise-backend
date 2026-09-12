@@ -2,122 +2,148 @@ import crypto from "crypto";
 import axios from "axios";
 
 import PaymentContract from "./payment.contract.js";
-import cashfreeConfig from "./payment-service.config.js";
+import razorpayConfig from "./payment-service.config.js";
 
 ///////////////////////////////////////////////////////////////
-// cashfree provider class
+// razorpay provider class
 
-class CashfreeProvider extends PaymentContract {
+class RazorpayProvider extends PaymentContract {
     constructor(config) {
         super();
 
-        this.clientId = config.clientId;
-        this.clientSecret = config.clientSecret;
-        this.apiVersion = config.apiVersion;
+        this.keyId = config.keyId;
+        this.keySecret = config.keySecret;
         this.baseUrl = config.baseUrl;
+        this.webhookSecret = config.webhookSecret;
 
         this.httpClient = axios.create({
             baseURL: this.baseUrl,
+            auth: {
+                username: this.keyId,
+                password: this.keySecret,
+            },
             headers: {
                 "Content-Type": "application/json",
-                "x-client-id": this.clientId,
-                "x-client-secret": this.clientSecret,
-                "x-api-version": this.apiVersion,
             },
             timeout: config.timeout,
         });
     }
 
-    // cashfree request
+    // ---------- razorpay request helper  ---------- //
 
     async request({ method, path, body }) {
-        const response = await this.httpClient({
-            method,
-            url: path,
-            data: body,
-        });
+        try {
+            const response = await this.httpClient({
+                method,
+                url: path,
+                data: body,
+            });
 
-        return response.data;
+            return response.data;
+        } catch (error) {
+        
+            throw error;
+        }
     }
 
-    // cashfree create order
+    // ---------- razorpay create order ---------- //
 
-    async createOrder({
-        orderId,
-        amount,
-        currency,
-        customerId,
-        customerEmail,
-    }) {
+    async createOrder({ orderId, amount, currency }) {
+        const amountInSubunit = Math.round(Number(amount) * 100);
+
+        if (!Number.isFinite(amountInSubunit) || amountInSubunit <= 0) {
+            throw new Error("Invalid payment amount.");
+        }
+
         const payload = {
-            order_id: orderId,
-            order_amount: amount,
-            order_currency: currency,
-
-            customer_details: {
-                customer_id: customerId,
-                customer_email: customerEmail,
-            },
+            amount: amountInSubunit,
+            currency,
+            receipt: orderId,
         };
 
         const response = await this.request({
             method: "POST",
-            path: "/orders",
+            path: "/v1/orders",
             body: payload,
         });
 
         return {
-            providerOrderId: response.cf_order_id,
-            orderId: response.order_id,
-            paymentSessionId: response.payment_session_id,
-            status: response.order_status,
+            providerOrderId: response.id,
+            orderId: response.receipt,
+            amount: response.amount,
+            currency: response.currency,
+            status: response.status,
         };
     }
 
-    // cashfree get payments for order
+    // ---------- razorpay get payments for order ---------- //
 
     async getPaymentsForOrder({ orderId }) {
         const response = await this.request({
             method: "GET",
-            path: `/orders/${orderId}/payments`,
+            path: `/v1/orders/${orderId}/payments`,
         });
 
-        return response;
+        return response.items ?? [];
     }
 
-    // cashfree get payment by id
+    // ---------- razorpay get payment by id ---------- //
 
-    async getPaymentById({ orderId, paymentId }) {
-        const response = await this.request({
+    async getPaymentById({ paymentId }) {
+        return await this.request({
             method: "GET",
-            path: `/orders/${orderId}/payments/${paymentId}`,
+            path: `/v1/payments/${paymentId}`,
         });
-
-        return response;
     }
 
-    // cashfree verify webhook
+    // ---------- verify razorpay checkout payment signature  ---------- //
 
-    async verifyWebhook({ rawBody, signature, timestamp }) {
-        if (!rawBody || !signature || !timestamp) {
-            throw new Error("Invalid Cashfree webhook request");
+    async verifyPaymentSignature({ orderId, paymentId, signature }) {
+        if (!orderId || !paymentId || !signature) {
+            throw new Error("Invalid Razorpay payment verification data.");
         }
 
-        const signatureData = `${timestamp}${rawBody}`;
+        const signatureData = `${orderId}|${paymentId}`;
 
         const generatedSignature = crypto
-            .createHmac("sha256", this.clientSecret)
+            .createHmac("sha256", this.keySecret)
             .update(signatureData)
-            .digest("base64");
+            .digest("hex");
 
-        const expectedSignature = Buffer.from(generatedSignature);
-        const receivedSignature = Buffer.from(signature);
+        const expectedSignature = Buffer.from(generatedSignature, "utf8");
+
+        const receivedSignature = Buffer.from(signature, "utf8");
 
         if (
             expectedSignature.length !== receivedSignature.length ||
             !crypto.timingSafeEqual(expectedSignature, receivedSignature)
         ) {
-            throw new Error("Invalid Cashfree webhook signature");
+            throw new Error("Invalid Razorpay payment signature.");
+        }
+
+        return true;
+    }
+
+    // ---------- verify razorpay webhook  ---------- //
+    async verifyWebhook({ rawBody, signature }) {
+        if (!rawBody || !signature || !this.webhookSecret) {
+            throw new Error("Invalid Razorpay webhook request.");
+        }
+
+        const generatedSignature = crypto
+            .createHmac("sha256", this.webhookSecret)
+            .update(rawBody)
+            .digest("hex");
+
+        const expectedSignature = Buffer.from(generatedSignature, "utf8");
+
+        const receivedSignature = Buffer.from(signature, "utf8");
+
+        if (
+            expectedSignature.length !== receivedSignature.length ||
+            !crypto.timingSafeEqual(expectedSignature, receivedSignature)
+        ) {
+            throw new Error("Invalid Razorpay webhook signature.");
         }
 
         let payload;
@@ -125,14 +151,22 @@ class CashfreeProvider extends PaymentContract {
         try {
             payload = JSON.parse(rawBody);
         } catch {
-            throw new Error("Invalid Cashfree webhook payload");
+            throw new Error("Invalid Razorpay webhook payload.");
         }
 
+        const paymentEntity = payload.payload?.payment?.entity;
+        const orderEntity = payload.payload?.order?.entity;
+
         return {
-            event: payload.type,
-            providerOrderId: payload.data?.order?.order_id,
-            providerPaymentId: payload.data?.payment?.cf_payment_id,
-            status: payload.data?.payment?.payment_status,
+            event: payload.event,
+
+            providerOrderId: orderEntity?.id ?? paymentEntity?.order_id ?? null,
+
+            providerPaymentId: paymentEntity?.id ?? null,
+
+            status: paymentEntity?.status ?? null,
+
+            method: paymentEntity?.method ?? null,
         };
     }
 }
@@ -140,7 +174,7 @@ class CashfreeProvider extends PaymentContract {
 ///////////////////////////////////////////////////////////////
 // instance
 
-const paymentProvider = new CashfreeProvider(cashfreeConfig);
+const paymentProvider = new RazorpayProvider(razorpayConfig);
 
 ///////////////////////////////////////////////////////////////
 // export
