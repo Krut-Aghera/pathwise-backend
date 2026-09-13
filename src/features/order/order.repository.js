@@ -47,7 +47,7 @@ const claimPaymentCreation = async ({ orderId, studentId, lockUntil }) => {
             },
         },
         {
-            new: true,
+            returnDocument: "after",
         }
     );
 };
@@ -71,7 +71,7 @@ const findOrderByProviderOrderId = ({ providerOrderId }) => {
 ///////////////////////////////////////////////////////////////
 // find order by order id and student id
 
-const findStudentCurrentOrder = ({ orderId, studentId }) => {
+const findStudentOrderById = ({ orderId, studentId }) => {
     return Order.findOne({
         _id: orderId,
         student: studentId,
@@ -98,6 +98,6 @@ export {
     claimPaymentCreation,
     findOrderById,
     findOrderByProviderOrderId,
-    findStudentCurrentOrder,
+    findStudentOrderById,
     findPendingOrderByStudentAndCourse,
 };

@@ -11,7 +11,7 @@ import ApiError from "../../utils/error-handler.utility.js";
 // get student pending order or throw error if not found
 
 const getStudentPendingOrder = async ({ orderId, studentId }) => {
-    const order = await orderRepository.findStudentCurrentOrder({
+    const order = await orderRepository.findStudentOrderById({
         orderId,
         studentId,
     });
@@ -48,7 +48,7 @@ const getStudentPendingOrder = async ({ orderId, studentId }) => {
 // get student order
 
 const getStudentOrder = async ({ orderId, studentId }) => {
-    const order = await orderRepository.findStudentCurrentOrder({
+    const order = await orderRepository.findStudentOrderById({
         orderId,
         studentId,
     });

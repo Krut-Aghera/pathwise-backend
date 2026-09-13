@@ -48,7 +48,25 @@ const cancelOrder = async (req, res) => {
     );
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// fetch student order controller
+
+const fetchStudentOrder = async (req, res) => {
+    const order = await orderService.fetchStudentOrder({
+        studentId: req.user._id,
+        orderId: req.params.orderId,
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: ORDER_SUCCESS_MESSAGES.FETCHED,
+            data: order,
+        })
+    );
+};
+
 ///////////////////////////////////////////////////////////////
 // exports
 
-export { createOrder, cancelOrder };
+export { createOrder, cancelOrder, fetchStudentOrder };

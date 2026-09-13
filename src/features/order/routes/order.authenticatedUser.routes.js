@@ -25,6 +25,21 @@ orderAuthenticatedUser.post(
 );
 
 ///////////////////////////////////////////////////////////////
+// GET /api/v1/orders/students/:orderId
+// Fetches the specified order for the authenticated student.
+
+orderAuthenticatedUser.get(
+    "/:orderId",
+    ...userAuthEngine,
+    validateMongoIdParam({
+        paramName: "orderId",
+        fieldName: "Order ID",
+    }),
+    validationEngine,
+    orderControllers.fetchStudentOrder
+);
+
+///////////////////////////////////////////////////////////////
 // PATCH /api/v1/orders/students/:orderId/cancel
 // Cancels the specified pending order for the authenticated student.
 

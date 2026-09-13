@@ -1,3 +1,4 @@
+import { COURSE_LIST_SELECT_FIELDS } from "../course/course.constants.js";
 import Enrollment from "./enrollment.model.js";
 
 ///////////////////////////////////////////////////////////////
@@ -36,7 +37,10 @@ const findEnrollmentsByStudent = ({ studentId }) => {
         student: studentId,
         isDeleted: false,
     })
-        .populate("course")
+        .populate({
+            path: "course",
+            select: COURSE_LIST_SELECT_FIELDS,
+        })
         .sort({ enrolledAt: -1 });
 };
 

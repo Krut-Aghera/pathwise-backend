@@ -1,6 +1,7 @@
 const ORDER_SUCCESS_MESSAGES = {
     CREATED: "Order created.",
     CANCELLED: "Order cancelled.",
+    FETCHED: "Order fetched.",
 };
 
 ///////////////////////////////////////////////////////////////

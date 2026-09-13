@@ -120,13 +120,32 @@ const cancelOrder = async ({ studentId, orderId }) => {
         });
     }
 
-    if (
-        order.status !== ORDER_STATUS.PENDING ||
-        order.expiresAt <= new Date()
-    ) {
+    // Idempotent cancellation.
+    // If the order is already cancelled, cancellation
+    // is considered successful.
+    if (order.status === ORDER_STATUS.CANCELLED) {
+        return order;
+    }
+
+    // Only a pending order can transition to cancelled.
+    if (order.status !== ORDER_STATUS.PENDING) {
         throw new ApiError({
             statusCode: HTTP_STATUS.BAD_REQUEST,
-            message: ORDER_ERROR_MESSAGES.ONLY_PENDING_ORDER_CAN_BE_CANCELLED,
+            message: ORDER_ERROR_MESSAGES.ORDER_NOT_PENDING,
+        });
+    }
+
+    // Pending order has expired.
+    if (order.expiresAt <= new Date()) {
+        order.status = ORDER_STATUS.EXPIRED;
+
+        await orderRepository.saveOrder({
+            order,
+        });
+
+        throw new ApiError({
+            statusCode: HTTP_STATUS.BAD_REQUEST,
+            message: ORDER_ERROR_MESSAGES.ORDER_EXPIRED,
         });
     }
 
@@ -137,7 +156,26 @@ const cancelOrder = async ({ studentId, orderId }) => {
     });
 };
 
+////////////////////////////////////////////////////////////////
+// fetch student order service
+
+const fetchStudentOrder = async ({ studentId, orderId }) => {
+    const order = await orderRepository.findStudentOrderById({
+        studentId,
+        orderId,
+    });
+
+    if (!order) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.NOT_FOUND,
+            message: ORDER_ERROR_MESSAGES.ORDER_NOT_FOUND,
+        });
+    }
+
+    return order;
+};
+
 ///////////////////////////////////////////////////////////////
 // exports
 
-export { createOrder, cancelOrder };
+export { createOrder, cancelOrder, fetchStudentOrder };
