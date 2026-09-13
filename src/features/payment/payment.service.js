@@ -15,11 +15,13 @@ import { PAYMENT_WEBHOOK_EVENTS } from "../../services/payment/payment-service.c
 // create payment service
 
 const createPayment = async ({ orderId, studentId }) => {
+    // Validate order
     const order = await getStudentPendingOrder({
         orderId,
         studentId,
     });
 
+    // Payment already initialized
     if (order.providerOrderId) {
         throw new ApiError({
             statusCode: HTTP_STATUS.CONFLICT,
@@ -27,17 +29,48 @@ const createPayment = async ({ orderId, studentId }) => {
         });
     }
 
-    const providerOrder = await PaymentGatewayService.createPaymentOrder({
-        order,
+    // Claim payment creation
+    const lockUntil = new Date(Date.now() + 30_000);
+
+    const claimedOrder = await orderRepository.claimPaymentCreation({
+        orderId,
+        studentId,
+        lockUntil,
     });
 
-    order.providerOrderId = providerOrder.providerOrderId;
+    if (!claimedOrder) {
+        throw new ApiError({
+            statusCode: HTTP_STATUS.CONFLICT,
+            message: PAYMENT_ERROR_MESSAGES.PAYMENT_ALREADY_INITIATED,
+        });
+    }
 
-    await orderRepository.saveOrder({
-        order,
-    });
+    // Create provider order
+    try {
+        const providerOrder = await PaymentGatewayService.createPaymentOrder({
+            order: claimedOrder,
+        });
 
-    return providerOrder;
+        // Persist provider order
+        claimedOrder.providerOrderId = providerOrder.providerOrderId;
+
+        claimedOrder.paymentCreationLockUntil = null;
+
+        await orderRepository.saveOrder({
+            order: claimedOrder,
+        });
+
+        return providerOrder;
+    } catch (error) {
+        // Release payment creation lock
+        claimedOrder.paymentCreationLockUntil = null;
+
+        await orderRepository.saveOrder({
+            order: claimedOrder,
+        });
+
+        throw error;
+    }
 };
 
 ///////////////////////////////////////////////////////////////

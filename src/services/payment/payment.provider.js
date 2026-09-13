@@ -41,7 +41,6 @@ class RazorpayProvider extends PaymentContract {
 
             return response.data;
         } catch (error) {
-        
             throw error;
         }
     }
@@ -49,9 +48,9 @@ class RazorpayProvider extends PaymentContract {
     // ---------- razorpay create order ---------- //
 
     async createOrder({ orderId, amount, currency }) {
-        const amountInSubunit = Math.round(Number(amount) * 100);
+        const amountInSubunit = Number(amount);
 
-        if (!Number.isFinite(amountInSubunit) || amountInSubunit <= 0) {
+        if (!Number.isSafeInteger(amountInSubunit) || amountInSubunit <= 0) {
             throw new Error("Invalid payment amount.");
         }
 

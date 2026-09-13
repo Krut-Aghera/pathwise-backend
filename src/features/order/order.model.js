@@ -52,8 +52,14 @@ const orderSchema = new mongoose.Schema(
             default: null,
         },
 
+        paymentCreationLockUntil: {
+            type: Date,
+            default: null,
+        },
+
         expiresAt: {
             type: Date,
+            required: true,
         },
     },
     {
@@ -63,6 +69,9 @@ const orderSchema = new mongoose.Schema(
 
 ///////////////////////////////////////////////////////////////
 // compounud indexes
+
+///////////////////////////////////////////////////////////////
+// compound indexes
 
 // student's orders / purchase history
 orderSchema.index({
@@ -81,6 +90,20 @@ orderSchema.index({
     status: 1,
     expiresAt: 1,
 });
+
+// one pending order per student/course
+orderSchema.index(
+    {
+        student: 1,
+        course: 1,
+    },
+    {
+        unique: true,
+        partialFilterExpression: {
+            status: ORDER_STATUS.PENDING,
+        },
+    }
+);
 
 // provider order id index for payment verification
 orderSchema.index({

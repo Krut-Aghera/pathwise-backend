@@ -16,9 +16,33 @@ const createEnrollment = async ({ enrollmentPayload }) => {
         return enrollment;
     }
 
-    return enrollmentRepository.createEnrollment({
-        enrollmentPayload,
-    });
+    try {
+        return await enrollmentRepository.createEnrollment({
+            enrollmentPayload: {
+                student: enrollmentPayload.student,
+                course: enrollmentPayload.course,
+                order: enrollmentPayload.order,
+                payment: enrollmentPayload.payment,
+            },
+        });
+    } catch (error) {
+        // Another concurrent request may have created the
+        // enrollment after our initial lookup.
+        if (error?.code !== 11000) {
+            throw error;
+        }
+
+        const existingEnrollment = await enrollmentRepository.findEnrollment({
+            studentId: enrollmentPayload.student,
+            courseId: enrollmentPayload.course,
+        });
+
+        if (!existingEnrollment) {
+            throw error;
+        }
+
+        return existingEnrollment;
+    }
 };
 
 ///////////////////////////////////////////////////////////////

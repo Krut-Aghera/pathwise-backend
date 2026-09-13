@@ -5,7 +5,10 @@ import * as enrollmentService from "../../features/enrollment/enrollment.service
 
 import ApiError from "../../utils/error-handler.utility.js";
 import HTTP_STATUS from "../../constants/http.constants.js";
-import { ORDER_STATUS } from "../../features/order/order.constants.js";
+import {
+    ORDER_ERROR_MESSAGES,
+    ORDER_STATUS,
+} from "../../features/order/order.constants.js";
 import { PAYMENT_ERROR_MESSAGES } from "../../features/payment/payment.constants.js";
 
 ///////////////////////////////////////////////////////////////
@@ -41,6 +44,27 @@ const completeCheckout = async ({ order, providerPaymentId }) => {
                 message: PAYMENT_ERROR_MESSAGES.ORDER_NOT_PENDING,
             });
         }
+
+        // -----------------------------------------------------
+        // Expired order
+        // -----------------------------------------------------
+
+        if (order.expiresAt <= new Date()) {
+            order.status = ORDER_STATUS.EXPIRED;
+
+            await orderRepository.saveOrder({
+                order,
+            });
+
+            throw new ApiError({
+                statusCode: HTTP_STATUS.BAD_REQUEST,
+                message: ORDER_ERROR_MESSAGES.ORDER_EXPIRED,
+            });
+        }
+
+        // -----------------------------------------------------
+        // Payment verification
+        // -----------------------------------------------------
 
         if (!providerPaymentId) {
             throw new ApiError({

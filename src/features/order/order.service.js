@@ -13,14 +13,15 @@ import {
     ORDER_STATUS,
 } from "./order.constants.js";
 import { ENROLLMENT_ERROR_MESSAGES } from "../enrollment/enrollment.constants.js";
+import { toSubunit } from "../../utils/money-subunit.utility.js";
 
 ///////////////////////////////////////////////////////////////
 // create order service
 
 const createOrder = async ({ studentId, orderData }) => {
     const courseId = orderData.course;
-
     const course = await courseRepository.findPublishedCourse({ courseId });
+
     if (!course) {
         throw new ApiError({
             statusCode: HTTP_STATUS.NOT_FOUND,
@@ -40,16 +41,61 @@ const createOrder = async ({ studentId, orderData }) => {
         });
     }
 
+    const existingPendingOrder =
+        await orderRepository.findPendingOrderByStudentAndCourse({
+            studentId,
+            courseId,
+        });
+
+    if (existingPendingOrder) {
+        if (existingPendingOrder.expiresAt > new Date()) {
+            await existingPendingOrder.populate("course");
+
+            return existingPendingOrder;
+        }
+
+        existingPendingOrder.status = ORDER_STATUS.EXPIRED;
+
+        await orderRepository.saveOrder({
+            order: existingPendingOrder,
+        });
+    }
+
     const orderPayload = {
         student: studentId,
         course: course._id,
-        amount: course.amount || course.price,
+        amount: toSubunit({
+            amount: course.price,
+            currency: ORDER_CURRENCY,
+        }),
         currency: ORDER_CURRENCY,
         status: ORDER_STATUS.PENDING,
         expiresAt: getExpiry(15),
     };
 
-    return await orderRepository.createOrder({ orderPayload });
+    try {
+        return await orderRepository.createOrder({
+            orderPayload,
+        });
+    } catch (error) {
+        if (error?.code !== 11000) {
+            throw error;
+        }
+
+        const pendingOrder =
+            await orderRepository.findPendingOrderByStudentAndCourse({
+                studentId,
+                courseId,
+            });
+
+        if (!pendingOrder) {
+            throw error;
+        }
+
+        await pendingOrder.populate("course");
+
+        return pendingOrder;
+    }
 };
 
 ///////////////////////////////////////////////////////////////

@@ -3,9 +3,12 @@ import paymentProvider from "./payment.provider.js";
 import * as paymentRepository from "../../features/payment/payment.repository.js";
 
 import {
+    PAYMENT_ERROR_MESSAGES,
     PAYMENT_PROVIDER,
     PAYMENT_STATUS,
 } from "../../features/payment/payment.constants.js";
+import ApiError from "../../utils/error-handler.utility.js";
+import HTTP_STATUS from "../../constants/http.constants.js";
 
 ///////////////////////////////////////////////////////////////
 // payment gateway class
@@ -73,6 +76,20 @@ class PaymentGateway {
             return null;
         }
 
+        if (razorpayPayment.amount !== order.amount) {
+            throw new ApiError({
+                statusCode: HTTP_STATUS.BAD_REQUEST,
+                message: PAYMENT_ERROR_MESSAGES.PAYMENT_AMOUNT_MISMATCH,
+            });
+        }
+
+        if (razorpayPayment.currency !== order.currency) {
+            throw new ApiError({
+                statusCode: HTTP_STATUS.BAD_REQUEST,
+                message: PAYMENT_ERROR_MESSAGES.PAYMENT_CURRENCY_MISMATCH,
+            });
+        }
+
         const existingPayment =
             await paymentRepository.findPaymentByProviderPaymentId({
                 provider: PAYMENT_PROVIDER.RAZORPAY,
@@ -87,7 +104,7 @@ class PaymentGateway {
             order: order._id,
             student: order.student,
 
-            amount: razorpayPayment.amount / 100,
+            amount: razorpayPayment.amount,
             currency: razorpayPayment.currency,
 
             method: razorpayPayment.method || null,
