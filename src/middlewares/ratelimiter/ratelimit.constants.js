@@ -286,6 +286,26 @@ const PROGRESS_RT = Object.freeze({
     },
 });
 
+////////////////////////////////////////////////////////////////
+// dashboard rate limits
+
+const DASHBOARD_RT = Object.freeze({
+    INSTRUCTOR: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 30,
+    },
+
+    STUDENT: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 30,
+    },
+
+    ADMIN: {
+        WINDOW_MS: WINDOWS.ONE_MINUTE,
+        LIMIT: 30,
+    },
+});
+
 export {
     RATE_LIMITER_OPTIONS,
     RATE_LIMIT,
@@ -294,4 +314,5 @@ export {
     ENROLLMENT_RT,
     WISHLIST_RT,
     PROGRESS_RT,
+    DASHBOARD_RT,
 };

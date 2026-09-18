@@ -44,7 +44,6 @@ coursePrivateRouter.get(
     courseControllers.fetchInstructorCourse
 );
 
-
 // GET /api/v1/courses/removed
 // Retrieves all removed courses owned by the authenticated instructor.
 

@@ -274,7 +274,6 @@ const fetchInstructorCourse = async ({ courseId, instructorId }) => {
     return await getAuthorizedInstructorCourse({ courseId, instructorId });
 };
 
-
 ///////////////////////////////////////////////////////////////
 // fetch removed courses service
 
@@ -283,7 +282,6 @@ const fetchRemovedCourses = async ({ instructorId }) => {
         instructorId,
     });
 };
-
 
 ///////////////////////////////////////////////////////////////
 // fetch courses service

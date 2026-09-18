@@ -31,11 +31,11 @@ The main user-facing Pathwise application is built separately with React.
 
 **Pathwise is a portfolio/educational software project.**
 
-* No real courses are being sold through this project.
-* No real money is involved in the payment workflow.
-* Razorpay is integrated using **test-mode credentials** for demonstrating and testing the payment workflow.
-* Course, enrollment, payment, and progress data are intended for demonstration and development purposes.
-* This project should not be considered a real commercial learning platform.
+- No real courses are being sold through this project.
+- No real money is involved in the payment workflow.
+- Razorpay is integrated using **test-mode credentials** for demonstrating and testing the payment workflow.
+- Course, enrollment, payment, and progress data are intended for demonstration and development purposes.
+- This project should not be considered a real commercial learning platform.
 
 ### Video & Educational Content Disclaimer
 
@@ -53,45 +53,45 @@ All rights to third-party video content remain with their respective owners.
 
 # ✨ Features
 
-* JWT-based authentication
-* Access and refresh token rotation
-* HTTP-only cookie authentication
-* Email verification
-* Password reset
-* Change password
-* Email change workflow
-* Instructor access request/confirmation
-* Student, instructor, and admin roles
-* Role-based authorization
-* Account-state authorization
-* Course creation and management
-* Course publication workflow
-* Section and lecture management
-* Lecture reordering
-* Image and video uploads
-* Cloudinary media storage
-* Student enrollment workflow
-* Razorpay test-mode payment integration
-* Razorpay payment verification
-* Razorpay webhook handling
-* Course and lecture progress tracking
-* Wishlist management
-* Pagination
-* Filtering
-* Sorting
-* Searching
-* Global and feature-specific rate limiting
-* Centralized validation
-* Centralized error handling
-* Structured API responses
-* Pino application logging
-* Morgan HTTP request logging
-* Helmet security headers
-* HPP protection
-* Temporary media file cleanup
-* Unit testing
-* API/integration testing
-* Production build with esbuild
+- JWT-based authentication
+- Access and refresh token rotation
+- HTTP-only cookie authentication
+- Email verification
+- Password reset
+- Change password
+- Email change workflow
+- Instructor access request/confirmation
+- Student, instructor, and admin roles
+- Role-based authorization
+- Account-state authorization
+- Course creation and management
+- Course publication workflow
+- Section and lecture management
+- Lecture reordering
+- Image and video uploads
+- Cloudinary media storage
+- Student enrollment workflow
+- Razorpay test-mode payment integration
+- Razorpay payment verification
+- Razorpay webhook handling
+- Course and lecture progress tracking
+- Wishlist management
+- Pagination
+- Filtering
+- Sorting
+- Searching
+- Global and feature-specific rate limiting
+- Centralized validation
+- Centralized error handling
+- Structured API responses
+- Pino application logging
+- Morgan HTTP request logging
+- Helmet security headers
+- HPP protection
+- Temporary media file cleanup
+- Unit testing
+- API/integration testing
+- Production build with esbuild
 
 ---
 
@@ -131,13 +131,13 @@ Pathwise follows a **feature-based modular architecture**.
 
 Each major business domain owns its related:
 
-* controllers
-* services
-* repositories
-* models
-* validators
-* constants
-* routes
+- controllers
+- services
+- repositories
+- models
+- validators
+- constants
+- routes
 
 Cross-feature infrastructure such as email, media, and payment providers is separated into dedicated services.
 
@@ -241,10 +241,10 @@ Processes validation results consistently.
 
 Controllers handle HTTP concerns only:
 
-* read request data
-* whitelist required fields
-* call services
-* construct responses
+- read request data
+- whitelist required fields
+- call services
+- construct responses
 
 Controllers do not directly access the database or contain business rules.
 
@@ -252,12 +252,12 @@ Controllers do not directly access the database or contain business rules.
 
 Services contain business logic and are responsible for:
 
-* business rules
-* workflow decisions
-* error handling
-* calling repositories
-* calling utilities
-* coordinating external services
+- business rules
+- workflow decisions
+- error handling
+- calling repositories
+- calling utilities
+- coordinating external services
 
 ### Repository
 
@@ -348,14 +348,14 @@ Tokens are stored in secure cookies rather than relying on client-side storage a
 
 The backend supports:
 
-* access token verification
-* refresh token verification
-* token rotation
-* cookie expiration
-* token expiration
-* authentication middleware
-* role authorization
-* account-state authorization
+- access token verification
+- refresh token verification
+- token rotation
+- cookie expiration
+- token expiration
+- authentication middleware
+- role authorization
+- account-state authorization
 
 ---
 
@@ -381,8 +381,8 @@ Some operations require more than authentication.
 
 Pathwise provides middleware for states such as:
 
-* active account
-* verified email
+- active account
+- verified email
 
 This allows sensitive operations to enforce the appropriate account state before reaching business logic.
 
@@ -546,10 +546,10 @@ Fetch all courses
 
 Public course listing supports:
 
-* pagination
-* filtering
-* sorting
-* searching
+- pagination
+- filtering
+- sorting
+- searching
 
 ---
 
@@ -774,14 +774,14 @@ The raw request body is preserved specifically for webhook signature verificatio
 
 The checkout implementation accounts for:
 
-* expired orders
-* duplicate enrollment attempts
-* concurrent enrollment race conditions
-* payment creation locking
-* amount mismatch
-* currency mismatch
-* payment verification failures
-* webhook processing
+- expired orders
+- duplicate enrollment attempts
+- concurrent enrollment race conditions
+- payment creation locking
+- amount mismatch
+- currency mismatch
+- payment verification failures
+- webhook processing
 
 A unique student/course constraint helps protect against duplicate enrollments during concurrent requests.
 
@@ -897,9 +897,9 @@ Successful responses use a consistent API response structure:
 
 `meta` is used for additional information such as:
 
-* pagination
-* progress statistics
-* aggregate course information
+- pagination
+- progress statistics
+- aggregate course information
 
 ---
 
@@ -935,29 +935,29 @@ Security is implemented at multiple layers.
 
 Pathwise uses:
 
-* Helmet
-* HPP
-* CORS
-* HTTP-only authentication cookies
-* request body limits
-* rate limiting
+- Helmet
+- HPP
+- CORS
+- HTTP-only authentication cookies
+- request body limits
+- rate limiting
 
 ### Authentication Security
 
-* JWT access tokens
-* JWT refresh tokens
-* token expiration
-* cookie expiration
-* refresh token rotation
-* role authorization
-* account-state authorization
+- JWT access tokens
+- JWT refresh tokens
+- token expiration
+- cookie expiration
+- refresh token rotation
+- role authorization
+- account-state authorization
 
 ### Input Security
 
-* MongoDB ID validation
-* request body validation
-* centralized validation processing
-* request size limits
+- MongoDB ID validation
+- request body validation
+- centralized validation processing
+- request size limits
 
 ---
 
@@ -973,16 +973,16 @@ Feature Rate Limiters
 
 Dedicated limiters exist for areas including:
 
-* authentication
-* courses
-* sections
-* lectures
-* orders
-* payments
-* enrollments
-* progress
-* users
-* wishlist
+- authentication
+- courses
+- sections
+- lectures
+- orders
+- payments
+- enrollments
+- progress
+- users
+- wishlist
 
 Resource-intensive endpoints such as lecture video uploads can have dedicated limits.
 
@@ -998,9 +998,9 @@ Pino provides structured application logging.
 
 It is used for events such as:
 
-* server startup
-* fatal startup failures
-* application diagnostics
+- server startup
+- fatal startup failures
+- application diagnostics
 
 ## Morgan
 
@@ -1037,14 +1037,14 @@ Production email delivery is planned around Sender.
 
 Email templates cover workflows including:
 
-* registration
-* email verification
-* password reset
-* password changed
-* email change
-* instructor access
-* account deactivation
-* course enrollment
+- registration
+- email verification
+- password reset
+- password changed
+- email change
+- instructor access
+- account deactivation
+- course enrollment
 
 ---
 
@@ -1191,10 +1191,10 @@ API / Integration Tests
 
 The test architecture includes reusable:
 
-* fixtures
-* helpers
-* assertions
-* API setup
+- fixtures
+- helpers
+- assertions
+- API setup
 
 Feature testing covers areas such as:
 
@@ -1366,7 +1366,7 @@ The planned application architecture is:
               ┌──────────────┼──────────────┐
               ▼              ▼              ▼
           MongoDB        Cloudinary       Razorpay
-                                          
+
                              │
                              ▼
                            Sender
@@ -1488,20 +1488,20 @@ Pathwise is structured to demonstrate backend engineering beyond basic CRUD impl
 
 The architecture emphasizes:
 
-* clear request pipelines
-* modular feature boundaries
-* isolated business logic
-* reusable infrastructure
-* explicit workflows
-* secure authentication
-* role and account-state authorization
-* external service abstraction
-* payment verification
-* media lifecycle management
-* edge-case handling
-* centralized errors
-* automated testing
-* production-oriented configuration
+- clear request pipelines
+- modular feature boundaries
+- isolated business logic
+- reusable infrastructure
+- explicit workflows
+- secure authentication
+- role and account-state authorization
+- external service abstraction
+- payment verification
+- media lifecycle management
+- edge-case handling
+- centralized errors
+- automated testing
+- production-oriented configuration
 
 The goal is to keep the codebase maintainable as additional LMS functionality is introduced.
 
@@ -1511,13 +1511,13 @@ The goal is to keep the codebase maintainable as additional LMS functionality is
 
 Potential future improvements include:
 
-* Production deployment and monitoring
-* Expanded administrative functionality
-* Broader automated test coverage
-* Background processing for suitable asynchronous operations
-* Expanded observability
-* Additional provider flexibility
-* Infrastructure migration options such as DigitalOcean or Hostinger
+- Production deployment and monitoring
+- Expanded administrative functionality
+- Broader automated test coverage
+- Background processing for suitable asynchronous operations
+- Expanded observability
+- Additional provider flexibility
+- Infrastructure migration options such as DigitalOcean or Hostinger
 
 ---
 
@@ -1527,16 +1527,16 @@ Potential future improvements include:
 
 Pathwise is a **full-stack portfolio project** created to demonstrate practical frontend and backend engineering through:
 
-* REST API architecture
-* authentication
-* authorization
-* payment workflows
-* media processing
-* email workflows
-* database architecture
-* automated testing
-* security
-* production-oriented application design
+- REST API architecture
+- authentication
+- authorization
+- payment workflows
+- media processing
+- email workflows
+- database architecture
+- automated testing
+- security
+- production-oriented application design
 
 ---
 

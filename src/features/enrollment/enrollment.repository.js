@@ -1,5 +1,5 @@
 import { COURSE_LIST_SELECT_FIELDS } from "../course/course.constants.js";
-import { RESOURCE_STATUS } from "../../constants/resource.constants.js"
+import { RESOURCE_STATUS } from "../../constants/resource.constants.js";
 import Enrollment from "./enrollment.model.js";
 
 ///////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ const findEnrollmentsByStudent = ({ studentId }) => {
             path: "course",
             match: {
                 isDeleted: false,
-                status: RESOURCE_STATUS.PUBLISHED
+                status: RESOURCE_STATUS.PUBLISHED,
             },
             select: COURSE_LIST_SELECT_FIELDS,
         })

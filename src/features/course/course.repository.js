@@ -256,7 +256,6 @@ const findInstructorCourseById = ({ courseId, instructorId }) => {
     });
 };
 
-
 ///////////////////////////////////////////////////////////////
 // find removed courses
 
@@ -273,7 +272,6 @@ const findRemovedCourses = async ({ instructorId }) => {
         }
     ).lean();
 };
-
 
 ///////////////////////////////////////////////////////////////
 // aggregate current course data

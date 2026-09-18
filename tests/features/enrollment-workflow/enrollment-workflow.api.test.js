@@ -337,7 +337,7 @@ describe("PATCH /api/v1/orders/students/:orderId/cancel", () => {
 
         const updatedOrder = await Order.findById(order._id);
 
-        expect(updatedOrder.status).toBe(ORDER_STATUS.PENDING);
+        expect(updatedOrder.status).toBe(ORDER_STATUS.EXPIRED);
     });
 
     // A valid pending order can be cancelled.

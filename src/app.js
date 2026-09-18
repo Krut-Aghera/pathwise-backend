@@ -22,6 +22,7 @@ import paymentRouter from "./features/payment/routes/payment.routes.js";
 import enrollmentRouter from "./features/enrollment/routes/enrollment.routes.js";
 import progressRouter from "./features/progress/routes/progress.routes.js";
 import wishlistRouter from "./features/wishlist/routes/wishlist.routes.js";
+import dashboardRouter from "./features/dashboard/dashboard.routes.js";
 
 const app = express();
 
@@ -90,6 +91,7 @@ app.use("/api/v1/payments", paymentRouter);
 app.use("/api/v1/enrollments", enrollmentRouter);
 app.use("/api/v1/progress", progressRouter);
 app.use("/api/v1/wishlist", wishlistRouter);
+app.use("/api/v1/dashboard", dashboardRouter);
 
 ///////////////////////////////////////////////////////////////
 // error middlewares
