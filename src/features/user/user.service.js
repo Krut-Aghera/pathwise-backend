@@ -151,21 +151,6 @@ const confirmEmailUpdation = async ({ user, token }) => {
     dbUser.refreshToken = null;
 
     await userRepository.saveUser(dbUser);
-
-    try {
-        await userEmail.sendEmailUpdateConfirmEmail({
-            email: dbUser.email,
-            username: dbUser.username,
-        });
-    } catch (error) {
-        logger.warn(
-            {
-                err: error,
-                userId: dbUser._id,
-            },
-            "Failed to send email change confirmation email."
-        );
-    }
 };
 
 ///////////////////////////////////////////////////////////////

@@ -44,6 +44,17 @@ coursePrivateRouter.get(
     courseControllers.fetchInstructorCourse
 );
 
+
+// GET /api/v1/courses/removed
+// Retrieves all removed courses owned by the authenticated instructor.
+
+coursePrivateRouter.get(
+    "/removed",
+    courseRatelimiter.fetchInstructorCoursesRateLimiter,
+    ...instructorAuthEngine,
+    courseControllers.fetchRemovedCourses
+);
+
 // POST /api/v1/courses
 // Creates a new course for the authenticated instructor.
 

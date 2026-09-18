@@ -214,6 +214,23 @@ const fetchCourses = async (req, res) => {
     );
 };
 
+/////////////////////////////////////////////////////////////////////////////
+// fetch removed courses controller
+
+const fetchRemovedCourses = async (req, res) => {
+    const courses = await courseService.fetchRemovedCourses({
+        instructorId: req.user._id,
+    });
+
+    return res.status(HTTP_STATUS.OK).json(
+        new ApiResponse({
+            statusCode: HTTP_STATUS.OK,
+            message: COURSE_SUCCESS_MESSAGES.INSTRUCTOR_REMOVED_COURSES_FETCHED,
+            data: courses,
+        })
+    );
+};
+
 ///////////////////////////////////////////////////////////////
 // fetch current course controller
 
@@ -243,6 +260,7 @@ export {
     saveCourseAsDraft,
     fetchInstructorCourse,
     fetchInstructorCourses,
+    fetchRemovedCourses,
     fetchCourses,
     fetchCurrentCourse,
 };

@@ -7,6 +7,7 @@ const COURSE_SUCCESS_MESSAGES = Object.freeze({
 
     INSTRUCTOR_COURSE_FETCHED: "Instructor course fetched successfully.",
     INSTRUCTOR_COURSES_FETCHED: "Instructor courses fetched successfully.",
+    INSTRUCTOR_REMOVED_COURSES_FETCHED: "Instructor removed courses fetched successfully.",
 
     COURSE_CREATED: "Course created successfully.",
     COURSE_UPDATED: "Course updated successfully.",

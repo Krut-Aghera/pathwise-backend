@@ -7,7 +7,7 @@ export const getEmailVerificationUrl = (token) => {
 
 // Create email change verification URL
 export const createEmailChangeVerificationUrl = (token) => {
-    return `${env_appVars.CLIENT_URL}/auth/change-email/${token}`;
+    return `${env_appVars.CLIENT_URL}/user/update-email/${token}`;
 };
 
 // Create password reset URL

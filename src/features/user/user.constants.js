@@ -34,7 +34,7 @@ const USER_ERROR_MESSAGES = Object.freeze({
     INVALID_OR_EXPIRED_VERIFICATION_LINK:
         "Invalid or expired verification link.",
     INVALID_OR_EXPIRED_VERIFICATION_CODE:
-        "Invalid or expired verification code.",
+        "Invalid or expired verification code. Try requesting a new one.",
     NOT_AUTHORIZED: "You are not authorized to perform this action.",
 
     ALREADY_INSTRUCTOR: "You already have instructor access.",

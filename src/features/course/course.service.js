@@ -274,6 +274,17 @@ const fetchInstructorCourse = async ({ courseId, instructorId }) => {
     return await getAuthorizedInstructorCourse({ courseId, instructorId });
 };
 
+
+///////////////////////////////////////////////////////////////
+// fetch removed courses service
+
+const fetchRemovedCourses = async ({ instructorId }) => {
+    return await courseRepository.findRemovedCourses({
+        instructorId,
+    });
+};
+
+
 ///////////////////////////////////////////////////////////////
 // fetch courses service
 
@@ -342,6 +353,7 @@ export {
     saveCourseAsDraft,
     fetchInstructorCourses,
     fetchInstructorCourse,
+    fetchRemovedCourses,
     fetchCourses,
     fetchCurrentCourse,
 };
