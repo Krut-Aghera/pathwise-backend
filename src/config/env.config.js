@@ -50,14 +50,21 @@ const env_jwtVars = Object.freeze({
 ////////////////////////////////////////////////////////////////////////////////
 // Email Configuration
 
-const env_emailVars = Object.freeze({
+const env_emailVars = {
     EMAIL_LOGO_URL: requireEnv("EMAIL_LOGO_URL"),
+};
 
-    MAILTRAP_API_TOKEN: requireEnv("MAILTRAP_API_TOKEN"),
-    MAILTRAP_SANDBOX_ID: requireEnv("MAILTRAP_SANDBOX_ID"),
-    MAILTRAP_SENDER_EMAIL: requireEnv("MAILTRAP_SENDER_EMAIL"),
-    MAILTRAP_SENDER_NAME: requireEnv("MAILTRAP_SENDER_NAME"),
-});
+if (process.env.NODE_ENV === "production") {
+    env_emailVars.RESEND_API_KEY = requireEnv("RESEND_API_KEY");
+    env_emailVars.RESEND_FROM_EMAIL = requireEnv("RESEND_FROM_EMAIL");
+} else if (process.env.NODE_ENV === "development") {
+    env_emailVars.MAILTRAP_API_TOKEN = requireEnv("MAILTRAP_API_TOKEN");
+    env_emailVars.MAILTRAP_SANDBOX_ID = requireEnv("MAILTRAP_SANDBOX_ID");
+    env_emailVars.MAILTRAP_SENDER_EMAIL = requireEnv("MAILTRAP_SENDER_EMAIL");
+    env_emailVars.MAILTRAP_SENDER_NAME = requireEnv("MAILTRAP_SENDER_NAME");
+}
+
+Object.freeze(env_emailVars);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Cloudinary Configuration
