@@ -1,6 +1,6 @@
 import sendEmail from "../email.provider.js";
 import renderEmail from "../email.renderer.js";
-import * as userEmailTemplates from "../../../templates/mails/user-mailTemplates/user-email.index.js";
+import * as userEmailTemplates from "../../../Templates/mails/user-mailTemplates/user-email.index.js";
 import { USER_EMAIL_SUBJECTS } from "../email.constans.js";
 
 ///////////////////////////////////////////////////////////////
