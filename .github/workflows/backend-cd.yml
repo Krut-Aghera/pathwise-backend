@@ -33,4 +33,4 @@ jobs:
                   ssh -i ~/.ssh/pathwise_deploy_key \
                       -o StrictHostKeyChecking=yes \
                       "$VPS_USER@$VPS_HOST" \
-                      'bash /var/www/pathwise-backend/deploy.sh'
+                      'cd /var/www/pathwise-backend && git pull --ff-only && bash ./deploy.sh'
