@@ -25,7 +25,7 @@ jobs:
                   mkdir -p ~/.ssh
                   chmod 700 ~/.ssh
 
-                  printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/pathwise_deploy_key
+                  printf '%s' "$VPS_SSH_KEY" | base64 --decode > ~/.ssh/pathwise_deploy_key
                   chmod 600 ~/.ssh/pathwise_deploy_key
 
                   ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts
