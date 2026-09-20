@@ -33,7 +33,10 @@ app.use(helmetMiddleware);
 app.use(hpp());
 app.use(
     cors({
-        origin: env_appVars?.CLIENT_URL || "http://localhost:5173",
+        origin: [
+            env_appVars?.CLIENT_URL,
+            "https://www.pathwiseeducation.in",
+        ].filter(Boolean),
         credentials: true,
         methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "HEAD", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
