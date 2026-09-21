@@ -27,6 +27,11 @@ import dashboardRouter from "./features/dashboard/dashboard.routes.js";
 const app = express();
 
 ///////////////////////////////////////////////////////////////
+// trust reverse proxy
+
+app.set("trust proxy", 1);
+
+///////////////////////////////////////////////////////////////
 // security middleware
 
 app.use(helmetMiddleware);
