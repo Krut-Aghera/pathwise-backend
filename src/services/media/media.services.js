@@ -77,14 +77,6 @@ const uploadVideoMedia = async ({ localFilePath, folder }) => {
         const uploadedVideo = await new Promise((resolve, reject) => {
             cloudinary.uploader.upload_chunked(
                 localFilePath,
-                (error, result) => {
-                    if (error) {
-                        reject(error);
-                        return;
-                    }
-
-                    resolve(result);
-                },
                 {
                     folder,
                     resource_type: MEDIA_RESOURCE_TYPES.VIDEO,
@@ -93,6 +85,14 @@ const uploadVideoMedia = async ({ localFilePath, folder }) => {
 
                     // 6 MB chunks for large lecture videos.
                     chunk_size: 6000000,
+                },
+                (error, result) => {
+                    if (error) {
+                        reject(error);
+                        return;
+                    }
+
+                    resolve(result);
                 }
             );
         });
@@ -123,6 +123,7 @@ const uploadVideoMedia = async ({ localFilePath, folder }) => {
         logger.info("Local video file removed from temp directory.");
     }
 };
+
 
 ///////////////////////////////////////////////////////////////
 // Generate video thumbnail URL
