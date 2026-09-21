@@ -22,5 +22,5 @@ export const FILE_FIELDS = Object.freeze({
     VIDEO: "video",
 });
 
-export const IMAGE_MAX_FILE_SIZE = 10 * 1024 * 1024; // 5 MB
-export const VIDEO_MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5 GB
+export const IMAGE_MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+export const VIDEO_MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB
