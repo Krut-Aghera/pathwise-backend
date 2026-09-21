@@ -74,15 +74,18 @@ const uploadVideoMedia = async ({ localFilePath, folder }) => {
     });
 
     try {
-        const uploadedVideo = await cloudinary.uploader.upload(localFilePath, {
-            folder,
-            resource_type: MEDIA_RESOURCE_TYPES.VIDEO,
-            overwrite: true,
-            invalidate: true,
+        const uploadedVideo = await cloudinary.uploader.upload_large(
+            localFilePath,
+            {
+                folder,
+                resource_type: MEDIA_RESOURCE_TYPES.VIDEO,
+                overwrite: true,
+                invalidate: true,
 
-            // Better for large lecture videos
-            chunk_size: 6000000,
-        });
+                // Upload large lecture videos in chunks.
+                chunk_size: 6000000,
+            }
+        );
 
         return {
             url: uploadedVideo.secure_url,
