@@ -75,8 +75,17 @@ const uploadVideoMedia = async ({ localFilePath, folder }) => {
 
     try {
         const uploadedVideo = await new Promise((resolve, reject) => {
-            cloudinary.uploader
-                .upload_chunked(localFilePath, {
+            cloudinary.uploader.upload_chunked(
+                localFilePath,
+                (error, result) => {
+                    if (error) {
+                        reject(error);
+                        return;
+                    }
+
+                    resolve(result);
+                },
+                {
                     folder,
                     resource_type: MEDIA_RESOURCE_TYPES.VIDEO,
                     overwrite: true,
@@ -84,9 +93,8 @@ const uploadVideoMedia = async ({ localFilePath, folder }) => {
 
                     // 6 MB chunks for large lecture videos.
                     chunk_size: 6000000,
-                })
-                .on("end", resolve)
-                .on("error", reject);
+                }
+            );
         });
 
         return {
