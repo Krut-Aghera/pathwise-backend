@@ -15,7 +15,7 @@ import validateCryptoTokenParam from "../../../validations/crypto-tokenParam.val
 
 const authPublicRouter = express.Router();
 
-/// POST /api/v1/auth/users
+// POST /api/v1/auth/users
 // Registers a new user account.
 
 authPublicRouter.post(

@@ -51,21 +51,6 @@ userPrivateRouter.post(
     userControllers.requestEmailUpdation
 );
 
-// POST /api/v1/users/me/email-change/confirm/:token
-// Confirms and completes the email address change.
-
-userPrivateRouter.post(
-    "/me/email-change/confirm/:token",
-    accessTokenVerification,
-    requireActiveAccount,
-    requireVerifiedEmail,
-    validateCryptoTokenParam({
-        paramName: "token",
-        fieldName: "Email change token",
-    }),
-    validationEngine,
-    userControllers.confirmEmailUpdation
-);
 
 // POST /api/v1/users/me/instructor-access
 // Initiates an instructor access request.
@@ -77,22 +62,6 @@ userPrivateRouter.post(
     requireActiveAccount,
     requireVerifiedEmail,
     userControllers.requestInstructorAccess
-);
-
-// POST /api/v1/users/me/instructor-access/confirm/:token
-// Confirms and grants instructor access.
-
-userPrivateRouter.post(
-    "/me/instructor-access/confirm/:token",
-    accessTokenVerification,
-    requireActiveAccount,
-    requireVerifiedEmail,
-    validateCryptoTokenParam({
-        paramName: "token",
-        fieldName: "Instructor access token",
-    }),
-    validationEngine,
-    userControllers.confirmInstructorAccess
 );
 
 // POST /api/v1/users/me/deactivation
@@ -108,17 +77,6 @@ userPrivateRouter.post(
     userControllers.requestAccountDeactivation
 );
 
-// POST /api/v1/users/me/deactivation/confirm
-// Confirms and deactivates the authenticated user's account.
-
-userPrivateRouter.post(
-    "/me/deactivation/confirm",
-    accessTokenVerification,
-    requireActiveAccount,
-    userValidations.accountDeactivationConfirmationValidators,
-    validationEngine,
-    userControllers.confirmAccountDeactivation
-);
 
 ///////////////////////////////////////////////////////////////
 // export
