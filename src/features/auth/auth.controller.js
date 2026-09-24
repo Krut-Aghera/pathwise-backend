@@ -52,17 +52,21 @@ const requestEmailVerification = async (req, res) => {
 // confirm email verification controller
 
 const confirmEmailVerification = async (req, res) => {
-    const user = await authService.confirmEmailVerification({
+    const { user, accessToken, refreshToken } = await authService.confirmEmailVerification({
         token: req.params.token,
     });
 
-    return res.status(HTTP_STATUS.OK).json(
-        new ApiResponse({
-            statusCode: HTTP_STATUS.OK,
-            message: AUTH_SUCCESS_MESSAGES.EMAIL_VERIFIED,
-            data: user,
-        })
-    );
+    return res
+        .status(HTTP_STATUS.OK)
+        .cookie(JWT_TOKEN_TYPE.ACCESS, accessToken, ACCESS_COOKIE_OPTIONS)
+        .cookie(JWT_TOKEN_TYPE.REFRESH, refreshToken, REFRESH_COOKIE_OPTIONS)
+        .json(
+            new ApiResponse({
+                statusCode: HTTP_STATUS.OK,
+                message: AUTH_SUCCESS_MESSAGES.EMAIL_VERIFIED,
+                data: user,
+            })
+        );
 };
 
 ///////////////////////////////////////////////////////////////
