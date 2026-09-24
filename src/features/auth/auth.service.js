@@ -128,16 +128,7 @@ const confirmEmailVerification = async ({ token }) => {
     user.emailVerificationToken = null;
     user.emailVerificationExpiry = null;
 
-    const savedUser = await userRepository.saveUser(user)
-
-    const { user: updatedUser, accessToken, refreshToken, }
-        = await authSession.createSession(savedUser)
-
-    return {
-        user: updatedUser,
-        accessToken,
-        refreshToken,
-    }
+    return await userRepository.saveUser(user);
 };
 
 ///////////////////////////////////////////////////////////////
